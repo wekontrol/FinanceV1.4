@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { User, X, Save, Mail } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { User, X, Save, Mail, Lock, Image } from 'lucide-react';
 
 interface ProfileModalProps {
   user: any;
@@ -8,15 +8,65 @@ interface ProfileModalProps {
 }
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: user.name,
     email: user.email || '',
-    username: user.username
+    username: user.username,
+    avatar: user.avatar || '/default-avatar.svg'
+  });
+  const [passwordForm, setPasswordForm] = useState({
+    current: '',
+    new: '',
+    confirm: ''
   });
   const [saved, setSaved] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, avatar: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSave = () => {
-    onSave(formData);
+    const updates: any = {
+      name: formData.name,
+      email: formData.email,
+      avatar: formData.avatar
+    };
+
+    // Se houver mudança de senha
+    if (passwordForm.current || passwordForm.new || passwordForm.confirm) {
+      if (!passwordForm.current) {
+        setPasswordError('Senha atual é obrigatória');
+        return;
+      }
+      if (!passwordForm.new || !passwordForm.confirm) {
+        setPasswordError('Nova senha e confirmação são obrigatórias');
+        return;
+      }
+      if (passwordForm.new !== passwordForm.confirm) {
+        setPasswordError('As novas senhas não coincidem');
+        return;
+      }
+      if (passwordForm.new.length < 4) {
+        setPasswordError('Senha deve ter pelo menos 4 caracteres');
+        return;
+      }
+      updates.password = passwordForm.new;
+    }
+
+    onSave(updates);
     setSaved(true);
     setTimeout(() => {
       setSaved(false);
@@ -26,8 +76,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 w-full max-w-md p-6 animate-scale-in">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 w-full max-w-md p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-6 sticky top-0 bg-white dark:bg-slate-800">
           <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
             <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
               <User size={24} className="text-purple-600 dark:text-purple-400" />
@@ -40,6 +90,41 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
         </div>
 
         <div className="space-y-4">
+          {/* Avatar Section */}
+          <div>
+            <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-2">
+              <Image size={16} />
+              Foto de Perfil
+            </label>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <img 
+                  src={formData.avatar} 
+                  alt="Avatar" 
+                  className="w-16 h-16 rounded-full border-2 border-slate-200 dark:border-slate-600 object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={handleAvatarClick}
+                  className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 hover:opacity-100 transition text-white text-xs font-bold"
+                >
+                  Trocar
+                </button>
+                <input 
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Clique no avatar para escolher uma nova foto
+              </p>
+            </div>
+          </div>
+
+          {/* Name */}
           <div>
             <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Nome</label>
             <input
@@ -50,6 +135,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
             />
           </div>
 
+          {/* Email */}
           <div>
             <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-2">
               <Mail size={16} />
@@ -64,6 +150,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
             />
           </div>
 
+          {/* Username */}
           <div>
             <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Usuário (Login)</label>
             <input
@@ -75,7 +162,63 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
             <p className="text-xs text-slate-400 mt-1">Não pode ser alterado</p>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Password Section */}
+          <div className="border-t border-slate-200 dark:border-slate-700 pt-4 mt-4">
+            <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-2">
+              <Lock size={16} />
+              Alterar Senha (Opcional)
+            </h3>
+            
+            <div>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Senha Atual</label>
+              <input
+                type="password"
+                value={passwordForm.current}
+                onChange={(e) => {
+                  setPasswordForm({ ...passwordForm, current: e.target.value });
+                  setPasswordError('');
+                }}
+                placeholder="Digite sua senha atual"
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Nova Senha</label>
+                <input
+                  type="password"
+                  value={passwordForm.new}
+                  onChange={(e) => {
+                    setPasswordForm({ ...passwordForm, new: e.target.value });
+                    setPasswordError('');
+                  }}
+                  placeholder="Nova senha"
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Confirmar</label>
+                <input
+                  type="password"
+                  value={passwordForm.confirm}
+                  onChange={(e) => {
+                    setPasswordForm({ ...passwordForm, confirm: e.target.value });
+                    setPasswordError('');
+                  }}
+                  placeholder="Confirmar senha"
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                />
+              </div>
+            </div>
+
+            {passwordError && (
+              <p className="text-xs text-rose-600 dark:text-rose-400 mt-2 font-bold">⚠️ {passwordError}</p>
+            )}
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
             <button
               onClick={handleSave}
               className="flex-1 p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
