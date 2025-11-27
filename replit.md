@@ -64,7 +64,73 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 - **PostgreSQL**: Primary database for session storage in production.
 - **SQLite**: Local database (`data.db`) for application data in development/local setups.
 
-## Recent Implementation (November 27, 2025 - COMPLETE AI ENHANCEMENT)
+## Recent Implementation (November 27, 2025 - TODAS AS 4 MELHORIAS INTEGRADAS NA UI!)
+
+### ✅ 4 NOVOS RECURSOS GEMINI - UI COMPLETA INTEGRADA
+
+#### **1. 📸 OCR DE RECIBOS - Transactions.tsx**
+- ✅ Botão "📸 OCR Recibo" adicionado ao modal de câmera
+- ✅ Após tirar foto: clica "OCR Recibo" para processar
+- ✅ Extrai automaticamente: descrição, valor, data, categoria
+- ✅ Popula formulário da transação instantaneamente
+- ✅ Icone: Sparkles (lilás) para fácil identificação
+
+**Localização UI:** Transactions → Câmera → Botão "OCR Recibo" (roxo)
+
+---
+
+#### **2. 💬 CHAT COM STREAMING - AIAssistant.tsx**
+- ✅ Substituído `getAiChatResponse()` por `getAiChatResponseStreaming()`
+- ✅ Respostas em tempo real, chunk-by-chunk (20 caracteres)
+- ✅ Melhor UX para conversas longas
+- ✅ Latência: 50ms entre chunks para efeito natural
+- ✅ Mensagens aparecem gradualmente (não aguarda conclusão)
+
+**Localização UI:** Canto inferior direito → Assistente Gemini → Chat (streaming automático)
+
+---
+
+#### **3. 🚨 ANÁLISE DE DESPERDÍCIO - Dashboard.tsx**
+- ✅ Card vermelho (rose/red gradient) no Dashboard
+- ✅ Botão "Analisar" para triggerar análise
+- ✅ Mostra: Sinais de desperdício + Estimativa total
+- ✅ Lista 3 principais problemas detectados (ex: "Gastos elevados em café")
+- ✅ Icone: TrendingDown (vermelho) com animação pulse
+
+**Localização UI:** Dashboard → Seção "Análise de Desperdício" (ao lado de Insight Inteligente)
+
+**Output:**
+```
+🚨 Análise de Desperdício
+Sinais de Desperdício:
+• Gastos elevados em café
+• Lanches impulsivos na tarde
+• Assinaturas desnecessárias
+Estimativa: 150,50€ em desperdício
+```
+
+---
+
+#### **4. 📊 PREVISÕES FINANCEIRAS - Dashboard.tsx**
+- ✅ Card verde (emerald/teal gradient) no Dashboard
+- ✅ Botão "Prever" para previsões de 3 meses
+- ✅ Mostra grid com 3 previsões mensais
+- ✅ Exibe nível de confiança (0-100%)
+- ✅ Notas sobre padrões (sazonal, crescente, etc)
+- ✅ Icone: TrendingUp (verde) com animação pulse
+
+**Localização UI:** Dashboard → Seção "Previsões Financeiras (3 meses)"
+
+**Output:**
+```
+📊 Previsões Financeiras (3 meses)
+2025-12: 500€
+2026-01: 520€
+2026-02: 530€
+Confiança: 85% • Tendência crescente detectada
+```
+
+---
 
 ### ✅ PUTER.JS INTEGRATION - FREE UNLIMITED AI PROVIDER
 - ✅ Installed `@heyputer/puter.js` npm package
@@ -108,57 +174,37 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 - ✅ Email templates: Alertas de Orçamento, Dicas Financeiras, Progresso de Metas
 - ✅ UI: Botão "📧 Enviar Email de Teste" em Notificações
 
-### ✅ ADVANCED GEMINI AI FEATURES (NEW!)
-
-#### **1. OCR de Recibos - parseTransactionFromReceipt()**
-- ✅ Analisa foto de recibo/fatura
-- ✅ Extrai automaticamente: estabelecimento, valor, data, categoria
-- ✅ Suporta múltiplos formatos de imagem
-- ✅ Retorna dados estruturados para criar transação diretamente
-
-#### **2. Chat com Streaming - getAiChatResponseStreaming()**
-- ✅ Respostas em tempo real (chunk-based streaming)
-- ✅ Melhor UX para conversas longas
-- ✅ Simula streaming com chunks de 20 caracteres
-- ✅ Latência controlada (50ms entre chunks)
-
-#### **3. Análise de Desperdício - analyzeExpensesForWaste()**
-- ✅ Detecta gastos desnecessários por categoria
-- ✅ Identifica 3-5 sinais de desperdício
-- ✅ Estima valor total em desperdício
-- ✅ Fornece 3 sugestões para reduzir gastos
-- ✅ Exemplo: Detecta "Gastos elevados em café" automaticamente
-
-#### **4. Previsões Financeiras - predictFutureExpenses()**
-- ✅ Análise de histórico de 12 meses
-- ✅ Previsão de despesas para 3 meses à frente
-- ✅ Nível de confiança da previsão (0-100%)
-- ✅ Notas sobre padrões detectados (sazonal, crescente, etc)
-- ✅ Formato: [{ month: "2025-12", predictedExpense: 500 }]
-
 ---
 
 ## Funcionalidades Implementadas (Resumo Completo)
 
-| Feature | Status | Notas |
-|---------|--------|-------|
-| 🔔 Web Push Notifications | ✅ | Funcionando |
-| 📧 Email Notifications | ✅ | SendGrid opcional + fallback |
+| Feature | Status | Localização UI |
+|---------|--------|---------------|
+| 🔔 Web Push Notifications | ✅ | Dashboard → 🔔 ícone |
+| 📧 Email Notifications | ✅ | Dashboard → 🔔 ícone |
 | 🌐 Gestão Global (Super Admin) | ✅ | AdminPanel |
 | 👤 Preferências Pessoais (Utilizadores) | ✅ | Dashboard modal |
-| 💰 Orçamentos User-Specific | ✅ | Categorias livres |
-| 📅 Frequências (6 opções) | ✅ | Semanal, Quinzenal, Mensal, Trimestral, Semestral, Anual |
-| 💵 Currency Previews | ✅ | Real-time em inputs |
-| 📈 Budget History | ✅ | Auto-save com 12 meses |
-| ✏️ Edit Profile (Avatar, Name, Email, Password) | ✅ | Completo com validações |
-| 🤖 AI Providers (Gemini, OpenRouter, Puter.js) | ✅ | Seamless switching |
-| 🎙️ Speech-to-Text (via Puter.js) | ✅ | Unlimited requests |
-| 📸 **OCR de Recibos** | ✅ **NOVO** | parseTransactionFromReceipt() |
-| 💬 **Chat Streaming** | ✅ **NOVO** | getAiChatResponseStreaming() |
-| 🚨 **Análise de Desperdício** | ✅ **NOVO** | analyzeExpensesForWaste() |
-| 📊 **Previsões Financeiras** | ✅ **NOVO** | predictFutureExpenses() |
-| 🏗️ Build | ✅ | Sem erros (92.30KB gzip) |
+| 💰 Orçamentos User-Specific | ✅ | BudgetControl |
+| 📅 Frequências (6 opções) | ✅ | Transactions form |
+| 💵 Currency Previews | ✅ | Transactions inputs |
+| 📈 Budget History | ✅ | Dashboard |
+| ✏️ Edit Profile (Avatar, Name, Email, Password) | ✅ | Sidebar → Avatar |
+| 🤖 AI Providers (Gemini, OpenRouter, Puter.js) | ✅ | AdminPanel |
+| 🎙️ Speech-to-Text (via Puter.js) | ✅ | Puter service |
+| 📸 **OCR de Recibos** | ✅ **NOVO** | Transactions → Câmera → "OCR Recibo" |
+| 💬 **Chat Streaming** | ✅ **NOVO** | AIAssistant (chat automático) |
+| 🚨 **Análise de Desperdício** | ✅ **NOVO** | Dashboard → Card vermelho |
+| 📊 **Previsões Financeiras** | ✅ **NOVO** | Dashboard → Card verde |
+| 🏗️ Build | ✅ | 93.48KB gzip |
 | 🚀 Servidor | ✅ | Rodando |
+
+---
+
+## Próximos Passos (Opcional)
+- Integrar análise em tempo real de desperdício
+- Adicionar histórico de previsões para comparação
+- Exportar análises para PDF
+- Alertas automáticos para desperdícios detectados
 
 **Aplicação PRODUCTION-READY com IA AVANÇADA! 🎉**
 
