@@ -303,6 +303,24 @@ export const settingsApi = {
       body: JSON.stringify({ value })
     });
     return handleResponse(response);
+  },
+
+  // New methods for API configurations table
+  getApiConfig: async (provider: string) => {
+    const response = await fetch(`${API_BASE}/settings/api-config/${provider}`, {
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  },
+
+  saveApiConfig: async (provider: string, apiKey: string, model?: string) => {
+    const response = await fetch(`${API_BASE}/settings/api-configs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ provider, apiKey, model })
+    });
+    return handleResponse(response);
   }
 };
 

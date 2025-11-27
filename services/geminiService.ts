@@ -11,13 +11,14 @@ const getApiKey = async () => {
   if (cachedApiKey) return cachedApiKey;
   
   try {
-    const response = await settingsApi.getSetting('gemini_api_key');
-    if (response?.value) {
-      cachedApiKey = response.value;
+    // First try new API configurations table
+    const config = await settingsApi.getApiConfig('google_gemini');
+    if (config?.apiKey) {
+      cachedApiKey = config.apiKey;
       return cachedApiKey;
     }
   } catch (error) {
-    console.error("Erro ao buscar chave Gemini do servidor:", error);
+    // Fail silently - not critical if config doesn't exist yet
   }
   
   return '';
@@ -32,7 +33,7 @@ const getAiClient = async () => {
 // Export functions to manage the key from the UI
 export const setGeminiKey = async (key: string) => {
   try {
-    await settingsApi.setSetting('gemini_api_key', key);
+    await settingsApi.saveApiConfig('google_gemini', key);
     cachedApiKey = key; // Update cache
   } catch (error) {
     console.error("Erro ao salvar chave Gemini:", error);
