@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { Transaction, LoanSimulation, BudgetLimit, UserBehaviorAnalysis } from "../types";
 
 // Helper to retrieve the API key dynamically (LocalStorage > Env Var)
-const getApiKey = () => localStorage.getItem('gemini_api_key') || process.env.API_KEY || '';
+const getApiKey = () => localStorage.getItem('gemini_api_key') || process.env.REACT_APP_GEMINI_API_KEY || '';
 
 // Helper to instantiate the client with the current key
 const getAiClient = () => {
@@ -56,7 +56,7 @@ export const categorizeTransaction = async (description: string, history: Transa
 
 export const getFinancialAdvice = async (transactions: any[], goals: any[]): Promise<string> => {
   const ai = getAiClient();
-  if (!ai) return "Adicione sua chave de API nas configurações para receber conselhos personalizados.";
+  if (!ai) return "Configure sua chave de API do Gemini em Configurações > Integrações para receber conselhos personalizados.";
 
   try {
     const summary = JSON.stringify({
@@ -82,7 +82,7 @@ export const getFinancialAdvice = async (transactions: any[], goals: any[]): Pro
 
 export const analyzeLoanDocument = async (text: string): Promise<Partial<LoanSimulation>> => {
   const ai = getAiClient();
-  if (!ai) throw new Error("API Key não configurada. Vá em Configurações > Integrações.");
+  if (!ai) throw new Error("API Key não configurada. Vá em Configurações > Integrações para adicionar sua chave do Gemini.");
 
   try {
     const prompt = `
@@ -103,199 +103,36 @@ export const analyzeLoanDocument = async (text: string): Promise<Partial<LoanSim
     });
 
     let jsonStr = response.text ? response.text.trim() : "{}";
-    const firstBrace = jsonStr.indexOf('{');
-    const lastBrace = jsonStr.lastIndexOf('}');
-    if (firstBrace !== -1 && lastBrace !== -1) {
-        jsonStr = jsonStr.substring(firstBrace, lastBrace + 1);
-    } else {
-        jsonStr = jsonStr.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '');
+
+    if (jsonStr.startsWith('```json')) {
+      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
     }
 
     return JSON.parse(jsonStr);
   } catch (error) {
     console.error("Erro ao analisar documento:", error);
-    throw new Error("Falha ao processar o documento com IA.");
-  }
-};
-
-// --- NEW FUNCTIONS ---
-
-export const parseTransactionFromText = async (input: string): Promise<Partial<Transaction>> => {
-  const ai = getAiClient();
-  if (!ai) throw new Error("API Key não configurada. Vá em Configurações > Integrações.");
-
-  try {
-    const prompt = `
-      Extraia dados de transação do seguinte texto em linguagem natural.
-      Hoje é: ${new Date().toISOString().split('T')[0]}.
-      
-      Texto: "${input}"
-      
-      Retorne APENAS um JSON com:
-      - description: string (resumo do que é)
-      - amount: number (valor numérico, ignore simbolos de moeda)
-      - type: 'DESPESA' ou 'RECEITA' (default DESPESA se não especificado)
-      - category: string (categoria sugerida)
-      - date: string (formato YYYY-MM-DD, se mencionado 'ontem' calcule a data, se não, use hoje)
-      - isRecurring: boolean (se o usuário disser "todo mês", "mensalmente", "assinatura", etc)
-      - frequency: 'monthly' | 'weekly' | 'yearly' (se for recorrente)
-    `;
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
-
-    let jsonStr = response.text ? response.text.trim() : "{}";
-    const firstBrace = jsonStr.indexOf('{');
-    const lastBrace = jsonStr.lastIndexOf('}');
-    if (firstBrace !== -1 && lastBrace !== -1) jsonStr = jsonStr.substring(firstBrace, lastBrace + 1);
-    
-    return JSON.parse(jsonStr);
-  } catch (error) {
-    console.error("Erro no parser inteligente:", error);
-    throw error;
-  }
-};
-
-export const parseTransactionFromAudio = async (base64Audio: string): Promise<Partial<Transaction>> => {
-  const ai = getAiClient();
-  if (!ai) throw new Error("API Key não configurada. Vá em Configurações > Integrações.");
-
-  try {
-    const prompt = `
-      Ouça este áudio de uma pessoa descrevendo uma transação financeira.
-      Hoje é: ${new Date().toISOString().split('T')[0]}.
-      Extraia os detalhes e retorne APENAS um JSON com:
-      - description: string (resumo claro da transação)
-      - amount: number (valor numérico)
-      - type: 'DESPESA' ou 'RECEITA' (tente inferir pelo contexto, ex: "gastei" = despesa, "recebi" = receita)
-      - category: string (categoria sugerida em Português)
-      - date: string (formato YYYY-MM-DD, se mencionado 'ontem' calcule, senão use hoje)
-      - isRecurring: boolean (se disser "todo mês", "assinatura", "fixo", "mensalmente")
-      - frequency: 'monthly' | 'weekly' | 'yearly' (se for recorrente)
-    `;
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: {
-        parts: [
-          {
-            inlineData: {
-              mimeType: 'audio/webm', // Assumindo formato padrão do navegador
-              data: base64Audio
-            }
-          },
-          { text: prompt }
-        ]
-      }
-    });
-
-    let jsonStr = response.text ? response.text.trim() : "{}";
-    const firstBrace = jsonStr.indexOf('{');
-    const lastBrace = jsonStr.lastIndexOf('}');
-    if (firstBrace !== -1 && lastBrace !== -1) jsonStr = jsonStr.substring(firstBrace, lastBrace + 1);
-    
-    return JSON.parse(jsonStr);
-  } catch (error) {
-    console.error("Erro no parser de áudio:", error);
-    throw error;
-  }
-};
-
-export const getAiChatResponse = async (question: string, contextData: any): Promise<string> => {
-  const ai = getAiClient();
-  if (!ai) return "Por favor, configure sua API Key nas configurações para usar o chat.";
-
-  try {
-    // Reduzimos o contexto para não exceder tokens, focando em resumos
-    const context = JSON.stringify({
-      saldo: contextData.balance,
-      gastos_por_categoria: contextData.categoryData,
-      ultimas_transacoes: contextData.recentTransactions,
-      metas: contextData.goals,
-    });
-
-    const prompt = `
-      Você é um consultor financeiro pessoal inteligente e amigável.
-      Use os dados fornecidos abaixo para responder à pergunta do usuário.
-      Se a pergunta não for sobre finanças, responda educadamente que só pode ajudar com questões financeiras.
-      
-      Dados Financeiros Atuais:
-      ${context}
-
-      Pergunta do Usuário: "${question}"
-
-      Responda de forma direta, útil e em Português. Use formatação Markdown se necessário.
-    `;
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
-
-    return response.text || "Sem resposta.";
-  } catch (error) {
-    console.error("Erro no chat:", error);
-    return "Desculpe, tive um problema ao processar sua pergunta.";
-  }
-};
-
-export const suggestBudgets = async (history: Transaction[]): Promise<BudgetLimit[]> => {
-  const ai = getAiClient();
-  if (!ai) return [];
-
-  try {
-    const expenses = history.filter(t => t.type === 'DESPESA');
-    const dataSummary = JSON.stringify(expenses.map(t => ({ c: t.category, a: t.amount })));
-
-    const prompt = `
-      Analise o histórico de despesas abaixo e sugira um orçamento (limite de gastos) mensal ideal para cada categoria identificada.
-      Seja realista mas conservador para ajudar a economizar.
-      
-      Dados: ${dataSummary}
-
-      Retorne APENAS um JSON array: [{ "category": "Nome", "limit": 1000 }]
-    `;
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
-
-    let jsonStr = response.text ? response.text.trim() : "[]";
-    const firstBrace = jsonStr.indexOf('[');
-    const lastBrace = jsonStr.lastIndexOf(']');
-    if (firstBrace !== -1 && lastBrace !== -1) jsonStr = jsonStr.substring(firstBrace, lastBrace + 1);
-
-    return JSON.parse(jsonStr);
-  } catch (error) {
-    console.error("Erro ao sugerir orçamentos:", error);
-    return [];
+    throw new Error("Não foi possível analisar o documento. Verifique o formato do PDF.");
   }
 };
 
 export const analyzeUserBehavior = async (transactions: Transaction[]): Promise<UserBehaviorAnalysis> => {
   const ai = getAiClient();
-  if (!ai) throw new Error("API Key ausente. Configure em Admin > Integrações.");
-
-  // Agrupar dados para economizar tokens
-  const expenses = transactions.filter(t => t.type === 'DESPESA');
-  const summary = expenses.map(t => `${t.date}: ${t.amount} (${t.category})`).slice(0, 50); // Últimas 50 transações
-  const total = expenses.reduce((a, b) => a + b.amount, 0);
-  const dataStr = JSON.stringify({ transactions: summary, totalSpent: total });
+  if (!ai) {
+    return {
+      summary: "Configure a API do Gemini para análise de comportamento.",
+      patterns: [],
+      recommendations: []
+    };
+  }
 
   try {
-    const prompt = `
-      Analise este histórico de transações financeiras de um usuário. Identifique padrões de comportamento.
-      
-      Dados: ${dataStr}
+    const summary = JSON.stringify(transactions.slice(0, 20));
 
-      Retorne APENAS um JSON com:
-      - persona: string (Um arquétipo curto, ex: "Poupador Cauteloso", "Gastador Impulsivo", "Investidor", "Equilibrado", "Bon Vivant")
-      - patternDescription: string (Uma frase descrevendo o principal padrão observado, ex: "Você gasta muito em Lazer nos fins de semana")
-      - nextMonthProjection: number (Estimativa de gastos totais para o próximo mês baseado na média)
-      - tip: string (Uma dica acionável e curta para melhorar)
+    const prompt = `
+      Analise o comportamento financeiro baseado nas transações. Retorne um JSON com:
+      - summary: Resumo breve (1 frase) do comportamento
+      - patterns: Array de 3 padrões observados (ex: "Gasta mais em fins de semana")
+      - recommendations: Array de 3 recomendações
     `;
 
     const response = await ai.models.generateContent({
@@ -304,18 +141,101 @@ export const analyzeUserBehavior = async (transactions: Transaction[]): Promise<
     });
 
     let jsonStr = response.text ? response.text.trim() : "{}";
-    const firstBrace = jsonStr.indexOf('{');
-    const lastBrace = jsonStr.lastIndexOf('}');
-    if (firstBrace !== -1 && lastBrace !== -1) jsonStr = jsonStr.substring(firstBrace, lastBrace + 1);
+    if (jsonStr.startsWith('```json')) {
+      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    }
 
     return JSON.parse(jsonStr);
   } catch (error) {
-    console.error("Erro ao analisar comportamento:", error);
     return {
-      persona: "Em Análise",
-      patternDescription: "Dados insuficientes para análise detalhada.",
-      nextMonthProjection: 0,
-      tip: "Continue registrando seus gastos."
+      summary: "Comece adicionando mais transações.",
+      patterns: [],
+      recommendations: []
     };
   }
+};
+
+export const parseTransactionFromText = async (text: string): Promise<Partial<Transaction>> => {
+  const ai = getAiClient();
+  if (!ai) return { description: text, category: "Geral" };
+
+  try {
+    const prompt = `
+      Extraia os dados de uma transação financeira do seguinte texto em Português. Retorne APENAS um JSON válido com:
+      - description: Descrição breve
+      - amount: Valor numérico
+      - type: "INCOME" ou "EXPENSE"
+      - category: Categoria (uma palavra)
+      - date: Data em formato YYYY-MM-DD (hoje se não mencionada)
+      
+      Texto: "${text}"
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+    });
+
+    let jsonStr = response.text ? response.text.trim() : "{}";
+    if (jsonStr.startsWith('```json')) {
+      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    }
+    if (jsonStr.startsWith('```')) {
+      jsonStr = jsonStr.slice(3);
+      jsonStr = jsonStr.slice(0, jsonStr.lastIndexOf('```'));
+    }
+
+    return JSON.parse(jsonStr);
+  } catch (error) {
+    return { description: text, category: "Geral" };
+  }
+};
+
+export const parseTransactionFromAudio = async (base64Audio: string): Promise<Partial<Transaction>> => {
+  const ai = getAiClient();
+  if (!ai) return { description: "Áudio não processado", category: "Geral" };
+
+  try {
+    const prompt = `
+      Transcreva e extraia dados de uma transação financeira do seguinte áudio. Retorne APENAS um JSON com:
+      - description: Descrição
+      - amount: Valor
+      - type: "INCOME" ou "EXPENSE"
+      - category: Categoria
+      - date: YYYY-MM-DD
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        { text: prompt },
+        {
+          inlineData: {
+            mimeType: 'audio/webm',
+            data: base64Audio,
+          },
+        },
+      ],
+    });
+
+    let jsonStr = response.text ? response.text.trim() : "{}";
+    if (jsonStr.startsWith('```json')) {
+      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    }
+
+    return JSON.parse(jsonStr);
+  } catch (error) {
+    return { description: "Áudio não processado", category: "Geral" };
+  }
+};
+
+export default {
+  categorizeTransaction,
+  getFinancialAdvice,
+  analyzeLoanDocument,
+  analyzeUserBehavior,
+  parseTransactionFromText,
+  parseTransactionFromAudio,
+  setGeminiKey,
+  hasGeminiKey,
 };
