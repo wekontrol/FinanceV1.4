@@ -5,12 +5,13 @@ import {
   PieChart, Pie, Cell, RadialBarChart, RadialBar, PolarAngleAxis, Sector
 } from 'recharts';
 import { Transaction, TransactionType, SavingsGoal, BudgetLimit, UserBehaviorAnalysis } from '../types';
-import { TrendingUp, TrendingDown, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Wallet, BrainCircuit, Lightbulb, User, PieChart as PieChartIcon, Download } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Wallet, BrainCircuit, Lightbulb, User, PieChart as PieChartIcon, Download, Bell, X } from 'lucide-react';
 import { getFinancialAdvice, analyzeUserBehavior } from '../services/geminiService';
 import { generatePDFReport } from '../services/reportService';
 import Hint from './Hint';
 import AlertsPanel from './AlertsPanel';
 import CategoryBreakdown from './CategoryBreakdown';
+import NotificationSettings from './NotificationSettings';
 
 interface DashboardProps {
   transactions: Transaction[];
@@ -39,6 +40,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   
   const [behavior, setBehavior] = useState<UserBehaviorAnalysis | null>(null);
   const [isAnalyzingBehavior, setIsAnalyzingBehavior] = useState(false);
+  const [showNotificationSettings, setShowNotificationSettings] = useState(false);
 
   // Custom Tooltips
   const CustomAreaTooltip = ({ active, payload, label }: any) => {
@@ -236,7 +238,15 @@ const Dashboard: React.FC<DashboardProps> = ({
           <h3 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Visão Geral</h3>
           <p className="text-sm text-slate-500">Saúde financeira.</p>
         </div>
-        <div className="flex items-center bg-white dark:bg-slate-800 rounded-2xl p-1.5 shadow-sm border border-slate-200 dark:border-slate-700 w-full sm:w-auto hover:border-primary-400 transition-colors">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <button 
+            onClick={() => setShowNotificationSettings(!showNotificationSettings)}
+            className="p-2.5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition text-slate-600 dark:text-slate-300"
+            title="Preferências de Notificações"
+          >
+            <Bell size={20} />
+          </button>
+          <div className="flex items-center bg-white dark:bg-slate-800 rounded-2xl p-1.5 shadow-sm border border-slate-200 dark:border-slate-700 flex-1 sm:flex-none hover:border-primary-400 transition-colors">
           <Calendar size={16} className="text-primary-500 ml-2 mr-2 shrink-0" />
           <select 
             value={dateRange} 
@@ -248,8 +258,25 @@ const Dashboard: React.FC<DashboardProps> = ({
             <option value="year">Ano Atual</option>
             <option value="all">Tudo</option>
           </select>
+          </div>
         </div>
       </div>
+
+      {/* Notification Settings Modal */}
+      {showNotificationSettings && (
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 animate-slide-in-left">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+              <Bell size={20} className="text-primary-600" />
+              Minhas Notificações
+            </h3>
+            <button onClick={() => setShowNotificationSettings(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+              <X size={20} />
+            </button>
+          </div>
+          <NotificationSettings onClose={() => setShowNotificationSettings(false)} />
+        </div>
+      )}
 
       {/* AI Behavior Analysis Widget */}
       <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden min-w-0">

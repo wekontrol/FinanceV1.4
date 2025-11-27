@@ -6,6 +6,7 @@ import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
 import { settingsApi, familiesApi } from '../services/api';
 import { backupApi } from '../services/backupApi';
 import { systemApi } from '../services/systemApi';
+import NotificationSettings from './NotificationSettings';
 
 interface AdminPanelProps {
   appName: string;
@@ -1122,6 +1123,24 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     </p>
                   </div>
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 7. Notifications (Only Super Admin) */}
+        {isSuperAdmin && (
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div onClick={() => toggleSection('notifications')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+              <div className="flex items-center">
+                <div className="p-2 bg-purple-100 text-purple-600 rounded-lg mr-4 shrink-0"><Bell size={20} /></div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">🌐 Configurações de Notificações</h3>
+              </div>
+              {expandedSection === 'notifications' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </div>
+            {expandedSection === 'notifications' && (
+              <div className="p-8 border-t border-slate-100 dark:border-slate-700 animate-slide-down">
+                <NotificationSettings isSuperAdmin={true} />
               </div>
             )}
           </div>
