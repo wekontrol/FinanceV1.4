@@ -105,14 +105,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
                     className={`
-                      w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 group active:scale-95
+                      w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 group active:scale-95 hover:scale-[1.02]
                       ${isActive 
-                        ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300' 
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-primary-400'}
+                        ? 'bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/30 dark:to-primary-900/10 text-primary-700 dark:text-primary-300 shadow-sm' 
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-primary-600 dark:hover:text-primary-400'}
                     `}
                   >
-                    <Icon size={18} className={`mr-3 shrink-0 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400 group-hover:text-primary-500'}`} />
+                    <Icon size={18} className={`mr-3 shrink-0 transition-all duration-300 ${isActive ? 'text-primary-600 dark:text-primary-400 scale-110' : 'text-slate-400 group-hover:text-primary-500 group-hover:scale-125'}`} />
                     <span className="truncate">{item.label}</span>
+                    {isActive && <div className="ml-auto w-2 h-2 rounded-full bg-primary-600 dark:bg-primary-400 animate-pulse-soft"></div>}
                   </button>
                 );
               })}

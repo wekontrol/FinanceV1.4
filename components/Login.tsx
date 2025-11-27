@@ -317,15 +317,19 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700 animate-scale-in">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-800 p-4 overflow-hidden relative">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 w-40 h-40 bg-primary-200 dark:bg-primary-900/20 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-emerald-200 dark:bg-emerald-900/20 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+      </div>
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700 animate-bounce-in relative z-10">
         
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary-600 rounded-2xl mx-auto flex items-center justify-center text-white shadow-lg shadow-primary-500/30 mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl mx-auto flex items-center justify-center text-white shadow-lg shadow-primary-500/50 mb-4 animate-bounce-in hover:shadow-xl hover:shadow-primary-500/70 transition-all duration-300 cursor-pointer">
             <Lock size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{appName}</h1>
-          <p className="text-slate-500 text-sm">Gestão Financeira Familiar</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-emerald-600 bg-clip-text text-transparent dark:from-primary-400 dark:to-emerald-400 mb-2">{appName}</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Gestão Financeira Familiar</p>
         </div>
 
         {error && (
