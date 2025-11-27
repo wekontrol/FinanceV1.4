@@ -180,6 +180,26 @@ export function initializeDatabase() {
       UNIQUE(user_id, subscription),
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
+
+    CREATE TABLE IF NOT EXISTS forecast_history (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      predictions TEXT NOT NULL,
+      confidence INTEGER DEFAULT 0,
+      notes TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS waste_analysis_history (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      waste_indicators TEXT NOT NULL,
+      total_waste REAL DEFAULT 0,
+      suggestions TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
   `);
 
   const adminExists = db.prepare('SELECT id FROM users WHERE username = ?').get('admin');

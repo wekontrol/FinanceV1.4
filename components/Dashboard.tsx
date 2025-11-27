@@ -7,7 +7,7 @@ import {
 import { Transaction, TransactionType, SavingsGoal, BudgetLimit, UserBehaviorAnalysis } from '../types';
 import { TrendingUp, TrendingDown, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Wallet, BrainCircuit, Lightbulb, User, PieChart as PieChartIcon, Download, Bell, X } from 'lucide-react';
 import { getFinancialAdvice, analyzeUserBehavior, analyzeExpensesForWaste, predictFutureExpenses } from '../services/geminiService';
-import { generatePDFReport } from '../services/reportService';
+import { generatePDFReport, generateAnalysisPDF } from '../services/reportService';
 import Hint from './Hint';
 import AlertsPanel from './AlertsPanel';
 import CategoryBreakdown from './CategoryBreakdown';
@@ -437,6 +437,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <p className="text-rose-200 font-semibold">Sinais de Desperdício:</p>
                 <ul className="text-slate-300 text-xs space-y-1 list-disc list-inside">{waste.wasteIndicators?.slice(0, 3).map((w: string, i: number) => <li key={i}>{w}</li>)}</ul>
                 <p className="text-rose-300 font-bold pt-2">Estimativa: {currencyFormatter(waste.totalWaste || 0)} em desperdício</p>
+                <button onClick={() => generateAnalysisPDF(waste, forecast, currencyFormatter, currentUser)} className="mt-2 text-xs bg-rose-500/30 hover:bg-rose-500/50 px-2 py-1 rounded text-rose-200 font-bold">📥 Exportar</button>
               </div>
             ) : (
               <p className="text-slate-400 text-sm">Clique em "Analisar" para detectar desperdícios</p>
@@ -466,6 +467,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 ))}
               </div>
               <p className="text-slate-300 text-xs pt-2">Confiança: <span className="text-emerald-300 font-bold">{forecast.confidence || 0}%</span> • {forecast.notes}</p>
+              <button onClick={() => generateAnalysisPDF(waste, forecast, currencyFormatter, currentUser)} className="mt-2 text-xs bg-emerald-500/30 hover:bg-emerald-500/50 px-2 py-1 rounded text-emerald-200 font-bold">📥 Exportar</button>
             </div>
           ) : (
             <p className="text-slate-400 text-sm">Clique em "Prever" para análise dos próximos 3 meses</p>
