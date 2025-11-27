@@ -1,23 +1,48 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { Transaction, LoanSimulation, BudgetLimit, UserBehaviorAnalysis } from "../types";
+import { settingsApi } from "./api";
 
-// Helper to retrieve the API key dynamically (LocalStorage > Env Var)
-const getApiKey = () => localStorage.getItem('gemini_api_key') || process.env.REACT_APP_GEMINI_API_KEY || '';
+let cachedApiKey: string | null = null;
+
+// Helper to retrieve the API key from server (global setting)
+const getApiKey = async () => {
+  // Check cache first
+  if (cachedApiKey) return cachedApiKey;
+  
+  try {
+    const response = await settingsApi.getSetting('gemini_api_key');
+    if (response?.value) {
+      cachedApiKey = response.value;
+      return cachedApiKey;
+    }
+  } catch (error) {
+    console.error("Erro ao buscar chave Gemini do servidor:", error);
+  }
+  
+  return '';
+};
 
 // Helper to instantiate the client with the current key
-const getAiClient = () => {
-  const apiKey = getApiKey();
+const getAiClient = async () => {
+  const apiKey = await getApiKey();
   return apiKey ? new GoogleGenAI({ apiKey }) : null;
 };
 
 // Export functions to manage the key from the UI
-export const setGeminiKey = (key: string) => {
-  localStorage.setItem('gemini_api_key', key);
+export const setGeminiKey = async (key: string) => {
+  try {
+    await settingsApi.setSetting('gemini_api_key', key);
+    cachedApiKey = key; // Update cache
+  } catch (error) {
+    console.error("Erro ao salvar chave Gemini:", error);
+    throw error;
+  }
 };
 
-export const hasGeminiKey = (): boolean => {
-  return !!getApiKey();
+export const hasGeminiKey = async (): Promise<boolean> => {
+  const key = await getApiKey();
+  return !!key;
 };
 
 // --- EXISTING FUNCTIONS REFACTORED ---
@@ -29,7 +54,7 @@ export const categorizeTransaction = async (description: string, history: Transa
     return exactMatch.category;
   }
 
-  const ai = getAiClient();
+  const ai = await getAiClient();
   if (!ai) return "Geral";
 
   try {
@@ -55,7 +80,7 @@ export const categorizeTransaction = async (description: string, history: Transa
 };
 
 export const getFinancialAdvice = async (transactions: any[], goals: any[]): Promise<string> => {
-  const ai = getAiClient();
+  const ai = await getAiClient();
   if (!ai) return "Configure sua chave de API do Gemini em Configurações > Integrações para receber conselhos personalizados.";
 
   try {
@@ -81,8 +106,8 @@ export const getFinancialAdvice = async (transactions: any[], goals: any[]): Pro
 };
 
 export const analyzeLoanDocument = async (text: string): Promise<Partial<LoanSimulation>> => {
-  const ai = getAiClient();
-  if (!ai) throw new Error("API Key não configurada. Vá em Configurações > Integrações para adicionar sua chave do Gemini.");
+  const ai = await getAiClient();
+  if (!ai) throw new Error("API Key não configurada. Peça ao Super Admin para configurar em Configurações > Integrações.");
 
   try {
     const prompt = `
@@ -116,7 +141,7 @@ export const analyzeLoanDocument = async (text: string): Promise<Partial<LoanSim
 };
 
 export const analyzeUserBehavior = async (transactions: Transaction[]): Promise<UserBehaviorAnalysis> => {
-  const ai = getAiClient();
+  const ai = await getAiClient();
   if (!ai) {
     return {
       summary: "Configure a API do Gemini para análise de comportamento.",
@@ -156,7 +181,7 @@ export const analyzeUserBehavior = async (transactions: Transaction[]): Promise<
 };
 
 export const parseTransactionFromText = async (text: string): Promise<Partial<Transaction>> => {
-  const ai = getAiClient();
+  const ai = await getAiClient();
   if (!ai) return { description: text, category: "Geral" };
 
   try {
@@ -192,7 +217,7 @@ export const parseTransactionFromText = async (text: string): Promise<Partial<Tr
 };
 
 export const parseTransactionFromAudio = async (base64Audio: string): Promise<Partial<Transaction>> => {
-  const ai = getAiClient();
+  const ai = await getAiClient();
   if (!ai) return { description: "Áudio não processado", category: "Geral" };
 
   try {
@@ -229,6 +254,54 @@ export const parseTransactionFromAudio = async (base64Audio: string): Promise<Pa
   }
 };
 
+export const suggestBudgets = async (transactions: Transaction[]): Promise<any[]> => {
+  const ai = await getAiClient();
+  if (!ai) return [];
+  
+  try {
+    const categorySpending = transactions.reduce((acc: any, t: any) => {
+      if (t.type === 'EXPENSE') {
+        acc[t.category] = (acc[t.category] || 0) + t.amount;
+      }
+      return acc;
+    }, {});
+
+    const prompt = `
+      Baseado nestes gastos por categoria: ${JSON.stringify(categorySpending)}
+      Sugira 3 limites de orçamento mensais recomendados.
+      Responda com array JSON: [{ category: string, suggestedLimit: number }]
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+    });
+
+    let jsonStr = response.text ? response.text.trim() : "[]";
+    if (jsonStr.startsWith('```json')) {
+      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    }
+
+    return JSON.parse(jsonStr);
+  } catch (error) {
+    return [];
+  }
+};
+
+export const getAiChatResponse = async (message: string): Promise<string> => {
+  const ai = await getAiClient();
+  if (!ai) return "API não configurada. Peça ao administrador para configurar a chave Gemini.";
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: message,
+    });
+    return response.text?.trim() || "Sem resposta.";
+  } catch (error) {
+    return "Erro ao processar mensagem.";
+  }
+};
+
 export default {
   categorizeTransaction,
   getFinancialAdvice,
@@ -236,6 +309,8 @@ export default {
   analyzeUserBehavior,
   parseTransactionFromText,
   parseTransactionFromAudio,
+  suggestBudgets,
+  getAiChatResponse,
   setGeminiKey,
   hasGeminiKey,
 };

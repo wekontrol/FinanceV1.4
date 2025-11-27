@@ -228,16 +228,6 @@ export const familyApi = {
     return handleResponse(response);
   },
 
-  updateEvent: async (id: string, data: any) => {
-    const response = await fetch(`${API_BASE}/family/events/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(data)
-    });
-    return handleResponse(response);
-  },
-
   deleteEvent: async (id: string) => {
     const response = await fetch(`${API_BASE}/family/events/${id}`, {
       method: 'DELETE',
@@ -266,16 +256,28 @@ export const budgetApi = {
   },
 
   deleteLimit: async (category: string) => {
-    const response = await fetch(`${API_BASE}/budget/limits/${encodeURIComponent(category)}`, {
+    const response = await fetch(`${API_BASE}/budget/limits/${category}`, {
       method: 'DELETE',
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  }
+};
+
+export const settingsApi = {
+  getSetting: async (key: string) => {
+    const response = await fetch(`${API_BASE}/settings/${key}`, {
       credentials: 'include'
     });
     return handleResponse(response);
   },
 
-  getSummary: async () => {
-    const response = await fetch(`${API_BASE}/budget/summary`, {
-      credentials: 'include'
+  setSetting: async (key: string, value: string) => {
+    const response = await fetch(`${API_BASE}/settings/${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ value })
     });
     return handleResponse(response);
   }

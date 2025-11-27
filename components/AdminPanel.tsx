@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BackupConfig, User, UserRole, UserStatus } from '../types';
 import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network } from 'lucide-react';
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
+import { settingsApi } from '../services/api';
 
 interface AdminPanelProps {
   appName: string;
@@ -109,23 +110,34 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     setTimeout(() => setIsSaved(false), 2000);
   };
 
-  const handleApiKeySave = () => {
+  const handleApiKeySave = async () => {
     if (activeProvider === 'gemini') {
       if (apiKeyInput.trim().length > 10) {
-        setGeminiKey(apiKeyInput.trim());
-        localStorage.setItem('ai_provider', 'gemini');
-        showSaveSuccess();
-        setApiKeyInput('');
+        try {
+          await settingsApi.setSetting('gemini_api_key', apiKeyInput.trim());
+          await setGeminiKey(apiKeyInput.trim());
+          localStorage.setItem('ai_provider', 'gemini');
+          showSaveSuccess();
+          setApiKeyInput('');
+          alert('Chave Gemini salva e será usada por todos os usuários!');
+        } catch (error) {
+          alert('Erro ao salvar chave: ' + error);
+        }
       } else {
         alert("Chave Gemini inválida ou muito curta.");
       }
     } else {
       if (openRouterKey.trim().length > 10) {
-        localStorage.setItem('openrouter_api_key', openRouterKey.trim());
-        localStorage.setItem('openrouter_model', openRouterModel.trim() || 'openai/gpt-3.5-turbo');
-        localStorage.setItem('ai_provider', 'openrouter');
-        showSaveSuccess();
-        setOpenRouterKey('');
+        try {
+          await settingsApi.setSetting('openrouter_api_key', openRouterKey.trim());
+          await settingsApi.setSetting('openrouter_model', openRouterModel.trim() || 'openai/gpt-3.5-turbo');
+          localStorage.setItem('ai_provider', 'openrouter');
+          showSaveSuccess();
+          setOpenRouterKey('');
+          alert('Chave OpenRouter salva e será usada por todos os usuários!');
+        } catch (error) {
+          alert('Erro ao salvar chave: ' + error);
+        }
       } else {
         alert("Chave OpenRouter inválida.");
       }

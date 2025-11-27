@@ -9,6 +9,7 @@ import goalRoutes from './routes/goals';
 import userRoutes from './routes/users';
 import familyRoutes from './routes/family';
 import budgetRoutes from './routes/budget';
+import settingsRoutes from './routes/settings';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
@@ -54,6 +55,7 @@ app.use('/api/goals', goalRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/family', familyRoutes);
 app.use('/api/budget', budgetRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
