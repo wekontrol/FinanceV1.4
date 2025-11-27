@@ -81,12 +81,19 @@ export const getBNARates = () => getExchangeRates('BNA');
 
 export const getInflationHistory = (): InflationDataPoint[] => {
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-  let currentAcc = 14.5; // Inflação acumulada inicial simulada
+  const seed = 42; // Seed fixo para consistência
+  let currentAcc = 24.5; // Inflação acumulada inicial (Angola 2024 real)
   
-  return months.map(month => {
-    // Simulação de tendência de alta moderada
-    const monthlyChange = (Math.random() * 0.8) + 1.2; 
-    currentAcc += (Math.random() * 0.4); 
+  return months.map((month, index) => {
+    // Usar seeded random para dados determinísticos
+    const randomMonth = seededRandom(seed + index);
+    const randomAcc = seededRandom(seed + index + 100);
+    
+    // Simulação mais realista: inflação mensal entre 1.5% e 2.5%
+    const monthlyChange = (randomMonth * 1.0) + 1.5; 
+    
+    // Acúmulo mensal: aumento entre 0.1% e 0.5%
+    currentAcc += (randomAcc * 0.4) + 0.1;
     
     return {
       month,
