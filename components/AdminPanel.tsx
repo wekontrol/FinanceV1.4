@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BackupConfig, User, UserRole, UserStatus } from '../types';
-import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2 } from 'lucide-react';
+import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2, FileText } from 'lucide-react';
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
 import { settingsApi, familiesApi } from '../services/api';
 
@@ -64,6 +64,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [families, setFamilies] = useState<any[]>([]);
   const [familiesLoading, setFamiliesLoading] = useState(false);
 
+  // Terms State
+  const [termsContent, setTermsContent] = useState('');
+  const [termsInput, setTermsInput] = useState('');
+  const [termsLoading, setTermsLoading] = useState(false);
+
   // System Update State
   const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'available' | 'uptodate' | 'error'>('idle');
   const [repoUrl, setRepoUrl] = useState(() => localStorage.getItem('repo_url') || 'https://github.com/SEU_USUARIO/gestor-financeiro');
@@ -115,6 +120,33 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       loadFamilies();
     } catch (error: any) {
       alert('Erro ao apagar família: ' + error.message);
+    }
+  };
+
+  const loadTerms = async () => {
+    setTermsLoading(true);
+    try {
+      const data = await settingsApi.getSetting('terms_of_service');
+      setTermsContent(data.value || '');
+      setTermsInput(data.value || '');
+    } catch (error) {
+      console.error('Error loading terms:', error);
+    } finally {
+      setTermsLoading(false);
+    }
+  };
+
+  const saveTerms = async () => {
+    if (!termsInput.trim()) {
+      alert('Termos não podem estar vazios');
+      return;
+    }
+    try {
+      await settingsApi.setSetting('terms_of_service', termsInput);
+      setTermsContent(termsInput);
+      alert('Termos e Condições salvos com sucesso!');
+    } catch (error: any) {
+      alert('Erro ao salvar termos: ' + error.message);
     }
   };
 
@@ -447,6 +479,45 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                         </button>
                       </div>
                     ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 1.7. Terms & Conditions (Super Admin Only) */}
+        {isSuperAdmin && (
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div onClick={() => { toggleSection('terms'); if (expandedSection !== 'terms') loadTerms(); }} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+              <div className="flex items-center">
+                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg mr-4 shrink-0"><FileText size={20} /></div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Termos e Condições / Contratos</h3>
+              </div>
+              {expandedSection === 'terms' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </div>
+            {expandedSection === 'terms' && (
+              <div className="p-8 border-t border-slate-100 dark:border-slate-700 animate-slide-down">
+                {termsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="inline-block animate-spin"><Loader2 size={24} className="text-slate-400" /></div>
+                    <p className="text-slate-400 mt-2">Carregando termos...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-sm text-slate-500">Edite os Termos e Condições que aparecerão durante o registro de novas famílias:</p>
+                    <textarea
+                      value={termsInput}
+                      onChange={(e) => setTermsInput(e.target.value)}
+                      placeholder="Digite os Termos e Condições aqui..."
+                      className="w-full h-64 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white font-mono text-sm resize-none"
+                    />
+                    <button
+                      onClick={saveTerms}
+                      className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <Save size={18} /> Salvar Termos e Condições
+                    </button>
                   </div>
                 )}
               </div>

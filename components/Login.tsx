@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User, UserStatus, UserRole } from '../types';
-import { Lock, User as UserIcon, LogIn, HelpCircle, ArrowLeft, CheckCircle, ShieldAlert, UserPlus } from 'lucide-react';
+import { Lock, User as UserIcon, LogIn, HelpCircle, ArrowLeft, CheckCircle, ShieldAlert, UserPlus, X } from 'lucide-react';
 import { authApi } from '../services/api';
 
 interface LoginProps {
@@ -21,6 +21,9 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
   const [familyName, setFamilyName] = useState('');
   const [securityQuestion, setSecurityQuestion] = useState('');
   const [securityAnswer, setSecurityAnswer] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [termsContent, setTermsContent] = useState('');
   
   const [recoveryUsername, setRecoveryUsername] = useState('');
   const [recoveryAnswer, setRecoveryAnswer] = useState('');
@@ -45,6 +48,12 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (!acceptedTerms) {
+      setError('Você deve aceitar os Termos e Condições para continuar');
+      return;
+    }
+    
     setLoading(true);
     
     try {
@@ -64,10 +73,21 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
       setFamilyName('');
       setSecurityQuestion('');
       setSecurityAnswer('');
+      setAcceptedTerms(false);
     } catch (err: any) {
       setError(err.message || 'Erro ao registrar');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadTerms = async () => {
+    try {
+      const response = await fetch(`${window.location.origin}/api/settings/terms_of_service`);
+      const data = await response.json();
+      setTermsContent(data.value || 'Nenhum termo definido ainda.');
+    } catch (err) {
+      setTermsContent('Erro ao carregar termos.');
     }
   };
 
@@ -173,15 +193,63 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 placeholder="Sua resposta"
               />
             </div>
+            <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+              <input 
+                type="checkbox" 
+                id="terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-1 w-4 h-4 accent-emerald-600"
+              />
+              <label htmlFor="terms" className="text-sm text-slate-600 dark:text-slate-300 flex-1">
+                Aceito os{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    loadTerms();
+                    setShowTermsModal(true);
+                  }}
+                  className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline"
+                >
+                  Termos e Condições
+                </button>
+              </label>
+            </div>
             <button 
               type="submit" 
-              disabled={loading}
-              className="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-50"
+              disabled={loading || !acceptedTerms}
+              className="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Registrando...' : 'Criar Família'}
             </button>
           </form>
         </div>
+
+        {showTermsModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col border border-slate-200 dark:border-slate-700">
+              <div className="flex justify-between items-center p-6 border-b border-slate-200 dark:border-slate-700">
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Termos e Condições</h3>
+                <button onClick={() => setShowTermsModal(false)} className="text-slate-400 hover:text-slate-600">
+                  <X size={24} />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">
+                  {termsContent}
+                </div>
+              </div>
+              <div className="p-6 border-t border-slate-200 dark:border-slate-700 flex gap-3 justify-end">
+                <button 
+                  onClick={() => setShowTermsModal(false)}
+                  className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white rounded-xl font-bold hover:bg-slate-300"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
