@@ -293,7 +293,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     if (activeProvider === 'gemini') {
       if (apiKeyInput.trim().length > 10) {
         try {
-          await settingsApi.setSetting('gemini_api_key', apiKeyInput.trim());
           await setGeminiKey(apiKeyInput.trim());
           localStorage.setItem('ai_provider', 'gemini');
           showSaveSuccess();
@@ -308,8 +307,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     } else {
       if (openRouterKey.trim().length > 10) {
         try {
-          await settingsApi.setSetting('openrouter_api_key', openRouterKey.trim());
-          await settingsApi.setSetting('openrouter_model', openRouterModel.trim() || 'openai/gpt-3.5-turbo');
+          await settingsApi.saveApiConfig('openrouter', openRouterKey.trim(), openRouterModel.trim() || 'openai/gpt-3.5-turbo');
           localStorage.setItem('ai_provider', 'openrouter');
           showSaveSuccess();
           setOpenRouterKey('');
