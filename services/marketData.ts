@@ -96,6 +96,12 @@ export const getInflationHistory = (): InflationDataPoint[] => {
   });
 };
 
+// Seeded random number generator para garantir dados consistentes
+const seededRandom = (seed: number): number => {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
+
 export const getCurrencyHistory = (base: string, target: string, period: '1A' | '2A' | '5A', provider: RateProvider = 'BNA'): CurrencyHistoryPoint[] => {
   const months = period === '1A' ? 12 : period === '2A' ? 24 : 60;
   const data: CurrencyHistoryPoint[] = [];
@@ -121,6 +127,12 @@ export const getCurrencyHistory = (base: string, target: string, period: '1A' | 
   if (provider === 'PARALLEL') volatility = 0.035; // 3.5% (Mercado informal é mais instável)
   if (provider === 'FOREX') volatility = 0.02;
 
+  // Gerar seed determinística baseada na combinação de parâmetros
+  // Isso garante que os mesmos parâmetros sempre geram os mesmos dados
+  const seed = base.charCodeAt(0) + target.charCodeAt(0) + 
+               (provider === 'BNA' ? 1 : provider === 'FOREX' ? 2 : 3) * 100 +
+               (period === '1A' ? 1 : period === '2A' ? 2 : 3) * 1000;
+
   // Adiciona o ponto atual primeiro
   data.push({
     date: 'Atual',
@@ -130,8 +142,9 @@ export const getCurrencyHistory = (base: string, target: string, period: '1A' | 
   for (let i = 1; i <= months; i++) {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
     
-    // Simular volatilidade passada (Random Walk reverso)
-    const change = 1 + (Math.random() * volatility * 2 - volatility);
+    // Usar seeded random ao invés de Math.random() para consistência
+    const randomValue = seededRandom(seed + i);
+    const change = 1 + (randomValue * volatility * 2 - volatility);
     
     // Aplicar variação inversa
     rateIterator = rateIterator / change;
