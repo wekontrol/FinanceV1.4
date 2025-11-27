@@ -8,6 +8,19 @@ const db = new Database(dbPath);
 db.pragma('journal_mode = WAL');
 
 export function initializeDatabase() {
+  // Migrations: Add missing columns if they don't exist
+  try {
+    db.exec(`ALTER TABLE api_configurations ADD COLUMN is_default INTEGER DEFAULT 0;`);
+  } catch (e) {
+    // Column already exists
+  }
+  
+  try {
+    db.exec(`ALTER TABLE budget_limits ADD COLUMN is_default INTEGER DEFAULT 0;`);
+  } catch (e) {
+    // Column already exists
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS families (
       id TEXT PRIMARY KEY,
