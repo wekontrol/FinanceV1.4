@@ -190,8 +190,10 @@ export const analyzeUserBehavior = async (transactions: Transaction[], language:
     });
 
     let jsonStr = response.text ? response.text.trim() : "{}";
-    if (jsonStr.startsWith('```json')) {
-      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    
+    // Remove markdown JSON wrapper
+    if (jsonStr.includes('```')) {
+      jsonStr = jsonStr.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     }
 
     return JSON.parse(jsonStr);
@@ -272,8 +274,10 @@ export const parseTransactionFromAudio = async (base64Audio: string): Promise<Pa
     });
 
     let jsonStr = response.text ? response.text.trim() : "{}";
-    if (jsonStr.startsWith('```json')) {
-      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    
+    // Remove markdown JSON wrapper
+    if (jsonStr.includes('```')) {
+      jsonStr = jsonStr.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     }
 
     return JSON.parse(jsonStr);
@@ -389,8 +393,10 @@ export const parseTransactionFromReceipt = async (imageUrl: string): Promise<Par
     });
 
     let jsonStr = response.text ? response.text.trim() : "{}";
-    if (jsonStr.startsWith('```json')) {
-      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    
+    // Remove markdown JSON wrapper
+    if (jsonStr.includes('```')) {
+      jsonStr = jsonStr.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     }
 
     return JSON.parse(jsonStr);
@@ -438,8 +444,10 @@ export const analyzeExpensesForWaste = async (transactions: Transaction[], langu
     });
 
     let jsonStr = response.text ? response.text.trim() : "{}";
-    if (jsonStr.startsWith('```json')) {
-      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    
+    // Remove markdown JSON wrapper
+    if (jsonStr.includes('```')) {
+      jsonStr = jsonStr.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     }
 
     return JSON.parse(jsonStr);
@@ -488,8 +496,10 @@ export const predictFutureExpenses = async (transactions: Transaction[], months:
     });
 
     let jsonStr = response.text ? response.text.trim() : "{}";
-    if (jsonStr.startsWith('```json')) {
-      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    
+    // Remove markdown JSON wrapper
+    if (jsonStr.includes('```')) {
+      jsonStr = jsonStr.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     }
 
     return JSON.parse(jsonStr);
