@@ -17,6 +17,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { getExchangeRates } from './services/marketData';
 import { authApi, transactionsApi, goalsApi, usersApi, familyApi, budgetApi } from './services/api';
+import { LanguageProvider } from './contexts/LanguageContext';
 
 // Dados Iniciais Atualizados com Hierarquia Familiar
 const INITIAL_USERS: User[] = [

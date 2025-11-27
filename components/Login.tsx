@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { User, UserStatus, UserRole } from '../types';
-import { Lock, User as UserIcon, LogIn, HelpCircle, ArrowLeft, CheckCircle, ShieldAlert, UserPlus, X } from 'lucide-react';
+import { Lock, User as UserIcon, LogIn, HelpCircle, ArrowLeft, CheckCircle, ShieldAlert, UserPlus, X, Globe } from 'lucide-react';
 import { authApi } from '../services/api';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface LoginProps {
   appName: string;
@@ -9,6 +10,7 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
+  const { language, setLanguage, t } = useLanguage();
   const [view, setView] = useState<'login' | 'recovery' | 'register'>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -324,12 +326,26 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
       </div>
       <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700 animate-bounce-in relative z-10">
         
+        {/* Language Selector */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <select 
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as any)}
+            className="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+          >
+            <option value="pt">🇵🇹 Português</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="um">🇦🇴 Umbundu</option>
+          </select>
+        </div>
+        
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl mx-auto flex items-center justify-center text-white shadow-lg shadow-primary-500/50 mb-4 animate-bounce-in hover:shadow-xl hover:shadow-primary-500/70 transition-all duration-300 cursor-pointer">
             <Lock size={32} />
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-emerald-600 bg-clip-text text-transparent dark:from-primary-400 dark:to-emerald-400 mb-2">{appName}</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Gestão Financeira Familiar</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{t('login.subtitle')}</p>
         </div>
 
         {error && (
@@ -341,7 +357,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Usuário</label>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('login.username')}</label>
             <div className="relative">
               <UserIcon className="absolute left-3 top-3.5 text-slate-400" size={18} />
               <input 
@@ -349,12 +365,12 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="Seu usuário"
+                placeholder={t('login.username')}
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Senha</label>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('login.password')}</label>
             <div className="relative">
               <Lock className="absolute left-3 top-3.5 text-slate-400" size={18} />
               <input 
@@ -372,7 +388,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
             disabled={loading}
             className="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-lg shadow-primary-500/30 flex justify-center items-center active:scale-95 transition-transform disabled:opacity-50"
           >
-            {loading ? 'Entrando...' : <><LogIn className="mr-2" size={20} /> Entrar</>}
+            {loading ? t('login.enter') + '...' : <><LogIn className="mr-2" size={20} /> {t('login.enter')}</>}
           </button>
 
           <div className="flex justify-between items-center mt-4">
@@ -381,14 +397,14 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
               onClick={() => { setView('recovery'); setError(''); }}
               className="text-sm text-slate-400 hover:text-primary-600 font-medium"
             >
-              Esqueci minha senha
+              {t('login.forgotPassword')}
             </button>
             <button 
               type="button" 
               onClick={() => setView('register')}
               className="text-sm text-emerald-600 font-bold hover:text-emerald-700 flex items-center"
             >
-              Criar Família <UserPlus size={14} className="ml-1"/>
+              {t('login.createFamily')} <UserPlus size={14} className="ml-1"/>
             </button>
           </div>
         </form>
