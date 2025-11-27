@@ -3,6 +3,8 @@ import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
 import { initializeDatabase } from './db/schema';
+import pgPool, { initializeSessionsTable } from './db/postgres';
+import ConnectPgSimple from 'connect-pg-simple';
 import authRoutes from './routes/auth';
 import transactionRoutes from './routes/transactions';
 import goalRoutes from './routes/goals';
@@ -16,6 +18,11 @@ const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
 initializeDatabase();
+
+// Initialize PostgreSQL sessions table in production
+if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+  initializeSessionsTable().catch(console.error);
+}
 
 // CORS configuration - must be before session middleware
 app.use(cors({
@@ -34,8 +41,23 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 const sessionSecret = process.env.SESSION_SECRET || 'gestor-financeiro-secret-key-2024';
 
+// Session store configuration
+let sessionStore: any;
+
+if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+  // Use PostgreSQL in production
+  const PgStore = ConnectPgSimple(session);
+  sessionStore = new PgStore({
+    pool: pgPool,
+    tableName: 'session',
+    createTableIfMissing: true,
+  });
+}
+// In development, use memory store (that's OK for local dev)
+
 // Session middleware - must be before route handlers
 app.use(session({
+  store: sessionStore,
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
@@ -78,6 +100,11 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   if (process.env.NODE_ENV === 'production') {
     console.log('Running in production mode');
+    if (process.env.DATABASE_URL) {
+      console.log('✅ Sessions stored in PostgreSQL');
+    } else {
+      console.warn('⚠️  DATABASE_URL not set - using memory store (not recommended for production)');
+    }
   } else {
     console.log('Running in development mode');
   }
