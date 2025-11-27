@@ -118,6 +118,7 @@ export interface ExchangeRates {
   ZAR: number;
   JPY: number;
   lastUpdate: string;
+  source?: string; // 'live', 'cached', or 'fallback'
 }
 
 export interface CurrencyHistoryPoint {

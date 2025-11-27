@@ -1,7 +1,7 @@
 
 import { ExchangeRates, InflationDataPoint, CurrencyHistoryPoint, RateProvider } from "../types";
 
-// Taxas Oficiais (Banco Nacional de Angola)
+// Fallback defaults se API falhar
 const RATES_BNA: Record<string, number> = {
   USD: 926.50,
   EUR: 1003.20,
@@ -12,8 +12,7 @@ const RATES_BNA: Record<string, number> = {
   JPY: 6.35
 };
 
-// Taxas Forex Global (Mid-market rates - Google/Yahoo Finance)
-// Geralmente similares ao oficial, mas flutuam mais rápido
+// Mercado Forex (USA/EUR spread ~1%)
 const RATES_FOREX: Record<string, number> = {
   USD: 930.10,
   EUR: 1008.50,
@@ -24,10 +23,9 @@ const RATES_FOREX: Record<string, number> = {
   JPY: 6.40
 };
 
-// Taxas Mercado Paralelo (Kinguilas/Rua)
-// Geralmente significativamente mais altas (Spread)
+// Mercado Paralelo (Spread alto)
 const RATES_PARALLEL: Record<string, number> = {
-  USD: 1150.00, // Spread alto
+  USD: 1150.00,
   EUR: 1240.00,
   BRL: 230.00,
   GBP: 1450.00,
@@ -37,9 +35,29 @@ const RATES_PARALLEL: Record<string, number> = {
 };
 
 export const getExchangeRates = async (provider: RateProvider = 'BNA'): Promise<ExchangeRates> => {
-  // Simulando delay de rede
-  await new Promise(resolve => setTimeout(resolve, 600));
+  try {
+    // Buscar do backend que cacheia e atualiza diariamente
+    const response = await fetch(`/api/settings/rates/${provider}`);
+    if (response.ok) {
+      const data = await response.json();
+      return {
+        AOA: data.AOA || 1,
+        USD: data.USD || RATES_BNA.USD,
+        EUR: data.EUR || RATES_BNA.EUR,
+        BRL: data.BRL || RATES_BNA.BRL,
+        GBP: data.GBP || RATES_BNA.GBP,
+        CNY: data.CNY || RATES_BNA.CNY,
+        ZAR: data.ZAR || RATES_BNA.ZAR,
+        JPY: data.JPY || RATES_BNA.JPY,
+        lastUpdate: data.lastUpdate || new Date().toISOString(),
+        source: data.source
+      };
+    }
+  } catch (error) {
+    console.warn('Error fetching live exchange rates, using fallback:', error);
+  }
 
+  // Fallback: usar valores armazenados em cache ou defaults
   let selectedRates = RATES_BNA;
   if (provider === 'FOREX') selectedRates = RATES_FOREX;
   if (provider === 'PARALLEL') selectedRates = RATES_PARALLEL;
@@ -53,7 +71,8 @@ export const getExchangeRates = async (provider: RateProvider = 'BNA'): Promise<
     CNY: selectedRates.CNY,
     ZAR: selectedRates.ZAR,
     JPY: selectedRates.JPY,
-    lastUpdate: new Date().toISOString()
+    lastUpdate: new Date().toISOString(),
+    source: 'fallback'
   };
 };
 

@@ -86,4 +86,78 @@ router.get('/gemini/key', requireAuth, (req: Request, res: Response) => {
   });
 });
 
+// Exchange rates endpoints
+async function fetchExchangeRates(provider: string = 'BNA') {
+  try {
+    const response = await fetch('https://api.exchangerate-api.com/v4/latest/AOA');
+    const data = await response.json();
+    
+    const rates: Record<string, number> = {
+      AOA: 1,
+      USD: data.rates?.USD || 926.50,
+      EUR: data.rates?.EUR || 1003.20,
+      BRL: data.rates?.BRL || 188.10,
+      GBP: data.rates?.GBP || 1168.00,
+      CNY: data.rates?.CNY || 127.30,
+      ZAR: data.rates?.ZAR || 49.10,
+      JPY: data.rates?.JPY || 6.35
+    };
+    
+    const nextUpdate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    db.prepare(`
+      INSERT INTO exchange_rates (provider, rates, last_update, next_update)
+      VALUES (?, ?, CURRENT_TIMESTAMP, ?)
+      ON CONFLICT(provider) DO UPDATE SET rates = excluded.rates, last_update = CURRENT_TIMESTAMP, next_update = excluded.next_update
+    `).run(provider, JSON.stringify(rates), nextUpdate);
+    
+    return rates;
+  } catch (error) {
+    console.error('Error fetching exchange rates:', error);
+    // Return cached rates or defaults
+    const cached = db.prepare('SELECT rates FROM exchange_rates WHERE provider = ?').get(provider) as any;
+    if (cached) {
+      return JSON.parse(cached.rates);
+    }
+    // Return defaults
+    return {
+      AOA: 1, USD: 926.50, EUR: 1003.20, BRL: 188.10,
+      GBP: 1168.00, CNY: 127.30, ZAR: 49.10, JPY: 6.35
+    };
+  }
+}
+
+// GET exchange rates (public)
+router.get('/rates/:provider', async (req: Request, res: Response) => {
+  const { provider } = req.params;
+  const validProviders = ['BNA', 'FOREX', 'PARALLEL'];
+  
+  if (!validProviders.includes(provider)) {
+    return res.status(400).json({ error: 'Invalid provider' });
+  }
+  
+  try {
+    let cached = db.prepare('SELECT rates, next_update FROM exchange_rates WHERE provider = ?').get(provider) as any;
+    const now = new Date().toISOString();
+    
+    // Check if update is needed (24 hours elapsed or first time)
+    if (!cached || (cached.next_update && new Date(cached.next_update) <= new Date(now))) {
+      const rates = await fetchExchangeRates(provider);
+      return res.json({
+        ...rates,
+        lastUpdate: new Date().toISOString(),
+        source: 'live'
+      });
+    }
+    
+    const rates = JSON.parse(cached.rates);
+    res.json({
+      ...rates,
+      lastUpdate: cached.last_update,
+      source: 'cached'
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch exchange rates' });
+  }
+});
+
 export default router;

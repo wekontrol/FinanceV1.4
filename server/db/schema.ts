@@ -135,6 +135,13 @@ export function initializeDatabase() {
       key TEXT PRIMARY KEY,
       value TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS exchange_rates (
+      provider TEXT PRIMARY KEY,
+      rates TEXT NOT NULL,
+      last_update TEXT DEFAULT CURRENT_TIMESTAMP,
+      next_update TEXT
+    );
   `);
 
   const adminExists = db.prepare('SELECT id FROM users WHERE username = ?').get('admin');
