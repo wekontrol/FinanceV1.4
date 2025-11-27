@@ -180,10 +180,8 @@ export function initializeDatabase() {
       INSERT INTO transactions (id, user_id, description, amount, date, category, type, is_recurring, frequency)
       VALUES 
         (?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?),
         (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      't1', 'u1', 'Supermercado Mensal', 85000.00, '2023-10-15', 'Alimentação', 'DESPESA', 0, null,
       't2', 'u1', 'Salário', 450000.00, '2023-10-05', 'Salário', 'RECEITA', 1, 'monthly',
       't3', 'u1', 'Netflix', 3500.00, '2023-10-10', 'Lazer', 'DESPESA', 1, 'monthly'
     );

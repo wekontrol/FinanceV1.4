@@ -71,7 +71,6 @@ const INITIAL_USERS: User[] = [
 ];
 
 const INITIAL_TRANSACTIONS: Transaction[] = [
-  { id: 't1', userId: 'u1', description: 'Supermercado Mensal', amount: 85000.00, date: '2023-10-15', category: 'Alimentação', type: TransactionType.EXPENSE, isRecurring: false },
   { id: 't2', userId: 'u1', description: 'Salário', amount: 450000.00, date: '2023-10-05', category: 'Salário', type: TransactionType.INCOME, isRecurring: true, frequency: 'monthly' },
   { id: 't3', userId: 'u1', description: 'Netflix', amount: 3500.00, date: '2023-10-10', category: 'Lazer', type: TransactionType.EXPENSE, isRecurring: true, frequency: 'monthly' },
   { id: 't4', userId: 'u1', description: 'Aluguel', amount: 150000.00, date: '2023-10-01', category: 'Moradia', type: TransactionType.EXPENSE, isRecurring: true, frequency: 'monthly' },
