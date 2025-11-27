@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import { Transaction, TransactionType, SavingsGoal, BudgetLimit, UserBehaviorAnalysis } from '../types';
 import { TrendingUp, TrendingDown, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Wallet, BrainCircuit, Lightbulb, User, PieChart as PieChartIcon, Download, Bell, X } from 'lucide-react';
-import { getFinancialAdvice, analyzeUserBehavior } from '../services/geminiService';
+import { getFinancialAdvice, analyzeUserBehavior, analyzeExpensesForWaste, predictFutureExpenses } from '../services/geminiService';
 import { generatePDFReport } from '../services/reportService';
 import Hint from './Hint';
 import AlertsPanel from './AlertsPanel';
@@ -41,6 +41,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [behavior, setBehavior] = useState<UserBehaviorAnalysis | null>(null);
   const [isAnalyzingBehavior, setIsAnalyzingBehavior] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
+  const [waste, setWaste] = useState<any>(null);
+  const [isAnalyzingWaste, setIsAnalyzingWaste] = useState(false);
+  const [forecast, setForecast] = useState<any>(null);
+  const [isAnalyzingForecast, setIsAnalyzingForecast] = useState(false);
 
   // Custom Tooltips
   const CustomAreaTooltip = ({ active, payload, label }: any) => {
@@ -405,14 +409,67 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      {/* AI Insight */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-indigo-900 dark:to-slate-900 rounded-3xl p-1 shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+      {/* AI Insights Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Main Insight */}
+        <div className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-indigo-900 dark:to-slate-900 rounded-3xl p-1 shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+          <div className="bg-white/5 backdrop-blur-sm p-4 md:p-6 rounded-[20px]">
+             <h3 className="font-bold text-lg mb-2 flex items-center text-white">
+              <Sparkles className="mr-2 text-yellow-300 animate-pulse shrink-0" size={20} /> Insight Inteligente
+            </h3>
+            <p className="text-slate-200 leading-relaxed font-light text-sm md:text-base break-words">"{advice}"</p>
+          </div>
+        </div>
+
+        {/* Waste Analysis */}
+        <div className="bg-gradient-to-r from-rose-900 to-red-800 dark:from-rose-900 dark:to-red-900 rounded-3xl p-1 shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 via-red-500 to-orange-500"></div>
+          <div className="bg-white/5 backdrop-blur-sm p-4 md:p-6 rounded-[20px]">
+            <h3 className="font-bold text-lg mb-3 flex items-center text-white justify-between">
+              <span className="flex items-center"><TrendingDown className="mr-2 text-rose-300 animate-pulse shrink-0" size={20} /> Análise de Desperdício</span>
+              <button onClick={async () => { setIsAnalyzingWaste(true); const w = await analyzeExpensesForWaste(transactions); setWaste(w); setIsAnalyzingWaste(false); }} disabled={isAnalyzingWaste} className="text-xs bg-rose-600 hover:bg-rose-700 px-2 py-1 rounded disabled:opacity-50">
+                {isAnalyzingWaste ? 'Analisando...' : 'Analisar'}
+              </button>
+            </h3>
+            {waste ? (
+              <div className="space-y-2 text-sm">
+                <p className="text-rose-200 font-semibold">Sinais de Desperdício:</p>
+                <ul className="text-slate-300 text-xs space-y-1 list-disc list-inside">{waste.wasteIndicators?.slice(0, 3).map((w: string, i: number) => <li key={i}>{w}</li>)}</ul>
+                <p className="text-rose-300 font-bold pt-2">Estimativa: {currencyFormatter(waste.totalWaste || 0)} em desperdício</p>
+              </div>
+            ) : (
+              <p className="text-slate-400 text-sm">Clique em "Analisar" para detectar desperdícios</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Forecast */}
+      <div className="bg-gradient-to-r from-emerald-900 to-teal-800 dark:from-emerald-900 dark:to-teal-900 rounded-3xl p-1 shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
         <div className="bg-white/5 backdrop-blur-sm p-4 md:p-6 rounded-[20px]">
-           <h3 className="font-bold text-lg mb-2 flex items-center text-white">
-            <Sparkles className="mr-2 text-yellow-300 animate-pulse shrink-0" size={20} /> Insight Inteligente
+          <h3 className="font-bold text-lg mb-3 flex items-center text-white justify-between">
+            <span className="flex items-center"><TrendingUp className="mr-2 text-emerald-300 animate-pulse shrink-0" size={20} /> Previsões Financeiras (3 meses)</span>
+            <button onClick={async () => { setIsAnalyzingForecast(true); const f = await predictFutureExpenses(transactions); setForecast(f); setIsAnalyzingForecast(false); }} disabled={isAnalyzingForecast} className="text-xs bg-emerald-600 hover:bg-emerald-700 px-2 py-1 rounded disabled:opacity-50">
+              {isAnalyzingForecast ? 'Prevendo...' : 'Prever'}
+            </button>
           </h3>
-          <p className="text-slate-200 leading-relaxed font-light text-sm md:text-base break-words">"{advice}"</p>
+          {forecast?.predictions?.length > 0 ? (
+            <div className="space-y-2 text-sm">
+              <div className="grid grid-cols-3 gap-2">
+                {forecast.predictions.slice(0, 3).map((p: any, i: number) => (
+                  <div key={i} className="bg-white/10 p-2 rounded">
+                    <p className="text-emerald-300 font-bold text-xs">{p.month}</p>
+                    <p className="text-slate-200 font-semibold">{currencyFormatter(p.predictedExpense || 0)}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-slate-300 text-xs pt-2">Confiança: <span className="text-emerald-300 font-bold">{forecast.confidence || 0}%</span> • {forecast.notes}</p>
+            </div>
+          ) : (
+            <p className="text-slate-400 text-sm">Clique em "Prever" para análise dos próximos 3 meses</p>
+          )}
         </div>
       </div>
 

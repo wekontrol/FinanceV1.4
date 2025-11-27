@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, Loader2, Minimize2, X, Maximize2 } from 'lucide-react';
-import { getAiChatResponse } from '../services/geminiService';
+import { getAiChatResponseStreaming } from '../services/geminiService';
 import { Transaction, SavingsGoal } from '../types';
 
 interface AIAssistantProps {
@@ -60,8 +60,21 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, transactions
     };
 
     try {
-      const response = await getAiChatResponse(userMsg, contextData);
-      setMessages(prev => [...prev, { role: 'ai', content: response }]);
+      let fullResponse = '';
+      const responseStream = await getAiChatResponseStreaming(userMsg);
+      
+      // Add initial message
+      setMessages(prev => [...prev, { role: 'ai', content: '' }]);
+      
+      // Stream response
+      for await (const chunk of responseStream) {
+        fullResponse += chunk;
+        setMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'ai', content: fullResponse };
+          return updated;
+        });
+      }
     } catch (e) {
       setMessages(prev => [...prev, { role: 'ai', content: "Desculpe, não consegui processar sua mensagem agora." }]);
     } finally {

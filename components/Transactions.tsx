@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Transaction, TransactionType, TransactionAttachment } from '../types';
-import { categorizeTransaction, parseTransactionFromText, parseTransactionFromAudio } from '../services/geminiService';
+import { categorizeTransaction, parseTransactionFromText, parseTransactionFromAudio, parseTransactionFromReceipt } from '../services/geminiService';
 import { Plus, Paperclip, Loader2, Trash2, Edit2, ArrowDownCircle, ArrowUpCircle, Search, Sparkles, Mic, Square, RefreshCw, CalendarClock, CreditCard, X, ChevronLeft, ChevronRight, FileText, FileSpreadsheet, UploadCloud, File as FileIcon, Download, Camera, Check, RotateCcw } from 'lucide-react';
 
 interface TransactionsProps {
@@ -274,6 +274,29 @@ const Transactions: React.FC<TransactionsProps> = ({
         attachments: [...prev.attachments, newAttachment]
       }));
       stopCamera();
+    }
+  };
+
+  const handleReceiptOCR = async () => {
+    if (capturedImage) {
+      setIsProcessingSmart(true);
+      try {
+        const result = await parseTransactionFromReceipt(capturedImage);
+        setFormData(prev => ({
+          ...prev,
+          description: result.description || prev.description,
+          amount: result.amount?.toString() || prev.amount,
+          type: (result.type as TransactionType) || prev.type,
+          category: result.category || prev.category,
+          date: result.date || prev.date
+        }));
+        stopCamera();
+        setShowForm(true);
+      } catch (error) {
+        alert("Não foi possível processar o recibo.");
+      } finally {
+        setIsProcessingSmart(false);
+      }
     }
   };
 
@@ -758,7 +781,18 @@ const Transactions: React.FC<TransactionsProps> = ({
                      <div className="w-16 h-16 rounded-full bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-600/30">
                         <Check size={32} />
                      </div>
-                     <span className="text-xs font-bold">Usar Foto</span>
+                     <span className="text-xs font-bold">Guardar</span>
+                  </button>
+
+                  <button 
+                    onClick={handleReceiptOCR}
+                    disabled={isProcessingSmart}
+                    className="flex flex-col items-center text-white gap-1 active:scale-95 transition-transform disabled:opacity-50"
+                  >
+                     <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
+                        {isProcessingSmart ? <Loader2 size={32} className="animate-spin" /> : <Sparkles size={32} />}
+                     </div>
+                     <span className="text-xs font-bold">OCR Recibo</span>
                   </button>
                 </>
               )}
