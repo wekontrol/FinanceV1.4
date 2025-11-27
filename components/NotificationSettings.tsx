@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Save, AlertCircle } from 'lucide-react';
 import { notificationApi } from '../services/notificationApi';
+import PushNotificationButton from './PushNotificationButton';
 
 interface NotificationSettingsProps {
   isSuperAdmin?: boolean;
@@ -101,6 +102,13 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ isSuperAdmi
             <Toggle label="Notificações Push (Web/App)" key="push_notifications" />
           </div>
         </div>
+
+        {!isSuperAdmin && (
+          <div>
+            <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">Ativar Push Web</h4>
+            <PushNotificationButton />
+          </div>
+        )}
       </div>
 
       <div className="flex gap-2">

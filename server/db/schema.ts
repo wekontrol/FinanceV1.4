@@ -168,6 +168,17 @@ export function initializeDatabase() {
       UNIQUE(user_id, is_global),
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
+
+    CREATE TABLE IF NOT EXISTS push_subscriptions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      subscription TEXT NOT NULL,
+      user_agent TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      last_active TEXT DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(user_id, subscription),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
   `);
 
   const adminExists = db.prepare('SELECT id FROM users WHERE username = ?').get('admin');
