@@ -12,10 +12,11 @@ import Simulations from './components/Simulations';
 import Login from './components/Login';
 import AIAssistant from './components/AIAssistant'; 
 import NotificationsMenu from './components/NotificationsMenu';
-import { Menu, Moon, Sun, Globe, Sparkles } from 'lucide-react';
+import { Menu, Moon, Sun, Globe, Sparkles, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { getExchangeRates } from './services/marketData';
+import { authApi, transactionsApi, goalsApi, usersApi, familyApi, budgetApi } from './services/api';
 
 // Dados Iniciais Atualizados com Hierarquia Familiar
 const INITIAL_USERS: User[] = [
@@ -103,7 +104,6 @@ const safeLoad = <T,>(key: string, fallback: T): T => {
 };
 
 const App: React.FC = () => {
-  // Tema inicial baseado na preferência do sistema ou localStorage
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('theme');
     if (saved) {
@@ -117,9 +117,10 @@ const App: React.FC = () => {
   });
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAiOpen, setIsAiOpen] = useState(false); // New AI State
+  const [isAiOpen, setIsAiOpen] = useState(false);
   const [currency, setCurrency] = useState('AOA'); 
   const [rateProvider, setRateProvider] = useState<RateProvider>('BNA');
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null);
@@ -129,22 +130,11 @@ const App: React.FC = () => {
   const [exportStartDate, setExportStartDate] = useState(new Date().toISOString().split('T')[0].substring(0, 8) + '01');
   const [exportEndDate, setExportEndDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // State initialization with robust error handling
-  const [allUsers, setAllUsers] = useState<User[]>(() => {
-    const saved = safeLoad<User[]>('users', INITIAL_USERS);
-    // Integrity Check
-    if (Array.isArray(saved) && saved.length > 0 && saved[0].username) {
-        const hasAdmin = saved.some(u => u.role === UserRole.SUPER_ADMIN || u.role === UserRole.ADMIN);
-        if (hasAdmin) return saved;
-    }
-    return INITIAL_USERS;
-  });
-  
-  const [currentUser, setCurrentUser] = useState<User>(INITIAL_USERS[0]);
-  
-  const [transactions, setTransactions] = useState<Transaction[]>(() => safeLoad('transactions', INITIAL_TRANSACTIONS));
-  const [goals, setGoals] = useState<SavingsGoal[]>(() => safeLoad('goals', INITIAL_GOALS));
-  const [budgets, setBudgets] = useState<BudgetLimit[]>(() => safeLoad('budgets', []));
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [goals, setGoals] = useState<SavingsGoal[]>([]);
+  const [budgets, setBudgets] = useState<BudgetLimit[]>([]);
   
   const [backupConfig, setBackupConfig] = useState<BackupConfig>({
     networkPath: '',
@@ -153,10 +143,47 @@ const App: React.FC = () => {
     lastBackup: null
   });
 
-  const [familyTasks, setFamilyTasks] = useState<FamilyTask[]>(() => safeLoad('familyTasks', []));
-  const [familyEvents, setFamilyEvents] = useState<FamilyEvent[]>(() => safeLoad('familyEvents', []));
+  const [familyTasks, setFamilyTasks] = useState<FamilyTask[]>([]);
+  const [familyEvents, setFamilyEvents] = useState<FamilyEvent[]>([]);
   const [savedSimulations, setSavedSimulations] = useState<SavedSimulation[]>(() => safeLoad('savedSimulations', []));
   const [notifications, setNotifications] = useState<AppNotification[]>(() => safeLoad('notifications', []));
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await authApi.me();
+        setCurrentUser(response.user);
+        setIsLoggedIn(true);
+        await loadAllData();
+      } catch (error) {
+        setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkSession();
+  }, []);
+
+  const loadAllData = async () => {
+    try {
+      const [transactionsData, goalsData, usersData, tasksData, eventsData, budgetsData] = await Promise.all([
+        transactionsApi.getAll(),
+        goalsApi.getAll(),
+        usersApi.getAll(),
+        familyApi.getTasks(),
+        familyApi.getEvents(),
+        budgetApi.getLimits()
+      ]);
+      setTransactions(transactionsData);
+      setGoals(goalsData);
+      setAllUsers(usersData);
+      setFamilyTasks(tasksData);
+      setFamilyEvents(eventsData);
+      setBudgets(budgetsData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  };
 
   useEffect(() => {
     const loadRates = async () => {
@@ -269,27 +296,7 @@ const App: React.FC = () => {
     localStorage.setItem('theme', newMode ? 'dark' : 'light');
   };
 
-  useEffect(() => {
-    // Session persistence logic
-    const session = sessionStorage.getItem('currentSession');
-    if (session) {
-      const { userId } = JSON.parse(session);
-      const user = allUsers.find(u => u.id === userId);
-      if (user) {
-        setCurrentUser(user);
-        setIsLoggedIn(true);
-      }
-    }
-  }, [allUsers]);
-
-  // Sync state to local storage
   useEffect(() => { localStorage.setItem('appName', appName); }, [appName]);
-  useEffect(() => { localStorage.setItem('transactions', JSON.stringify(transactions)); }, [transactions]);
-  useEffect(() => { localStorage.setItem('users', JSON.stringify(allUsers)); }, [allUsers]);
-  useEffect(() => { localStorage.setItem('goals', JSON.stringify(goals)); }, [goals]);
-  useEffect(() => { localStorage.setItem('budgets', JSON.stringify(budgets)); }, [budgets]);
-  useEffect(() => { localStorage.setItem('familyTasks', JSON.stringify(familyTasks)); }, [familyTasks]);
-  useEffect(() => { localStorage.setItem('familyEvents', JSON.stringify(familyEvents)); }, [familyEvents]);
   useEffect(() => { localStorage.setItem('savedSimulations', JSON.stringify(savedSimulations)); }, [savedSimulations]);
   useEffect(() => { localStorage.setItem('notifications', JSON.stringify(notifications)); }, [notifications]);
 
@@ -309,7 +316,7 @@ const App: React.FC = () => {
   }, []);
 
   const checkAutomaticNotifications = useCallback(() => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn || !currentUser) return;
     const now = new Date();
     const currentMonth = now.getMonth();
     
@@ -335,11 +342,13 @@ const App: React.FC = () => {
       }
     });
 
-    const myTasks = familyTasks.filter(t => t.assignedTo === currentUser.id && !t.isCompleted);
-    if (myTasks.length > 0) {
-      addNotification('Tarefas Pendentes', `Você tem ${myTasks.length} tarefas familiares pendentes.`, `tasks-${currentUser.id}-${myTasks.length}`);
+    if (currentUser) {
+      const myTasks = familyTasks.filter(t => t.assignedTo === currentUser.id && !t.isCompleted);
+      if (myTasks.length > 0) {
+        addNotification('Tarefas Pendentes', `Você tem ${myTasks.length} tarefas familiares pendentes.`, `tasks-${currentUser.id}-${myTasks.length}`);
+      }
     }
-  }, [isLoggedIn, transactions, budgets, goals, familyTasks, currentUser.id, addNotification]);
+  }, [isLoggedIn, transactions, budgets, goals, familyTasks, currentUser, addNotification]);
 
   useEffect(() => { checkAutomaticNotifications(); }, [transactions, checkAutomaticNotifications]);
 
@@ -381,34 +390,59 @@ const App: React.FC = () => {
     return `${valueInAOA.toFixed(2)} Kz`;
   };
 
-  const handleLogin = (user: User) => {
+  const handleLogin = async (user: User) => {
     setCurrentUser(user);
     setIsLoggedIn(true);
-    sessionStorage.setItem('currentSession', JSON.stringify({ userId: user.id }));
+    await loadAllData();
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
     setIsLoggedIn(false);
     setCurrentView('dashboard');
-    sessionStorage.removeItem('currentSession');
+    setCurrentUser(null);
+    setTransactions([]);
+    setGoals([]);
+    setAllUsers([]);
   };
 
-  const handleAddUser = (user: Omit<User, 'id'>) => {
-    const newUser = { ...user, id: Date.now().toString() };
-    setAllUsers([...allUsers, newUser]);
+  const handleAddUser = async (userData: Omit<User, 'id'>) => {
+    try {
+      const response = await usersApi.create(userData);
+      setAllUsers([...allUsers, response]);
+    } catch (error) {
+      console.error('Error adding user:', error);
+      alert('Erro ao adicionar usuário');
+    }
   };
-  const handleRegister = (user: Omit<User, 'id'>) => handleAddUser(user);
-  const handleUpdateUser = (updatedUser: User) => {
-    const newUsers = allUsers.map(u => u.id === updatedUser.id ? updatedUser : u);
-    setAllUsers(newUsers);
-    if (currentUser.id === updatedUser.id) setCurrentUser(updatedUser);
+
+  const handleUpdateUser = async (updatedUser: User) => {
+    try {
+      const response = await usersApi.update(updatedUser.id, updatedUser);
+      setAllUsers(allUsers.map(u => u.id === updatedUser.id ? response : u));
+      if (currentUser?.id === updatedUser.id) setCurrentUser(response);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      alert('Erro ao atualizar usuário');
+    }
   };
-  const handleDeleteUser = (userId: string) => {
-    if (userId === currentUser.id && allUsers.length > 1) {
+
+  const handleDeleteUser = async (userId: string) => {
+    if (userId === currentUser?.id) {
       alert("Não é possível remover a si mesmo.");
       return;
     }
-    setAllUsers(allUsers.filter(u => u.id !== userId));
+    try {
+      await usersApi.delete(userId);
+      setAllUsers(allUsers.filter(u => u.id !== userId));
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('Erro ao remover usuário');
+    }
   };
   const handleRestoreBackup = async (file: File) => {
     const reader = new FileReader();
@@ -450,20 +484,139 @@ const App: React.FC = () => {
     return false;
   };
 
-  const addTransaction = (t: Omit<Transaction, 'id'>) => setTransactions([{ ...t, id: Date.now().toString() }, ...transactions]);
-  const updateTransaction = (u: Transaction) => setTransactions(transactions.map(t => t.id === u.id ? u : t));
-  const deleteTransaction = (id: string) => setTransactions(transactions.filter(t => t.id !== id));
-  const addGoal = (g: Omit<SavingsGoal, 'id'>) => setGoals([...goals, { ...g, id: Date.now().toString(), history: g.currentAmount > 0 ? [{id: Date.now()+'init', userId: currentUser.id, date: new Date().toISOString().split('T')[0], amount: g.currentAmount, note: 'Inicial'}] : [] }]);
-  const deleteGoal = (id: string) => setGoals(goals.filter(g => g.id !== id));
-  const addGoalContribution = (id: string, amount: number, note: string) => setGoals(goals.map(g => g.id === id ? { ...g, currentAmount: g.currentAmount + amount, history: [...g.history, { id: Date.now().toString(), userId: currentUser.id, date: new Date().toISOString().split('T')[0], amount, note }] } : g));
-  const editGoalContribution = (gid: string, c: GoalTransaction) => setGoals(goals.map(g => g.id === gid ? { ...g, history: g.history.map(h => h.id === c.id ? c : h), currentAmount: g.history.map(h => h.id === c.id ? c : h).reduce((a,b)=>a+b.amount,0) } : g));
-  const deleteGoalContribution = (gid: string, cid: string) => setGoals(goals.map(g => g.id === gid ? { ...g, history: g.history.filter(h => h.id !== cid), currentAmount: g.history.filter(h => h.id !== cid).reduce((a,b)=>a+b.amount,0) } : g));
-  const saveBudget = (b: BudgetLimit) => setBudgets(p => { const i = p.findIndex(x => x.category === b.category); return i >= 0 ? p.map((x, idx) => idx === i ? b : x) : [...p, b] });
-  const addFamilyTask = (t: Omit<FamilyTask, 'id'>) => setFamilyTasks([...familyTasks, { ...t, id: Date.now().toString() }]);
-  const toggleFamilyTask = (id: string) => setFamilyTasks(familyTasks.map(t => t.id === id ? { ...t, isCompleted: !t.isCompleted } : t));
-  const deleteFamilyTask = (id: string) => setFamilyTasks(familyTasks.filter(t => t.id !== id));
-  const addFamilyEvent = (e: Omit<FamilyEvent, 'id'>) => setFamilyEvents([...familyEvents, { ...e, id: Date.now().toString() }]);
-  const deleteFamilyEvent = (id: string) => setFamilyEvents(familyEvents.filter(e => e.id !== id));
+  const addTransaction = async (t: Omit<Transaction, 'id'>) => {
+    try {
+      const response = await transactionsApi.create(t);
+      setTransactions([response, ...transactions]);
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+      alert('Erro ao adicionar transação');
+    }
+  };
+  
+  const updateTransaction = async (u: Transaction) => {
+    try {
+      const response = await transactionsApi.update(u.id, u);
+      setTransactions(transactions.map(t => t.id === u.id ? response : t));
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      alert('Erro ao atualizar transação');
+    }
+  };
+  
+  const deleteTransaction = async (id: string) => {
+    try {
+      await transactionsApi.delete(id);
+      setTransactions(transactions.filter(t => t.id !== id));
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      alert('Erro ao remover transação');
+    }
+  };
+  
+  const addGoal = async (g: Omit<SavingsGoal, 'id'>) => {
+    try {
+      const response = await goalsApi.create(g);
+      setGoals([...goals, response]);
+    } catch (error) {
+      console.error('Error adding goal:', error);
+      alert('Erro ao adicionar meta');
+    }
+  };
+  
+  const deleteGoal = async (id: string) => {
+    try {
+      await goalsApi.delete(id);
+      setGoals(goals.filter(g => g.id !== id));
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+      alert('Erro ao remover meta');
+    }
+  };
+  
+  const addGoalContribution = async (id: string, amount: number, note: string) => {
+    try {
+      const response = await goalsApi.contribute(id, amount, note);
+      setGoals(goals.map(g => g.id === id ? response : g));
+    } catch (error) {
+      console.error('Error adding contribution:', error);
+      alert('Erro ao adicionar contribuição');
+    }
+  };
+  
+  const editGoalContribution = (gid: string, c: GoalTransaction) => {
+    setGoals(goals.map(g => g.id === gid ? { ...g, history: g.history.map(h => h.id === c.id ? c : h), currentAmount: g.history.map(h => h.id === c.id ? c : h).reduce((a,b)=>a+b.amount,0) } : g));
+  };
+  
+  const deleteGoalContribution = (gid: string, cid: string) => {
+    setGoals(goals.map(g => g.id === gid ? { ...g, history: g.history.filter(h => h.id !== cid), currentAmount: g.history.filter(h => h.id !== cid).reduce((a,b)=>a+b.amount,0) } : g));
+  };
+  
+  const saveBudget = async (b: BudgetLimit) => {
+    try {
+      await budgetApi.setLimit(b.category, b.limit);
+      setBudgets(p => { 
+        const i = p.findIndex(x => x.category === b.category); 
+        return i >= 0 ? p.map((x, idx) => idx === i ? b : x) : [...p, b];
+      });
+    } catch (error) {
+      console.error('Error saving budget:', error);
+      alert('Erro ao salvar orçamento');
+    }
+  };
+  
+  const addFamilyTask = async (t: Omit<FamilyTask, 'id'>) => {
+    try {
+      const response = await familyApi.createTask(t);
+      setFamilyTasks([...familyTasks, response]);
+    } catch (error) {
+      console.error('Error adding task:', error);
+      alert('Erro ao adicionar tarefa');
+    }
+  };
+  
+  const toggleFamilyTask = async (id: string) => {
+    const task = familyTasks.find(t => t.id === id);
+    if (!task) return;
+    try {
+      const response = await familyApi.updateTask(id, { ...task, isCompleted: !task.isCompleted });
+      setFamilyTasks(familyTasks.map(t => t.id === id ? response : t));
+    } catch (error) {
+      console.error('Error toggling task:', error);
+      alert('Erro ao atualizar tarefa');
+    }
+  };
+  
+  const deleteFamilyTask = async (id: string) => {
+    try {
+      await familyApi.deleteTask(id);
+      setFamilyTasks(familyTasks.filter(t => t.id !== id));
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      alert('Erro ao remover tarefa');
+    }
+  };
+  
+  const addFamilyEvent = async (e: Omit<FamilyEvent, 'id'>) => {
+    try {
+      const response = await familyApi.createEvent(e);
+      setFamilyEvents([...familyEvents, response]);
+    } catch (error) {
+      console.error('Error adding event:', error);
+      alert('Erro ao adicionar evento');
+    }
+  };
+  
+  const deleteFamilyEvent = async (id: string) => {
+    try {
+      await familyApi.deleteEvent(id);
+      setFamilyEvents(familyEvents.filter(e => e.id !== id));
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert('Erro ao remover evento');
+    }
+  };
+  
   const saveSimulation = (s: LoanSimulation, n: string) => setSavedSimulations([...savedSimulations, { ...s, id: Date.now().toString(), name: n, createdAt: new Date().toISOString() }]);
   const deleteSimulation = (id: string) => setSavedSimulations(savedSimulations.filter(s => s.id !== id));
 
@@ -493,8 +646,19 @@ const App: React.FC = () => {
     setBackupConfig({...backupConfig, lastBackup: new Date().toISOString()});
   };
 
-  if (!isLoggedIn) {
-    return <Login appName={appName} users={allUsers} onLogin={handleLogin} onUpdateUser={handleUpdateUser} onRegister={handleRegister} />;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-primary-600 mx-auto mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn || !currentUser) {
+    return <Login appName={appName} onLogin={handleLogin} />;
   }
 
   return (

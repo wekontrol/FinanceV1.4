@@ -5,7 +5,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   define: {
-    // Evita o erro "process is not defined" no navegador
     'process.env': {}
   },
   server: {
@@ -16,6 +15,13 @@ export default defineConfig({
     hmr: {
       clientPort: 443,
       protocol: 'wss'
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      }
     }
   },
   build: {

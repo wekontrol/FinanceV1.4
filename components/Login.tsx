@@ -1,90 +1,237 @@
 import React, { useState } from 'react';
-import { User, UserStatus } from '../types';
+import { User, UserStatus, UserRole } from '../types';
 import { Lock, User as UserIcon, LogIn, HelpCircle, ArrowLeft, CheckCircle, ShieldAlert, UserPlus } from 'lucide-react';
-import Register from './Register';
+import { authApi } from '../services/api';
 
 interface LoginProps {
   appName: string;
-  users: User[];
   onLogin: (user: User) => void;
-  onUpdateUser: (user: User) => void;
-  onRegister: (user: Omit<User, 'id'>) => void; // New prop
 }
 
-const Login: React.FC<LoginProps> = ({ appName, users, onLogin, onUpdateUser, onRegister }) => {
+const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
   const [view, setView] = useState<'login' | 'recovery' | 'register'>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   
-  // Recovery State
-  const [recoveryUser, setRecoveryUser] = useState<User | null>(null);
+  const [registerName, setRegisterName] = useState('');
+  const [registerUsername, setRegisterUsername] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [securityQuestion, setSecurityQuestion] = useState('');
   const [securityAnswer, setSecurityAnswer] = useState('');
+  
+  const [recoveryUsername, setRecoveryUsername] = useState('');
+  const [recoveryAnswer, setRecoveryAnswer] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [recoveryStep, setRecoveryStep] = useState<1 | 2 | 3>(1);
+  const [recoveryStep, setRecoveryStep] = useState<1 | 2>(1);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const user = users.find(u => u.username === username && u.password === password);
-    
-    if (user) {
-      if (user.status === UserStatus.PENDING) {
-        setError("Sua conta ainda está aguardando aprovação do administrador.");
-        return;
-      }
-      if (user.status === UserStatus.REJECTED) {
-        setError("Sua conta foi desativada.");
-        return;
-      }
-      onLogin(user);
-    } else {
-      setError("Usuário ou senha incorretos.");
-    }
-  };
-
-  const handleIdentifyUser = () => {
-    const user = users.find(u => u.username === username);
-    if (!user) {
-      setError("Usuário não encontrado.");
-      return;
-    }
-    if (!user.securityQuestion) {
-      setError("Este usuário não configurou perguntas de segurança.");
-      return;
-    }
-    setRecoveryUser(user);
-    setRecoveryStep(2);
     setError('');
-  };
-
-  const handleVerifyAnswer = () => {
-    if (!recoveryUser?.securityQuestion) return;
-    if (securityAnswer.toLowerCase().trim() === recoveryUser.securityQuestion.answer.toLowerCase().trim()) {
-      setRecoveryStep(3);
-      setError('');
-    } else {
-      setError("Resposta incorreta.");
+    setLoading(true);
+    
+    try {
+      const response = await authApi.login(username, password);
+      onLogin(response.user);
+    } catch (err: any) {
+      setError(err.message || 'Erro ao fazer login');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleResetPassword = () => {
-    if (!recoveryUser) return;
-    onUpdateUser({ ...recoveryUser, password: newPassword });
-    alert("Senha redefinida com sucesso!");
-    setView('login');
-    setPassword('');
-    setRecoveryStep(1);
-    setRecoveryUser(null);
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    
+    try {
+      await authApi.register({
+        username: registerUsername,
+        password: registerPassword,
+        name: registerName,
+        securityQuestion,
+        securityAnswer
+      });
+      alert('Família registrada com sucesso! Faça login.');
+      setView('login');
+      setRegisterName('');
+      setRegisterUsername('');
+      setRegisterPassword('');
+      setSecurityQuestion('');
+      setSecurityAnswer('');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao registrar');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRegisterSubmit = (userData: Omit<User, 'id'>) => {
-    onRegister(userData);
-    alert("Família registrada com sucesso! Faça login.");
-    setView('login');
+  const handleRecoverPassword = async () => {
+    setError('');
+    setLoading(true);
+    
+    try {
+      await authApi.recoverPassword(recoveryUsername, recoveryAnswer, newPassword);
+      alert('Senha redefinida com sucesso!');
+      setView('login');
+      setRecoveryStep(1);
+      setRecoveryUsername('');
+      setRecoveryAnswer('');
+      setNewPassword('');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao recuperar senha');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (view === 'register') {
-    return <Register onRegister={handleRegisterSubmit} onCancel={() => setView('login')} />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900 p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center mb-6">
+            <button onClick={() => setView('login')} className="p-2 -ml-2 text-slate-400 hover:text-slate-600">
+              <ArrowLeft size={20} />
+            </button>
+            <h3 className="font-bold text-slate-800 dark:text-white ml-2">Criar Nova Família</h3>
+          </div>
+
+          {error && (
+            <div className="mb-4 p-4 bg-rose-50 dark:bg-rose-900/20 text-rose-600 rounded-xl text-sm flex items-center">
+              <ShieldAlert size={18} className="mr-2" />
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleRegister} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nome Completo</label>
+              <input 
+                type="text" 
+                value={registerName}
+                onChange={e => setRegisterName(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                placeholder="Seu nome"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Usuário</label>
+              <input 
+                type="text" 
+                value={registerUsername}
+                onChange={e => setRegisterUsername(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                placeholder="Nome de usuário"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Senha</label>
+              <input 
+                type="password" 
+                value={registerPassword}
+                onChange={e => setRegisterPassword(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                placeholder="••••••"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pergunta de Segurança (Opcional)</label>
+              <input 
+                type="text" 
+                value={securityQuestion}
+                onChange={e => setSecurityQuestion(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                placeholder="Ex: Nome do primeiro animal"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Resposta de Segurança</label>
+              <input 
+                type="text" 
+                value={securityAnswer}
+                onChange={e => setSecurityAnswer(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                placeholder="Sua resposta"
+              />
+            </div>
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {loading ? 'Registrando...' : 'Criar Família'}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === 'recovery') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900 p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center mb-6">
+            <button onClick={() => { setView('login'); setRecoveryStep(1); }} className="p-2 -ml-2 text-slate-400 hover:text-slate-600">
+              <ArrowLeft size={20} />
+            </button>
+            <h3 className="font-bold text-slate-800 dark:text-white ml-2">Recuperar Senha</h3>
+          </div>
+
+          {error && (
+            <div className="mb-4 p-4 bg-rose-50 dark:bg-rose-900/20 text-rose-600 rounded-xl text-sm flex items-center">
+              <ShieldAlert size={18} className="mr-2" />
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Usuário</label>
+              <input 
+                type="text" 
+                value={recoveryUsername}
+                onChange={e => setRecoveryUsername(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                placeholder="Seu usuário"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Resposta de Segurança</label>
+              <input 
+                type="text" 
+                value={recoveryAnswer}
+                onChange={e => setRecoveryAnswer(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                placeholder="Sua resposta"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nova Senha</label>
+              <input 
+                type="password" 
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                placeholder="••••••"
+              />
+            </div>
+            <button 
+              onClick={handleRecoverPassword}
+              disabled={loading}
+              className="w-full py-3 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-700 disabled:opacity-50"
+            >
+              {loading ? 'Recuperando...' : 'Redefinir Senha'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -106,92 +253,59 @@ const Login: React.FC<LoginProps> = ({ appName, users, onLogin, onUpdateUser, on
           </div>
         )}
 
-        {view === 'login' ? (
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Usuário</label>
-              <div className="relative">
-                <UserIcon className="absolute left-3 top-3.5 text-slate-400" size={18} />
-                <input 
-                  type="text" 
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="Seu usuário"
-                />
-              </div>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Usuário</label>
+            <div className="relative">
+              <UserIcon className="absolute left-3 top-3.5 text-slate-400" size={18} />
+              <input 
+                type="text" 
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="Seu usuário"
+              />
             </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Senha</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3.5 text-slate-400" size={18} />
-                <input 
-                  type="password" 
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="••••••"
-                />
-              </div>
-            </div>
-            
-            <button type="submit" className="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-lg shadow-primary-500/30 flex justify-center items-center active:scale-95 transition-transform">
-              <LogIn className="mr-2" size={20} /> Entrar
-            </button>
-
-            <div className="flex justify-between items-center mt-4">
-              <button 
-                type="button" 
-                onClick={() => { setView('recovery'); setError(''); setUsername(''); }}
-                className="text-sm text-slate-400 hover:text-primary-600 font-medium"
-              >
-                Esqueci minha senha
-              </button>
-              <button 
-                type="button" 
-                onClick={() => setView('register')}
-                className="text-sm text-emerald-600 font-bold hover:text-emerald-700 flex items-center"
-              >
-                Criar Família <UserPlus size={14} className="ml-1"/>
-              </button>
-            </div>
-          </form>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center mb-4">
-               <button onClick={() => { setView('login'); setError(''); setRecoveryStep(1); }} className="p-2 -ml-2 text-slate-400 hover:text-slate-600">
-                 <ArrowLeft size={20} />
-               </button>
-               <h3 className="font-bold text-slate-800 dark:text-white ml-2">Recuperação de Senha</h3>
-            </div>
-
-            {recoveryStep === 1 && (
-              <>
-                <p className="text-sm text-slate-500 mb-4">Digite seu nome de usuário para começar.</p>
-                <input type="text" value={username} onChange={e => setUsername(e.target.value)} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border" placeholder="Nome de usuário" />
-                <button onClick={handleIdentifyUser} className="w-full py-3 bg-slate-800 text-white font-bold rounded-xl active:scale-95 transition-transform">Continuar</button>
-              </>
-            )}
-
-            {recoveryStep === 2 && recoveryUser && (
-              <>
-                <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl mb-2">
-                  <p className="text-xs font-bold text-primary-600 uppercase">Pergunta de Segurança</p>
-                  <p className="font-medium text-slate-800 dark:text-white">{recoveryUser.securityQuestion?.question}</p>
-                </div>
-                <input type="text" value={securityAnswer} onChange={e => setSecurityAnswer(e.target.value)} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border" placeholder="Sua resposta" />
-                <button onClick={handleVerifyAnswer} className="w-full py-3 bg-slate-800 text-white font-bold rounded-xl active:scale-95 transition-transform">Verificar</button>
-              </>
-            )}
-
-            {recoveryStep === 3 && (
-              <>
-                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border" placeholder="Nova senha" />
-                <button onClick={handleResetPassword} className="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl active:scale-95 transition-transform">Redefinir</button>
-              </>
-            )}
           </div>
-        )}
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Senha</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3.5 text-slate-400" size={18} />
+              <input 
+                type="password" 
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="••••••"
+              />
+            </div>
+          </div>
+          
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-lg shadow-primary-500/30 flex justify-center items-center active:scale-95 transition-transform disabled:opacity-50"
+          >
+            {loading ? 'Entrando...' : <><LogIn className="mr-2" size={20} /> Entrar</>}
+          </button>
+
+          <div className="flex justify-between items-center mt-4">
+            <button 
+              type="button" 
+              onClick={() => { setView('recovery'); setError(''); }}
+              className="text-sm text-slate-400 hover:text-primary-600 font-medium"
+            >
+              Esqueci minha senha
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setView('register')}
+              className="text-sm text-emerald-600 font-bold hover:text-emerald-700 flex items-center"
+            >
+              Criar Família <UserPlus size={14} className="ml-1"/>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
