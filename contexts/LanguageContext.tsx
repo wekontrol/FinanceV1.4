@@ -45,9 +45,15 @@ const translations = {
 
     // Dashboard
     'dashboard.title': 'Painel Geral',
+    'dashboard.overview': 'Visão Geral',
+    'dashboard.financial_health': 'Saúde financeira.',
+    'dashboard.behavioral_analysis': 'Análise Comportamental',
+    'dashboard.waste_analysis': 'Análise de Desperdício',
+    'dashboard.expenses_by_category': '📊 Despesas por Categoria',
     'dashboard.income': 'Receitas',
     'dashboard.expenses': 'Despesas',
     'dashboard.balance': 'Saldo',
+    'dashboard.balance_liquid': 'Saldo Líquido',
     'dashboard.aiAdvice': 'Conselho de IA',
     'dashboard.analyzing': 'Analisando suas finanças com IA...',
     'dashboard.analyzing_dot': 'Analisando...',
@@ -63,9 +69,13 @@ const translations = {
     'dashboard.thisMonth': 'Este Mês',
     'dashboard.thisYear': 'Este Ano',
     'dashboard.7days': '7 Dias',
+    'dashboard.current_month': 'Mês Atual',
+    'dashboard.current_year': 'Ano Atual',
     'dashboard.allTime': 'Tudo',
     'dashboard.monthly': 'Mensal',
     'dashboard.annual': 'Anual',
+    'dashboard.last7days': 'Últimos 7 Dias',
+    'dashboard.myNotifications': 'Minhas Notificações',
 
     // Transactions
     'transactions.title': 'Transações',

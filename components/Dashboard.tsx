@@ -129,7 +129,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       )}
       <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold">📊 Despesas por Categoria</h3>
+          <h3 className="text-lg font-bold">{t('dashboard.expenses_by_category')}</h3>
           {currentUser && (
             <button onClick={() => generatePDFReport(transactions, savingsGoals, "month", currencyFormatter, currentUser)} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-bold">
               <Download size={16} /> Exportar PDF
@@ -229,10 +229,10 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   const getRangeLabel = () => {
     switch(dateRange) {
-      case '7days': return 'Últimos 7 Dias';
-      case 'month': return 'Este Mês';
-      case 'year': return 'Este Ano';
-      case 'all': return 'Geral';
+      case '7days': return t('dashboard.last7days');
+      case 'month': return t('dashboard.thisMonth');
+      case 'year': return t('dashboard.thisYear');
+      case 'all': return t('dashboard.allTime');
     }
   };
 
@@ -241,8 +241,8 @@ const Dashboard: React.FC<DashboardProps> = ({
       {/* Header + Filters */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h3 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Visão Geral</h3>
-          <p className="text-sm text-slate-500">Saúde financeira.</p>
+          <h3 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white tracking-tight">{t('dashboard.overview')}</h3>
+          <p className="text-sm text-slate-500">{t('dashboard.financial_health')}</p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button 
@@ -259,10 +259,10 @@ const Dashboard: React.FC<DashboardProps> = ({
             onChange={(e) => setDateRange(e.target.value as DateRange)}
             className="bg-transparent border-none text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer outline-none py-1 w-full"
           >
-            <option value="7days">7 Dias</option>
-            <option value="month">Mês Atual</option>
-            <option value="year">Ano Atual</option>
-            <option value="all">Tudo</option>
+            <option value="7days">{t('dashboard.7days')}</option>
+            <option value="month">{t('dashboard.current_month')}</option>
+            <option value="year">{t('dashboard.current_year')}</option>
+            <option value="all">{t('dashboard.allTime')}</option>
           </select>
           </div>
         </div>
@@ -274,7 +274,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
               <Bell size={20} className="text-primary-600" />
-              Minhas Notificações
+              {t('dashboard.myNotifications')}
             </h3>
             <button onClick={() => setShowNotificationSettings(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
               <X size={20} />
@@ -292,7 +292,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
               <div className="max-w-full min-w-0">
                 <h3 className="text-lg font-bold flex items-center flex-wrap">
-                  <BrainCircuit className="mr-2 text-cyan-400 shrink-0" /> Análise Comportamental
+                  <BrainCircuit className="mr-2 text-cyan-400 shrink-0" /> {t('dashboard.behavioral_analysis')}
                   <Hint text="A IA analisa seu histórico para identificar padrões." className="text-white ml-2 hidden sm:inline-block" />
                 </h3>
                 <p className="text-blue-200 text-sm mt-1 truncate max-w-full">Descubra seu perfil de gastos e receba previsões.</p>
@@ -304,7 +304,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   className="px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl font-bold text-sm transition flex items-center whitespace-nowrap border border-white/10 active:scale-95"
                 >
                   {isAnalyzingBehavior ? <Sparkles className="animate-spin mr-2" size={16}/> : <Sparkles className="mr-2 text-yellow-300" size={16}/>}
-                  {isAnalyzingBehavior ? 'Analisando...' : 'Analisar Padrão'}
+                  {isAnalyzingBehavior ? t('dashboard.analyzing_dot') : t('dashboard.analyzeBehavior')}
                 </button>
               )}
             </div>
@@ -349,7 +349,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 {getRangeLabel()}
               </span>
             </div>
-            <p className="text-indigo-100 text-sm font-medium mb-1">Saldo Líquido</p>
+            <p className="text-indigo-100 text-sm font-medium mb-1">{t('dashboard.balance_liquid')}</p>
             <h3 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight truncate break-all" title={currencyFormatter(summary.balance)}>
               {currencyFormatter(summary.balance)}
             </h3>
@@ -363,7 +363,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <ArrowUpRight className="text-emerald-500" size={20} />
             </div>
-            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Receitas</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('dashboard.income')}</p>
             <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white truncate break-all" title={currencyFormatter(summary.totalIncome)}>
               {currencyFormatter(summary.totalIncome)}
             </h3>
@@ -377,7 +377,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <ArrowDownRight className="text-rose-500" size={20} />
             </div>
-            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Despesas</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('dashboard.expenses')}</p>
             <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white truncate break-all" title={currencyFormatter(summary.totalExpense)}>
               {currencyFormatter(summary.totalExpense)}
             </h3>
@@ -429,9 +429,9 @@ const Dashboard: React.FC<DashboardProps> = ({
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 via-red-500 to-orange-500"></div>
           <div className="bg-white/5 backdrop-blur-sm p-4 md:p-6 rounded-[20px]">
             <h3 className="font-bold text-lg mb-3 flex items-center text-white justify-between">
-              <span className="flex items-center"><TrendingDown className="mr-2 text-rose-300 animate-pulse shrink-0" size={20} /> Análise de Desperdício</span>
+              <span className="flex items-center"><TrendingDown className="mr-2 text-rose-300 animate-pulse shrink-0" size={20} /> {t('dashboard.waste_analysis')}</span>
               <button onClick={async () => { setIsAnalyzingWaste(true); const w = await analyzeExpensesForWaste(transactions); setWaste(w); setIsAnalyzingWaste(false); }} disabled={isAnalyzingWaste} className="text-xs bg-rose-600 hover:bg-rose-700 px-2 py-1 rounded disabled:opacity-50">
-                {isAnalyzingWaste ? 'Analisando...' : 'Analisar'}
+                {isAnalyzingWaste ? t('dashboard.analyzing_dot') : t('dashboard.analyzeWaste')}
               </button>
             </h3>
             {waste ? (
