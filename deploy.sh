@@ -61,7 +61,36 @@ sudo -u $APP_USER npm run build
 sudo chown -R $APP_USER:$APP_USER $APP_DIR
 sudo chmod -R 755 $APP_DIR
 
-echo ">>> [6/7] Configurando serviço systemd..."
+echo ">>> [6/7] Configurando PostgreSQL e serviço systemd..."
+
+# Verificar se PostgreSQL está disponível
+if ! command -v psql &> /dev/null; then
+    echo "Instalando PostgreSQL..."
+    sudo apt-get install -y postgresql postgresql-contrib
+fi
+
+# Solicitar string de conexão PostgreSQL
+echo ""
+echo "═══════════════════════════════════════════════════════════"
+echo "CONFIGURAÇÃO DO POSTGRESQL"
+echo "═══════════════════════════════════════════════════════════"
+echo ""
+echo "Você precisa fornecer a string de conexão do PostgreSQL."
+echo "Formato: postgresql://user:password@host:5432/database"
+echo ""
+echo "Exemplos:"
+echo "  - Local: postgresql://postgres:senha@localhost:5432/gestor_financeiro"
+echo "  - Render: postgresql://user:pass@render-host.com:5432/db"
+echo ""
+read -p "Cole a string PostgreSQL (TheFinance): " POSTGRES_URL
+
+if [ -z "$POSTGRES_URL" ]; then
+    echo "⚠️  PostgreSQL não configurado. Usando memory store (não recomendado para produção)."
+    POSTGRES_ENV=""
+else
+    echo "✓ PostgreSQL configurado!"
+    POSTGRES_ENV="Environment=\"TheFinance=$POSTGRES_URL\""
+fi
 
 # Cria arquivo de serviço systemd
 sudo tee /etc/systemd/system/gestor-financeiro.service > /dev/null <<EOF
@@ -86,6 +115,7 @@ LimitNPROC=65535
 
 Environment="NODE_ENV=production"
 Environment="PORT=5000"
+$POSTGRES_ENV
 
 [Install]
 WantedBy=multi-user.target

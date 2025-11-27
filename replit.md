@@ -58,10 +58,16 @@ A comprehensive family financial management platform built with React, TypeScrip
 - **Transactions/Goals/Users**: Full CRUD endpoints
 
 ## Deployment
-**For Ubuntu Proxmox:**
+**For Ubuntu Proxmox - FULLY AUTOMATED:**
 ```bash
-./deploy.sh
+sudo ./deploy.sh
 ```
+That's it! The script will:
+1. ✅ Install Node.js automatically
+2. ✅ Build the application
+3. ✅ **Ask for PostgreSQL string** (paste your connection string)
+4. ✅ Configure systemd with `TheFinance` variable
+5. ✅ Start the service automatically
 
 **For Render/Cloud:**
 1. Connect GitHub repository
@@ -69,10 +75,9 @@ A comprehensive family financial management platform built with React, TypeScrip
 3. Deploy - sessions automatically use PostgreSQL
 
 **Production Environment Variables:**
-- `NODE_ENV=production`
-- `TheFinance=postgresql://user:pass@host:5432/dbname` (for sessions storage)
-- `SESSION_SECRET=your-secret-key`
-- `PORT=10000` (or your cloud provider's port)
+- `NODE_ENV=production` (set by deploy script)
+- `TheFinance=postgresql://user:pass@host:5432/dbname` (sessions storage - **set during deploy.sh**)
+- `PORT=5000` (set by deploy script)
 
 ## Session Storage - How It Works
 1. **Development**: Uses memory store (in-process)
