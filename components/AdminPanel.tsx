@@ -706,6 +706,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                         >
                           {keySaved ? <Check size={20} /> : 'Salvar'}
                         </button>
+                        {apiKeyInput && (
+                          <button 
+                            onClick={() => {
+                              setApiKeyInput('');
+                              alert('Chave Gemini removida!');
+                            }}
+                            className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-700 transition shadow-lg flex items-center justify-center"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                        )}
                       </div>
                       
                       {hasGeminiKey() && (
