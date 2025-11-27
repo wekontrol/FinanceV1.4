@@ -302,6 +302,154 @@ export const getAiChatResponse = async (message: string): Promise<string> => {
   }
 };
 
+// --- NEW FEATURES ---
+
+export const getAiChatResponseStreaming = async (message: string): Promise<AsyncIterable<string>> => {
+  const ai = await getAiClient();
+  if (!ai) throw new Error("API não configurada");
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: message,
+      generationConfig: { temperature: 0.7 }
+    });
+    
+    // Simular streaming dividindo em chunks
+    const text = response.text || "Sem resposta.";
+    const chunkSize = 20;
+    
+    return (async function* () {
+      for (let i = 0; i < text.length; i += chunkSize) {
+        yield text.substring(i, i + chunkSize);
+        // Simular latência de streaming
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+    })();
+  } catch (error) {
+    throw new Error("Erro ao processar mensagem com streaming.");
+  }
+};
+
+export const parseTransactionFromReceipt = async (imageUrl: string): Promise<Partial<Transaction>> => {
+  const ai = await getAiClient();
+  if (!ai) return { description: "Recibo não processado", category: "Geral" };
+
+  try {
+    const prompt = `
+      Analise esta foto de recibo/fatura. Extraia os dados de transação financeira. Retorne APENAS um JSON válido com:
+      - description: Descrição do estabelecimento/item principal
+      - amount: Valor total pago (número)
+      - type: "EXPENSE"
+      - category: Categoria (uma palavra em Português)
+      - date: Data em formato YYYY-MM-DD (se visível, caso contrário hoje)
+      
+      Se não conseguir extrair algum campo, use um valor padrão razoável.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        { text: prompt },
+        {
+          inlineData: {
+            mimeType: 'image/jpeg',
+            data: imageUrl.startsWith('data:') ? imageUrl.split(',')[1] : imageUrl,
+          },
+        },
+      ],
+    });
+
+    let jsonStr = response.text ? response.text.trim() : "{}";
+    if (jsonStr.startsWith('```json')) {
+      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    }
+
+    return JSON.parse(jsonStr);
+  } catch (error) {
+    console.error('Erro ao processar recibo:', error);
+    return { description: "Recibo não processado", category: "Geral" };
+  }
+};
+
+export const analyzeExpensesForWaste = async (transactions: Transaction[]): Promise<{ wasteIndicators: string[], totalWaste: number, suggestions: string[] }> => {
+  const ai = await getAiClient();
+  if (!ai) return { wasteIndicators: [], totalWaste: 0, suggestions: [] };
+
+  try {
+    const expensesByCategory = transactions.reduce((acc: any, t: any) => {
+      if (t.type === 'EXPENSE') {
+        acc[t.category] = (acc[t.category] || 0) + t.amount;
+      }
+      return acc;
+    }, {});
+
+    const prompt = `
+      Analise estes gastos e identifique potenciais desperdícios:
+      ${JSON.stringify(expensesByCategory)}
+      
+      Retorne um JSON com:
+      - wasteIndicators: Array de 3-5 sinais de possível desperdício (ex: "Gastos elevados em café")
+      - totalWaste: Valor estimado em desperdício (número)
+      - suggestions: Array de 3 sugestões para reduzir gastos
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+    });
+
+    let jsonStr = response.text ? response.text.trim() : "{}";
+    if (jsonStr.startsWith('```json')) {
+      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    }
+
+    return JSON.parse(jsonStr);
+  } catch (error) {
+    return { wasteIndicators: [], totalWaste: 0, suggestions: [] };
+  }
+};
+
+export const predictFutureExpenses = async (transactions: Transaction[], months: number = 3): Promise<{ predictions: any[], confidence: number, notes: string }> => {
+  const ai = await getAiClient();
+  if (!ai) return { predictions: [], confidence: 0, notes: "API não configurada" };
+
+  try {
+    const monthlyExpenses = transactions
+      .filter(t => t.type === 'EXPENSE')
+      .slice(0, 12)
+      .reduce((acc: any, t: any) => {
+        const month = new Date(t.date).toISOString().split('T')[0].substring(0, 7);
+        acc[month] = (acc[month] || 0) + t.amount;
+        return acc;
+      }, {});
+
+    const prompt = `
+      Analise o histórico de gastos mensais e faça previsões para os próximos ${months} meses:
+      Histórico: ${JSON.stringify(monthlyExpenses)}
+      
+      Retorne um JSON com:
+      - predictions: Array com previsões de despesa para cada mês (ex: [{ month: "2025-12", predictedExpense: 500 }])
+      - confidence: Nível de confiança da previsão (0-100)
+      - notes: Observações sobre a previsão (ex: "Tendência crescente detectada", "Padrão sazonal")
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+    });
+
+    let jsonStr = response.text ? response.text.trim() : "{}";
+    if (jsonStr.startsWith('```json')) {
+      jsonStr = jsonStr.replace(/```json\n?/, '').replace(/```$/, '');
+    }
+
+    return JSON.parse(jsonStr);
+  } catch (error) {
+    return { predictions: [], confidence: 0, notes: "Erro ao processar previsão" };
+  }
+};
+
 export default {
   categorizeTransaction,
   getFinancialAdvice,
@@ -311,6 +459,10 @@ export default {
   parseTransactionFromAudio,
   suggestBudgets,
   getAiChatResponse,
+  getAiChatResponseStreaming,
+  parseTransactionFromReceipt,
+  analyzeExpensesForWaste,
+  predictFutureExpenses,
   setGeminiKey,
   hasGeminiKey,
 };
