@@ -51,7 +51,7 @@ export interface Transaction {
   attachments?: TransactionAttachment[]; // New: Multiple attachments
   attachmentName?: string; // Deprecated: Kept for backward compatibility
   isRecurring?: boolean;
-  frequency?: 'weekly' | 'monthly' | 'yearly';
+  frequency?: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
   nextDueDate?: string;
 }
 

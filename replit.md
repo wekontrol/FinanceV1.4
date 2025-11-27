@@ -9,7 +9,7 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Deployment target: Ubuntu 20.04+ on Proxmox VMs (or Render/Production)
 - Theme: Supports dark mode preference
 
-## Recent Implementation (November 27, 2025 - Auto-Save Budget History + Category Validation)
+## Recent Implementation (November 27, 2025 - Enhanced Frequencies + Category Validation)
 
 ✅ **HISTÓRICO DE ORÇAMENTOS - Budget History Tracking (100% Automático)**
 1. **Nova Tabela** - `budget_history` armazena gastos mensais por categoria
@@ -40,6 +40,15 @@ A comprehensive family financial management platform built with React, TypeScrip
 3. **Validações** - Avisa se categoria/valor vazios ou valor ≤ 0
 4. **Animações** - Slide-in-left ao aparecer, validações inline
 5. **Testado & Funcionando** - Adiciona novos orçamentos corretamente
+
+✅ **FREQUÊNCIAS EXPANDIDAS - 6 Opções de Recorrência**
+1. **Semanal** - Cada semana
+2. **Quinzenal** - A cada 2 semanas
+3. **Mensal** - A cada mês
+4. **Trimestral** - A cada 3 meses (NOVO)
+5. **Semestral** - A cada 6 meses (NOVO)
+6. **Anual** - Uma vez por ano
+7. **Exibição Dinâmica** - Labels ajustados em cards de assinatura
 
 ✅ **SAÚDE FINANCEIRA MELHORADA - Score Widget Premium**
 1. **Score Widget Interativo** - Hover reveals breakdown (40% poupança, 30% despesa, 30% metas)

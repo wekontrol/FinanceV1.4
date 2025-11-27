@@ -53,7 +53,7 @@ const Transactions: React.FC<TransactionsProps> = ({
     date: new Date().toISOString().split('T')[0],
     attachments: [] as TransactionAttachment[],
     isRecurring: false,
-    frequency: 'monthly' as 'monthly' | 'weekly' | 'yearly'
+    frequency: 'monthly' as 'monthly' | 'weekly' | 'biweekly' | 'quarterly' | 'semiannual' | 'yearly'
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -671,7 +671,10 @@ const Transactions: React.FC<TransactionsProps> = ({
                       className={inputClass}
                     >
                       <option value="weekly">Semanal</option>
+                      <option value="biweekly">Quinzenal</option>
                       <option value="monthly">Mensal</option>
+                      <option value="quarterly">Trimestral</option>
+                      <option value="semiannual">Semestral</option>
                       <option value="yearly">Anual</option>
                     </select>
                   </div>
@@ -781,7 +784,7 @@ const Transactions: React.FC<TransactionsProps> = ({
                         {t.type === 'RECEITA' ? <ArrowUpCircle size={24} /> : <CreditCard size={24} />}
                      </div>
                      <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs font-bold text-slate-500 dark:text-slate-300 uppercase">
-                       {t.frequency === 'monthly' ? 'Mensal' : t.frequency === 'weekly' ? 'Semanal' : 'Anual'}
+                       {t.frequency === 'weekly' ? 'Semanal' : t.frequency === 'biweekly' ? 'Quinzenal' : t.frequency === 'monthly' ? 'Mensal' : t.frequency === 'quarterly' ? 'Trimestral' : t.frequency === 'semiannual' ? 'Semestral' : 'Anual'}
                      </span>
                    </div>
                    
