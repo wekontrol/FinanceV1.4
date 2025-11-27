@@ -1,5 +1,6 @@
 
 import React, { useMemo, useEffect, useState } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, RadialBarChart, RadialBar, PolarAngleAxis, Sector
@@ -34,7 +35,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   currentInflation = 0,
   currentUser
 }) => {
-  const [advice, setAdvice] = useState<string>("Analisando suas finanças com IA...");
+  const { t } = useLanguage();
+  const [advice, setAdvice] = useState<string>(t("dashboard.analyzing"));
   const [dateRange, setDateRange] = useState<DateRange>('month');
   const [showAlerts, setShowAlerts] = useState(true);
   

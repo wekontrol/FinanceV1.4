@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Transaction, TransactionType, TransactionAttachment } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 import { categorizeTransaction, parseTransactionFromText, parseTransactionFromAudio, parseTransactionFromReceipt } from '../services/geminiService';
 import { Plus, Paperclip, Loader2, Trash2, Edit2, ArrowDownCircle, ArrowUpCircle, Search, Sparkles, Mic, Square, RefreshCw, CalendarClock, CreditCard, X, ChevronLeft, ChevronRight, FileText, FileSpreadsheet, UploadCloud, File as FileIcon, Download, Camera, Check, RotateCcw } from 'lucide-react';
 
@@ -25,6 +26,7 @@ const Transactions: React.FC<TransactionsProps> = ({
   currencyFormatter,
   onExport
 }) => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'history' | 'subscriptions'>('history');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -68,7 +70,7 @@ const Transactions: React.FC<TransactionsProps> = ({
 
   const handleEdit = (transaction: Transaction) => {
     if (transaction.userId !== currentUserId) {
-      alert("Você só pode editar suas próprias transações.");
+      alert(t("transactions.note"));
       return;
     }
 

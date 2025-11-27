@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { LayoutDashboard, Wallet, PiggyBank, Users, Settings, LogOut, X, Activity, Camera, TrendingUp, Calculator, PieChart } from 'lucide-react';
 import { User, UserRole } from '../types';
 import ProfileModal from './ProfileModal';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface SidebarProps {
   appName: string;
@@ -24,21 +25,22 @@ const Sidebar: React.FC<SidebarProps> = ({
   logout,
   onUpdateUser
 }) => {
+  const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'transactions', label: 'Transações', icon: Wallet },
-    { id: 'budget', label: 'Orçamentos', icon: PieChart },
-    { id: 'goals', label: 'Metas', icon: PiggyBank },
-    { id: 'inflation', label: 'Inflação', icon: TrendingUp },
-    { id: 'simulations', label: 'Simulações', icon: Calculator },
-    { id: 'family', label: 'Família', icon: Users },
+    { id: 'dashboard', label: t('sidebar.dashboard'), icon: LayoutDashboard },
+    { id: 'transactions', label: t('sidebar.transactions'), icon: Wallet },
+    { id: 'budget', label: t('sidebar.budget'), icon: PieChart },
+    { id: 'goals', label: t('sidebar.goals'), icon: PiggyBank },
+    { id: 'inflation', label: t('sidebar.inflation'), icon: TrendingUp },
+    { id: 'simulations', label: t('sidebar.simulations'), icon: Calculator },
+    { id: 'family', label: t('sidebar.family'), icon: Users },
   ];
 
   if (currentUser.role === UserRole.ADMIN || currentUser.role === UserRole.SUPER_ADMIN || currentUser.role === UserRole.MANAGER) {
-    menuItems.push({ id: 'admin', label: 'Configurações', icon: Settings });
+    menuItems.push({ id: 'admin', label: t('sidebar.settings'), icon: Settings });
   }
 
   const handleNavClick = (viewId: string) => {
@@ -68,10 +70,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const getRoleLabel = () => {
-    if (currentUser.role === UserRole.SUPER_ADMIN) return 'Super Admin';
-    if (currentUser.role === UserRole.ADMIN) return 'Administrador';
-    if (currentUser.role === UserRole.MANAGER) return 'Gestor Familiar';
-    return 'Membro';
+    if (currentUser.role === UserRole.SUPER_ADMIN) return t('sidebar.role.superadmin');
+    if (currentUser.role === UserRole.ADMIN) return t('sidebar.role.admin');
+    if (currentUser.role === UserRole.MANAGER) return t('sidebar.role.manager');
+    return t('sidebar.role.member');
   };
 
   return (
