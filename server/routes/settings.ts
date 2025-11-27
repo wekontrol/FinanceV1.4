@@ -52,13 +52,18 @@ router.post('/:key', requireAuth, requireSuperAdmin, (req: Request, res: Respons
   }
   
   // Only allow specific settings to be configured
-  const allowedKeys = ['gemini_api_key', 'openrouter_api_key', 'openrouter_model', 'ai_provider', 'terms_of_service'];
+  const allowedKeys = ['gemini_api_key', 'openrouter_api_key', 'openrouter_model', 'ai_provider', 'terms_of_service', 'github_repo_url'];
   if (!allowedKeys.includes(key)) {
     return res.status(400).json({ error: 'Invalid setting key' });
   }
   
-  // For terms_of_service, don't enforce minimum length
-  if (key !== 'terms_of_service') {
+  // For terms_of_service and github_repo_url, don't enforce minimum length (or custom validation)
+  if (key === 'github_repo_url') {
+    // Validate GitHub URL format
+    if (!value || !value.includes('github.com')) {
+      return res.status(400).json({ error: 'Invalid GitHub URL' });
+    }
+  } else if (key !== 'terms_of_service') {
     if (!value || value.trim().length < 10) {
       return res.status(400).json({ error: 'Invalid value' });
     }

@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
+import db from '../db/schema';
 
 const execAsync = promisify(exec);
 const router = Router();
@@ -38,27 +39,31 @@ router.post('/update', requireAuth, requireSuperAdmin, async (req: Request, res:
   try {
     // Get project directory
     const projectDir = process.env.PROJECT_DIR || '/var/www/gestor-financeiro' || process.cwd();
+    
+    // Get GitHub repo URL from settings or use default
+    const repoSetting = db.prepare('SELECT value FROM app_settings WHERE key = ?').get('github_repo_url') as any;
+    const githubRepo = repoSetting?.value || 'origin';
 
     // Step 1: Pull from git
     updateProgress = { current: 20, total: 100, status: 'Puxando código do repositório...', error: null };
     try {
-      await execAsync('git pull origin main', { cwd: projectDir, timeout: 60000 });
+      await execAsync(`git pull ${githubRepo} main`, { cwd: projectDir, timeout: 60000, shell: '/bin/bash' });
     } catch (e: any) {
       console.warn('Git pull failed (might be first deploy):', e.message);
     }
 
     // Step 2: Install dependencies
     updateProgress = { current: 40, total: 100, status: 'Instalando dependências...', error: null };
-    await execAsync('npm install', { cwd: projectDir, timeout: 120000 });
+    await execAsync('npm install', { cwd: projectDir, timeout: 120000, shell: '/bin/bash' });
 
     // Step 3: Build
     updateProgress = { current: 70, total: 100, status: 'Compilando aplicação...', error: null };
-    await execAsync('npm run build', { cwd: projectDir, timeout: 180000 });
+    await execAsync('npm run build', { cwd: projectDir, timeout: 180000, shell: '/bin/bash' });
 
     // Step 4: Restart service (if running under systemd)
     updateProgress = { current: 90, total: 100, status: 'Reiniciando serviço...', error: null };
     try {
-      await execAsync('sudo systemctl restart gestor-financeiro', { timeout: 30000 });
+      await execAsync('sudo systemctl restart gestor-financeiro', { timeout: 30000, shell: '/bin/bash' });
     } catch (e: any) {
       console.warn('Systemctl restart not available (development mode):', e.message);
     }

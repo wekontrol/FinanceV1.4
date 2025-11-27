@@ -9,7 +9,21 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Deployment target: Ubuntu 20.04+ on Proxmox VMs (or Render/Production)
 - Theme: Supports dark mode preference
 
-## Recent Implementation (November 27, 2025)
+## Recent Implementation (November 27, 2025 - Final Session)
+
+✅ **GITHUB REPOSITORY CONFIGURAÇÃO - Super Admin Config**
+1. **GitHub Repo URL Input** - Super Admin pode configurar URL do repositório
+2. **Sistema de Update Corrigido** - Agora usa `/bin/bash` explicitamente (fix para "spawn /bin/sh ENOENT")
+3. **Settings Persistência** - GitHub repo URL salvo em banco de dados
+4. **Validação** - Verifica se URL contém "github.com"
+5. **Integrado com Update System** - Sistema de atualização lê URL configurada
+
+✅ **ADICIONAR ORÇAMENTOS - Budget Management**
+1. **Botão Flutuante** - Card com ícone `+` para adicionar novos orçamentos
+2. **Formulário Interativo** - Dropdown com categorias disponíveis (não mostra as já configuradas)
+3. **Validações** - Avisa se categoria/valor vazios ou valor ≤ 0
+4. **Animações** - Slide-in-left ao aparecer, validações inline
+5. **Testado & Funcionando** - Adiciona novos orçamentos corretamente
 
 ✅ **SAÚDE FINANCEIRA MELHORADA - Score Widget Premium**
 1. **Score Widget Interativo** - Hover reveals breakdown (40% poupança, 30% despesa, 30% metas)

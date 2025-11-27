@@ -370,9 +370,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     }
   };
 
-  const saveRepoUrl = () => {
-    localStorage.setItem('repo_url', repoUrl);
-    alert("URL salva.");
+  const saveRepoUrl = async () => {
+    if (!repoUrl.includes('github.com')) {
+      alert('URL do GitHub inválida. Deve incluir "github.com"');
+      return;
+    }
+    try {
+      await settingsApi.setSetting('github_repo_url', repoUrl);
+      alert('URL do repositório GitHub salva com sucesso!');
+    } catch (error: any) {
+      alert('Erro ao salvar URL: ' + error.message);
+    }
   };
 
   const inputClass = "w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none transition-all";
@@ -870,6 +878,41 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
           )}
         </div>
+
+        {/* 4.5. GitHub Repository (Only Super Admin) */}
+        {isSuperAdmin && (
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div onClick={() => toggleSection('github')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+              <div className="flex items-center">
+                <div className="p-2 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded-lg mr-4 shrink-0"><Github size={20} /></div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Repositório GitHub</h3>
+              </div>
+              {expandedSection === 'github' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </div>
+            {expandedSection === 'github' && (
+              <div className="p-8 border-t border-slate-100 dark:border-slate-700 animate-slide-down">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                  Configure o repositório GitHub que será usado para atualizar o sistema. Use o formato completo: <code className="bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded text-xs">https://github.com/usuario/repo</code>
+                </p>
+                <div className="flex gap-3">
+                  <input 
+                    type="text" 
+                    value={repoUrl}
+                    onChange={(e) => setRepoUrl(e.target.value)}
+                    placeholder="https://github.com/seu-usuario/seu-repositorio"
+                    className={inputClass}
+                  />
+                  <button 
+                    onClick={saveRepoUrl}
+                    className="bg-slate-800 text-white px-6 rounded-xl font-bold hover:bg-slate-700 transition shadow-lg shadow-slate-500/20 shrink-0 flex items-center gap-2"
+                  >
+                    <Save size={18} /> Salvar
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* 5. Update System (Only Super Admin) */}
         {isSuperAdmin && (
