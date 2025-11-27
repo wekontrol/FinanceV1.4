@@ -4,8 +4,8 @@
 A comprehensive family financial management platform built with React, TypeScript, and Express.js. This application provides intelligent financial tracking, AI-powered insights using Google's Gemini AI, Puter.js, and family-friendly features for household budget management. It offers multi-user support with role hierarchy, real-time financial data, and robust administrative controls. The project aims to deliver a production-ready solution for household budget management with advanced features like AI insights, real-time notifications, and detailed financial reporting.
 
 ## User Preferences
-- Application uses **Portuguese (PT)** as primary language
-- **NEW: Multi-language support - Português, English, Español, Umbundu** (optional selector on login)
+- Application uses Portuguese (PT) as primary language
+- **NEW: Multi-language support - Português, English, Español, Umbundu, Lingala** (optional selector on login)
 - Default login: `admin` / `admin`
 - Deployment target: Ubuntu 20.04+ on Proxmox VMs (or Render/Production)
 - Theme: Supports dark mode preference
@@ -20,7 +20,7 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 - Global styling with custom scrollbar, glass morphism, and smooth transitions
 - Real-time currency formatting in input fields for visual confirmation (e.g., "AOA 1.500,00")
 - Interactive Financial Health Score widget with dynamic colors and animations
-- **NEW: Language selector on login screen (top-right corner, optional)**
+- **NEW: Language selector on login screen (top-right corner, optional) - 5 languages!**
 
 **Technical Implementations & Feature Specifications:**
 - **Notification Management:** Supports Web Push Notifications (Service Worker, subscribers in `push_subscriptions` table) and Email Notifications (SendGrid integration optional). Users and Super Admins can configure preferences for budget alerts, subscription reminders, financial tips (AI insights), and goal progress.
@@ -70,14 +70,15 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 
 ## Recent Implementation (November 27, 2025)
 
-### ✅ LANGUAGE SELECTOR - Multi-language Support (NEW)
+### ✅ LANGUAGE SELECTOR - Multi-language Support with 5 Languages! (LATEST)
 - ✅ Created `contexts/LanguageContext.tsx` for language state management
 - ✅ Language selector dropdown on login screen (top-right corner)
-- ✅ 4 languages available:
+- ✅ 5 languages available:
   - 🇵🇹 **Português** (default)
   - 🇬🇧 **English**
   - 🇪🇸 **Español**
   - 🇦🇴 **Umbundu** (Native Angolan language)
+  - 🇨🇩 **Lingala** (Spoken in Congo)
 - ✅ Language preference saved to localStorage
 - ✅ Optional selector - doesn't interfere with login flow
 - ✅ Fully styled with flags and dark mode support
@@ -85,8 +86,8 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 - ✅ Ready for full app translation (Phase 2)
 
 **Implementation Details:**
-- Location: `contexts/LanguageContext.tsx` (22KB, translations for 4 languages)
-- Login translations: username, password, buttons, messages
+- Location: `contexts/LanguageContext.tsx` (25KB, translations for 5 languages)
+- Login translations: username, password, buttons, messages (all 5 languages)
 - Integrated with `Login.tsx`, `index.tsx`, and `App.tsx`
 - `useLanguage()` hook for components to access translations
 - localStorage key: `app_language` (default: 'pt')
@@ -94,7 +95,7 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 **How to Use:**
 1. Open login page
 2. Click language dropdown (top-right corner)
-3. Select desired language (🇵🇹 🇬🇧 🇪🇸 🇦🇴)
+3. Select desired language (🇵🇹 🇬🇧 🇪🇸 🇦🇴 🇨🇩)
 4. Login labels and buttons update instantly
 5. Language preference persists across sessions
 
@@ -136,7 +137,7 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 
 | Feature | Status | Localização UI |
 |---------|--------|---------------|
-| 🌐 **Seletor de Idioma** | ✅ **NOVO** | Login → Canto superior direito |
+| 🌐 **Seletor de Idioma (5 idiomas)** | ✅ **NOVO** | Login → Canto superior direito |
 | 🔔 Web Push Notifications | ✅ | Dashboard → 🔔 ícone |
 | 📧 Email Notifications | ✅ | Dashboard → 🔔 ícone |
 | 💰 Orçamentos User-Specific | ✅ | BudgetControl |
@@ -150,13 +151,13 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 | 🚨 Análise de Desperdício | ✅ | Dashboard → Card vermelho |
 | 📊 Previsões Financeiras | ✅ | Dashboard → Card verde |
 | 📥 PDF Export | ✅ | Botão nos dois cards |
-| 🏗️ Build | ✅ | 95.42KB gzip |
+| 🏗️ Build | ✅ | 95.64KB gzip |
 | 🚀 Servidor | ✅ | Rodando |
 
 ---
 
 ## Próximos Passos (Fase 2 - Opcional)
-- Completar tradução de toda a UI para 4 idiomas
+- Completar tradução de toda a UI para 5 idiomas
 - Dashboard translations
 - Transactions translations
 - Admin panel translations
@@ -165,5 +166,5 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 - Exportar histórico completo para análise de tendências
 - Comparar histórico de previsões com gráficos
 
-**Aplicação PRODUCTION-READY com IA AVANÇADA + MULTI-IDIOMA! 🎉**
+**Aplicação PRODUCTION-READY com IA AVANÇADA + MULTI-IDIOMA (5 LINGUAS)! 🎉**
 

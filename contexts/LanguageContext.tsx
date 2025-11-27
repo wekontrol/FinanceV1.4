@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type Language = 'pt' | 'en' | 'es' | 'um';
+export type Language = 'pt' | 'en' | 'es' | 'um' | 'ln';
 
 interface LanguageContextType {
   language: Language;
@@ -122,6 +122,34 @@ const translations = {
     'app.simulations': 'Okuweza',
     'app.logout': 'Okupumbula',
     'app.settings': 'Okunozela',
+  },
+  ln: {
+    // Login (Lingala)
+    'login.title': 'Boyambisi ya Mbongo',
+    'login.subtitle': 'Boyambisi ya Mbongo ya Libota',
+    'login.username': 'Nkombo ya Mosepe',
+    'login.password': 'Motele',
+    'login.enter': 'Kota',
+    'login.forgotPassword': 'Nabosani motele na ngai',
+    'login.createFamily': 'Wumela Libota',
+    'login.language': 'Lokota',
+    'login.select_language': 'Pona lokota...',
+    'login.portuguese': 'Português',
+    'login.english': 'English',
+    'login.spanish': 'Español',
+    'login.umbundu': 'Umbundu',
+
+    // General
+    'app.dashboard': 'Plateau ya Malamu',
+    'app.transactions': 'Bandumba ya Mbongo',
+    'app.goals': 'Makanisi',
+    'app.family': 'Libota',
+    'app.admin': 'Mosepe Monene',
+    'app.budget': 'Mpakatano ya Mbongo',
+    'app.inflation': 'Mbalela ya Mbongo',
+    'app.simulations': 'Libande',
+    'app.logout': 'Kamatá',
+    'app.settings': 'Zinsangá',
   },
 };
 

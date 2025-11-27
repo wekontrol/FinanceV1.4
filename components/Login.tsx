@@ -337,6 +337,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
             <option value="en">🇬🇧 English</option>
             <option value="es">🇪🇸 Español</option>
             <option value="um">🇦🇴 Umbundu</option>
+            <option value="ln">🇨🇩 Lingala</option>
           </select>
         </div>
         
