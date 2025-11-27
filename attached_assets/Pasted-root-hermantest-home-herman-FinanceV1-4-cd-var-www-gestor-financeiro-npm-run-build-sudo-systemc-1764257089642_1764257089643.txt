@@ -1,0 +1,51 @@
+root@hermantest:/home/herman/FinanceV1.4# cd /var/www/gestor-financeiro
+npm run build
+sudo systemctl restart gestor-financeiro
+sudo journalctl -u gestor-financeiro -n 30
+
+> gestor-financeiro-familiar@1.0.3 build
+> vite build
+
+vite v5.4.21 building for production...
+✓ 2599 modules transformed.
+dist/index.html                              6.72 kB │ gzip:   2.29 kB
+dist/assets/purify.es-C_uT9hQ1.js           21.98 kB │ gzip:   8.74 kB
+dist/assets/index.es-BZ6VLLcb.js           150.44 kB │ gzip:  51.42 kB
+dist/assets/html2canvas.esm-CBrSDip1.js    201.42 kB │ gzip:  48.03 kB
+dist/assets/index-gNboUCbz.js            1,427.88 kB │ gzip: 382.94 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.44s
+Nov 27 15:24:20 hermantest systemd[1]: gestor-financeiro.service: Main process exited, code=exited, status=1/FAILURE
+Nov 27 15:24:20 hermantest systemd[1]: gestor-financeiro.service: Failed with result 'exit-code'.
+Nov 27 15:24:30 hermantest systemd[1]: gestor-financeiro.service: Scheduled restart job, restart counter is at 46.
+Nov 27 15:24:30 hermantest systemd[1]: Started gestor-financeiro.service - Gestor Financeiro Familiar - Node.js Applica>
+Nov 27 15:24:30 hermantest npm[11784]: > gestor-financeiro-familiar@1.0.3 start
+Nov 27 15:24:30 hermantest npm[11784]: > NODE_ENV=production tsx server/index.ts
+Nov 27 15:24:31 hermantest npm[11807]: Database initialized successfully
+Nov 27 15:24:31 hermantest npm[11807]: Warning: connect.session() MemoryStore is not
+Nov 27 15:24:31 hermantest npm[11807]: designed for a production environment, as it will leak
+Nov 27 15:24:31 hermantest npm[11807]: memory, and will not scale past a single process.
+Nov 27 15:24:31 hermantest npm[11807]: /var/www/gestor-financeiro/node_modules/path-to-regexp/src/index.ts:225
+Nov 27 15:24:31 hermantest npm[11807]:       throw new PathError(`Missing parameter name at index ${index}`, str);
+Nov 27 15:24:31 hermantest npm[11807]:             ^
+Nov 27 15:24:31 hermantest npm[11807]: PathError [TypeError]: Missing parameter name at index 2: /*; visit https://git.>
+Nov 27 15:24:31 hermantest npm[11807]:     at name (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/index.ts>
+Nov 27 15:24:31 hermantest npm[11807]:     at parse (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/index.t>
+Nov 27 15:24:31 hermantest npm[11807]:     at pathToRegexp (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/>
+Nov 27 15:24:31 hermantest npm[11807]:     at Object.match (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/>
+Nov 27 15:24:31 hermantest npm[11807]:     at matcher (/var/www/gestor-financeiro/node_modules/router/lib/layer.js:86:2>
+Nov 27 15:24:31 hermantest npm[11807]:     at new Layer (/var/www/gestor-financeiro/node_modules/router/lib/layer.js:93>
+Nov 27 15:24:31 hermantest npm[11807]:     at Function.route (/var/www/gestor-financeiro/node_modules/router/index.js:4>
+Nov 27 15:24:31 hermantest npm[11807]:     at Function.route (/var/www/gestor-financeiro/node_modules/express/lib/appli>
+Nov 27 15:24:31 hermantest npm[11807]:     at app.<computed> [as get] (/var/www/gestor-financeiro/node_modules/express/>
+Nov 27 15:24:31 hermantest npm[11807]:     at <anonymous> (/var/www/gestor-financeiro/server/index.ts:50:7) {
+Nov 27 15:24:31 hermantest npm[11807]:   originalPath: '/*'
+Nov 27 15:24:31 hermantest npm[11807]: }
+Nov 27 15:24:31 hermantest npm[11807]: Node.js v20.19.6
+Nov 27 15:24:31 hermantest systemd[1]: gestor-financeiro.service: Main process exited, code=exited, status=1/FAILURE
+Nov 27 15:24:31 hermantest systemd[1]: gestor-financeiro.service: Failed with result 'exit-code'.
+lines 1-29
