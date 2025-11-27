@@ -9,6 +9,7 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Imported from GitHub repository
 - Configured Vite to work with Replit's proxy environment
   - Set server to bind to 0.0.0.0:5000
+  - Enabled allowedHosts: true to allow Replit's proxy domain
   - Configured HMR for WSS protocol on port 443
 - Installed all npm dependencies
 - Set up development workflow for hot-reload development server
