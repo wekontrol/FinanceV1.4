@@ -35,13 +35,22 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
   const [budgetHistory, setBudgetHistory] = useState<Record<string, HistoryEntry[]>>({});
   const [selectedMonth, setSelectedMonth] = useState<string>('');
 
-  const categories = useMemo(() => {
+  const defaultCategories = ['Alimentação', 'Transporte', 'Moradia', 'Lazer', 'Saúde', 'Educação', 'Outros'];
+
+  const validCategories = useMemo(() => {
     const transactionCategories = new Set(transactions.map(t => t.category));
     const budgetCategories = new Set(budgets.map(b => b.category));
-    const defaultCategories = ['Alimentação', 'Transporte', 'Moradia', 'Lazer', 'Saúde', 'Educação', 'Outros'];
     const all = new Set([...transactionCategories, ...budgetCategories, ...defaultCategories]);
-    return Array.from(all).sort();
+    return all;
   }, [transactions, budgets]);
+
+  const categories = useMemo(() => {
+    return Array.from(validCategories).sort();
+  }, [validCategories]);
+
+  const isValidCategory = (category: string): boolean => {
+    return validCategories.has(category.trim());
+  };
 
   const categorySpending = useMemo(() => {
     const now = new Date();
@@ -92,6 +101,11 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
   const handleAddNewBudget = () => {
     if (!newCategory.trim() || !newAmount.trim()) {
       alert("Selecione uma categoria e defina um valor.");
+      return;
+    }
+
+    if (!isValidCategory(newCategory)) {
+      alert(`❌ Categoria inválida: "${newCategory}"\n\nCategories válidas são:\n${Array.from(validCategories).sort().join(', ')}`);
       return;
     }
     
