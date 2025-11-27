@@ -79,10 +79,6 @@ const App: React.FC = () => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   
-  const handleUserChange = (user: User) => {
-    setCurrentUser(user);
-    setUserLanguage(user.languagePreference || 'pt');
-  };
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [budgets, setBudgets] = useState<BudgetLimit[]>([]);
@@ -343,6 +339,7 @@ const App: React.FC = () => {
 
   const handleLogin = async (user: User) => {
     setCurrentUser(user);
+    setUserLanguage(user.languagePreference || 'pt');
     setIsLoggedIn(true);
     await loadAllData();
   };
@@ -609,11 +606,16 @@ const App: React.FC = () => {
   }
 
   if (!isLoggedIn || !currentUser) {
-    return <Login appName={appName} onLogin={handleLogin} />;
+    return (
+      <LanguageProvider initialLanguage="pt">
+        <Login appName={appName} onLogin={handleLogin} />
+      </LanguageProvider>
+    );
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-[#09090b] overflow-hidden font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
+    <LanguageProvider initialLanguage={userLanguage as any}>
+      <div className="flex h-screen bg-slate-50 dark:bg-[#09090b] overflow-hidden font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
       <Sidebar 
         appName={appName}
         currentUser={currentUser}
@@ -719,7 +721,8 @@ const App: React.FC = () => {
            </div>
         </div>
       )}
-    </div>
+      </div>
+    </LanguageProvider>
   );
 };
 

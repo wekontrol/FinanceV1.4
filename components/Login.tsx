@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { User, UserStatus, UserRole } from '../types';
 import { Lock, User as UserIcon, LogIn, HelpCircle, ArrowLeft, CheckCircle, ShieldAlert, UserPlus, X, Globe } from 'lucide-react';
 import { authApi } from '../services/api';
-import { useLanguage } from '../contexts/LanguageContext';
 
 interface LoginProps {
   appName: string;
@@ -10,8 +9,39 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
-  const { language, setLanguage, t } = useLanguage();
+  const [language, setLanguage] = useState('pt');
   const [view, setView] = useState<'login' | 'recovery' | 'register'>('login');
+  
+  const t = (key: string): string => {
+    const translations: { [lang: string]: { [key: string]: string } } = {
+      pt: {
+        'login.username': 'Usuário', 'login.password': 'Senha', 'login.enter': 'Entrar',
+        'login.forgotPassword': 'Esqueci minha senha', 'login.createFamily': 'Criar Família',
+        'login.subtitle': 'Gestão Financeira Familiar',
+      },
+      en: {
+        'login.username': 'Username', 'login.password': 'Password', 'login.enter': 'Sign In',
+        'login.forgotPassword': 'Forgot password', 'login.createFamily': 'Create Family',
+        'login.subtitle': 'Family Financial Management',
+      },
+      es: {
+        'login.username': 'Usuario', 'login.password': 'Contraseña', 'login.enter': 'Iniciar sesión',
+        'login.forgotPassword': 'Olvidé mi contraseña', 'login.createFamily': 'Crear Familia',
+        'login.subtitle': 'Gestor Financiero Familiar',
+      },
+      um: {
+        'login.username': 'Ongila', 'login.password': 'Ondombolo', 'login.enter': 'Inga',
+        'login.forgotPassword': 'Ongila wanu', 'login.createFamily': 'Onga fomilia',
+        'login.subtitle': 'Ongila Ndombolo wa Fomilia',
+      },
+      ln: {
+        'login.username': 'Nkombo', 'login.password': 'Motébi', 'login.enter': 'Kota',
+        'login.forgotPassword': 'Nabosani nkombo', 'login.createFamily': 'Kundikanga libota',
+        'login.subtitle': 'Nkambo ya libota libota',
+      }
+    };
+    return translations[language]?.[key] || key;
+  };
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -40,12 +70,13 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
     try {
       const response = await authApi.login(username, password);
       // Save language preference for this user
+      const userWithLang = { ...response.user, languagePreference: language };
       await fetch(`${window.location.origin}/api/users/language`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ languagePreference: language })
       }).catch(() => {}); // Silent fail if endpoint not ready yet
-      onLogin(response.user);
+      onLogin(userWithLang);
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login');
     } finally {
