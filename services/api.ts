@@ -282,3 +282,20 @@ export const settingsApi = {
     return handleResponse(response);
   }
 };
+
+export const familiesApi = {
+  getAll: async () => {
+    const response = await fetch(`${API_BASE}/families`, {
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  },
+
+  delete: async (id: string) => {
+    const response = await fetch(`${API_BASE}/families/${id}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  }
+};

@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { BackupConfig, User, UserRole, UserStatus } from '../types';
-import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network } from 'lucide-react';
+import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2 } from 'lucide-react';
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
-import { settingsApi } from '../services/api';
+import { settingsApi, familiesApi } from '../services/api';
 
 interface AdminPanelProps {
   appName: string;
@@ -60,6 +60,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
   const [keySaved, setKeySaved] = useState(false);
 
+  // Families State
+  const [families, setFamilies] = useState<any[]>([]);
+  const [familiesLoading, setFamiliesLoading] = useState(false);
+
   // System Update State
   const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'available' | 'uptodate' | 'error'>('idle');
   const [repoUrl, setRepoUrl] = useState(() => localStorage.getItem('repo_url') || 'https://github.com/SEU_USUARIO/gestor-financeiro');
@@ -81,6 +85,38 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const isAdmin = currentUser.role === UserRole.ADMIN || isSuperAdmin;
   const isManager = currentUser.role === UserRole.MANAGER;
   const isMember = currentUser.role === UserRole.MEMBER;
+
+  // Load families on mount
+  useEffect(() => {
+    if (isSuperAdmin) {
+      loadFamilies();
+    }
+  }, [isSuperAdmin]);
+
+  const loadFamilies = async () => {
+    setFamiliesLoading(true);
+    try {
+      const data = await familiesApi.getAll();
+      setFamilies(data);
+    } catch (error) {
+      console.error('Error loading families:', error);
+    } finally {
+      setFamiliesLoading(false);
+    }
+  };
+
+  const handleDeleteFamily = async (familyId: string) => {
+    if (!confirm('Tem certeza que deseja APAGAR esta família e TODOS os seus dados?\n\nEsta ação é irreversível!')) {
+      return;
+    }
+    try {
+      await familiesApi.delete(familyId);
+      alert('Família apagada com sucesso!');
+      loadFamilies();
+    } catch (error: any) {
+      alert('Erro ao apagar família: ' + error.message);
+    }
+  };
 
   const visibleUsers = users.filter(u => {
     if (isSuperAdmin || isAdmin) return true;
@@ -367,6 +403,50 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-700">
                     <p className="text-xs font-bold text-rose-500 uppercase mb-2">Zona de Perigo (Super Admin)</p>
                     <button onClick={handleResetData} className="flex items-center text-rose-600 hover:text-rose-700 font-bold text-sm bg-rose-50 dark:bg-rose-900/20 px-4 py-2 rounded-lg border border-rose-200 dark:border-rose-800"><AlertTriangle size={16} className="mr-2" /> Resetar Dados de Fábrica</button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 1.5. Families Management (Super Admin Only) */}
+        {isSuperAdmin && (
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div onClick={() => toggleSection('families')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+              <div className="flex items-center">
+                <div className="p-2 bg-purple-100 text-purple-600 rounded-lg mr-4 shrink-0"><Users size={20} /></div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Gerenciar Famílias</h3>
+              </div>
+              {expandedSection === 'families' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </div>
+            {expandedSection === 'families' && (
+              <div className="p-8 border-t border-slate-100 dark:border-slate-700 animate-slide-down">
+                {familiesLoading ? (
+                  <div className="text-center py-8">
+                    <div className="inline-block animate-spin"><Loader2 size={24} className="text-slate-400" /></div>
+                    <p className="text-slate-400 mt-2">Carregando famílias...</p>
+                  </div>
+                ) : families.length === 0 ? (
+                  <p className="text-slate-400 text-center py-8">Nenhuma família cadastrada.</p>
+                ) : (
+                  <div className="grid gap-3">
+                    {families.map(family => (
+                      <div key={family.id} className="flex items-center justify-between bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <div>
+                          <h4 className="font-bold text-slate-800 dark:text-white">{family.name}</h4>
+                          <p className="text-xs text-slate-500 mt-1">{family.member_count} membro{family.member_count !== 1 ? 's' : ''} • Criada em {new Date(family.created_at).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteFamily(family.id)}
+                          disabled={family.id === 'fam_admin'}
+                          className="p-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          title={family.id === 'fam_admin' ? 'Não pode deletar família padrão' : 'Deletar família'}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

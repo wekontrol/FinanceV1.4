@@ -18,6 +18,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
   const [registerName, setRegisterName] = useState('');
   const [registerUsername, setRegisterUsername] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+  const [familyName, setFamilyName] = useState('');
   const [securityQuestion, setSecurityQuestion] = useState('');
   const [securityAnswer, setSecurityAnswer] = useState('');
   
@@ -51,6 +52,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
         username: registerUsername,
         password: registerPassword,
         name: registerName,
+        familyName,
         securityQuestion,
         securityAnswer
       });
@@ -59,6 +61,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
       setRegisterName('');
       setRegisterUsername('');
       setRegisterPassword('');
+      setFamilyName('');
       setSecurityQuestion('');
       setSecurityAnswer('');
     } catch (err: any) {
@@ -136,6 +139,17 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 onChange={e => setRegisterPassword(e.target.value)}
                 className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
                 placeholder="••••••"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nome da Família</label>
+              <input 
+                type="text" 
+                value={familyName}
+                onChange={e => setFamilyName(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                placeholder="Ex: Família Silva"
                 required
               />
             </div>

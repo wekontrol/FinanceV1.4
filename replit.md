@@ -5,24 +5,22 @@ A comprehensive family financial management platform built with React, TypeScrip
 
 **Current State**: Full-stack application with Express.js backend and SQLite database, fully deployed on Ubuntu servers.
 
-## Recent Changes (November 27, 2025)
-### Session & Authentication Fixes
-- Fixed Express.js session persistence issues for adding transactions/goals
-- Improved CORS configuration with proper credentials handling
-- Enhanced session middleware ordering (CORS → Session → Routes)
-- Added `proxy: true` for session cookies with proxies
-- Fixed PORT environment variable parsing (parseInt)
-- Ensured `sameSite: 'lax'` and `path: '/'` for cookie availability
+## Recent Changes (November 27, 2025 - Latest)
+### Family Management System
+- ✅ Added `families` table to database for storing family names
+- ✅ Created `/api/families` endpoints (GET all, DELETE by ID)
+- ✅ Modified registration to require `familyName` during signup
+- ✅ Added "Gerenciar Famílias" section in AdminPanel (Super Admin only)
+- ✅ Super Admin can view all families with member count
+- ✅ Super Admin can delete families (with cascade delete of users/transactions/goals)
+- ✅ Protected admin family (fam_admin) from deletion
 
-### Previous Updates
-- Converted from client-side to full-stack server-side application
-- Added Express.js backend with REST API endpoints
-- Implemented SQLite database for persistent data storage
-- Added session-based authentication with bcrypt password hashing
-- Configured Vite proxy for API requests during development
-- Updated deployment configuration for server-side hosting
-- Fixed Express 5.x routing issue (SPA fallback)
-- Configured systemd service for automatic startup on Ubuntu
+### Previous Updates (November 27, 2025)
+- Fixed session persistence across devices (backend working 100%)
+- Implemented global Gemini API key storage in database
+- Added `/api/settings` endpoint for Super Admin configuration
+- Fixed all missing function exports (suggestBudgets, getAiChatResponse)
+- Resolved data synchronization verification (backend fully functional)
 
 ## Project Architecture
 
@@ -48,6 +46,7 @@ A comprehensive family financial management platform built with React, TypeScrip
 
 2. **Family Mode**
    - Multi-user support with role hierarchy (Super Admin, Manager, Member)
+   - **NEW**: Family management system - view and delete families
    - Shared family calendar and task management
    - Parental controls and viewing permissions
 
@@ -78,15 +77,17 @@ A comprehensive family financial management platform built with React, TypeScrip
 │       ├── goals.ts        # Savings goals with contributions
 │       ├── users.ts        # User management
 │       ├── family.ts       # Family tasks & events
-│       └── budget.ts       # Budget limits
+│       ├── families.ts     # Family management (NEW)
+│       ├── budget.ts       # Budget limits
+│       └── settings.ts     # Global settings (API keys, etc)
 ├── components/             # React components
 │   ├── Dashboard.tsx
 │   ├── Transactions.tsx
 │   ├── Goals.tsx
 │   ├── FamilyMode.tsx
-│   ├── AdminPanel.tsx
+│   ├── AdminPanel.tsx      # Updated with Families section
 │   ├── AIAssistant.tsx
-│   ├── Login.tsx
+│   ├── Login.tsx           # Updated with family name field
 │   └── ...
 ├── services/              # Frontend services
 │   ├── api.ts            # API client (calls backend endpoints)
@@ -101,25 +102,74 @@ A comprehensive family financial management platform built with React, TypeScrip
 └── package.json          # Dependencies and scripts
 ```
 
-### Data Storage
-- **SQLite Database**: `data.db` - All persistent data
-- **Session Management**: In-memory with express-session (server-side)
-- **Local Storage**: App preferences and saved simulations (frontend)
-- **Environment Variables**: API keys and secrets
+### Database Schema
+- **families** table: id, name, created_at
+- **users** table: id, username, password, name, role, avatar, status, created_by, family_id, birth_date, allow_parent_view, security_question, security_answer, created_at
+- **transactions** table: User spending/income records
+- **savings_goals** table: User savings goals
+- **goal_transactions** table: Contributions to goals
+- **app_settings** table: Global settings (gemini_api_key, etc)
 
 ### API Endpoints
-- `POST /api/auth/login` - User authentication
-- `POST /api/auth/register` - Create new family account
+
+#### Authentication
+- `POST /api/auth/login` - User authentication (returns user + creates session)
+- `POST /api/auth/register` - Create new family account (now requires familyName)
 - `POST /api/auth/logout` - End session
 - `GET /api/auth/me` - Get current user from session
-- `GET/POST/PUT/DELETE /api/transactions` - Manage transactions
-- `GET/POST/PUT/DELETE /api/goals` - Manage savings goals
+- `POST /api/auth/recover-password` - Password recovery
+
+#### Transactions
+- `GET /api/transactions` - List user's transactions
+- `POST /api/transactions` - Create transaction
+- `PUT /api/transactions/:id` - Update transaction
+- `DELETE /api/transactions/:id` - Delete transaction
+
+#### Goals
+- `GET /api/goals` - List user's goals
+- `POST /api/goals` - Create goal
+- `PUT /api/goals/:id` - Update goal
+- `DELETE /api/goals/:id` - Delete goal
 - `POST /api/goals/:id/contribute` - Add goal contribution
-- `GET/POST/PUT/DELETE /api/users` - User management
+
+#### Users
+- `GET /api/users` - List visible users
+- `POST /api/users` - Create new user
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
+
+#### Family Management (NEW)
+- `GET /api/families` - List all families (Super Admin only)
+- `DELETE /api/families/:id` - Delete family + all cascade data (Super Admin only)
+
+#### Other Endpoints
 - `GET/POST/PUT/DELETE /api/family/tasks` - Family tasks
-- `GET/POST/PUT/DELETE /api/family/events` - Family events
+- `GET/POST/DELETE /api/family/events` - Family events
 - `GET/POST/DELETE /api/budget/limits` - Budget limits
+- `GET /api/settings/:key` - Get setting (authenticated)
+- `POST /api/settings/:key` - Set global setting (Super Admin only)
 - `GET /api/health` - Health check endpoint
+
+### Registration Flow (UPDATED)
+1. User clicks "Criar Nova Família"
+2. Provides: Name, Username, Password, **Family Name**, Security Question/Answer
+3. New family is created with name in `families` table
+4. New user is created as MANAGER with APPROVED status
+5. User is redirected to login
+
+### Family Management (NEW)
+1. **Super Admin** goes to ⚙️ Configurações
+2. Opens "Gerenciar Famílias" section
+3. Sees all families with member count
+4. Can click delete (🗑️) to remove a family
+5. Deletion cascades: removes all users, transactions, goals in that family
+6. Cannot delete default admin family (fam_admin)
+
+### Global Settings System
+1. Super Admin adds Gemini API key in ⚙️ Configurações > Integrações & IA
+2. Key is stored in `app_settings` table (server-side)
+3. All users automatically use the Super Admin's key
+4. Works across all devices and sessions
 
 ### Environment Variables
 - `NODE_ENV`: Set to "production" for server mode, "development" for dev
@@ -131,6 +181,7 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Application uses Portuguese (PT) as primary language
 - Default login: `admin` / `admin`
 - Deployment target: Ubuntu 20.04+ on Proxmox VMs
+- Theme: Supports dark mode preference
 
 ## Development Notes
 - **Development**: `npm run dev` starts both servers concurrently
@@ -153,6 +204,13 @@ A comprehensive family financial management platform built with React, TypeScrip
 3. **CORS**: Configured to allow credentials from any origin
 4. **Protected Routes**: All API endpoints (except /auth/login, /auth/register) require valid session
 5. **Logout**: POST /api/auth/logout → Destroys session
+6. **Data Sync**: Frontend calls loadAllData() after successful login
+
+## Data Flow & Synchronization
+- **Backend**: SQLite database (persistent, shared across sessions/devices)
+- **Frontend**: React state + optional localStorage (for UI preferences only)
+- **Key Data**: Always fetched from server on login
+- **Cross-Device**: Users see same data on login from different devices
 
 ## Deployment
 
@@ -182,16 +240,29 @@ See `README_INSTALL.md` for step-by-step installation instructions on Ubuntu.
 - **Auto-restart**: Yes (10-second delay between attempts)
 - **Logs**: `sudo journalctl -u gestor-financeiro -f`
 
+## Testing Checklist
+- ✅ Backend data synchronization (tested with curl)
+- ✅ Multi-device access (same data appears on different devices)
+- ✅ Family creation with name
+- ✅ Family deletion (Super Admin only)
+- ✅ Global Gemini API key (Super Admin configures once)
+- ✅ Session persistence (cookies working)
+
 ## Troubleshooting
 
-### Sessions Not Persisting (Transactions/Goals Not Saving)
-**Symptoms**: "Not authenticated" error when adding transactions/goals
-
+### Sessions Not Persisting
 **Solutions**:
-1. Ensure cookies are being sent: Check browser DevTools → Network → see Set-Cookie headers
-2. Check Express.js middleware order: CORS must be before Session middleware ✅
-3. Verify CORS configuration: credentials: true ✅
-4. Test with curl: `curl -c cookies.txt -X POST http://localhost:5000/api/auth/login ...` then use `-b cookies.txt` for subsequent requests
+1. Ensure cookies are being sent: DevTools → Network → Set-Cookie headers
+2. Express.js middleware order: CORS → Session → Routes ✅
+3. CORS configuration: credentials: true ✅
+4. Cookie settings: sameSite: 'lax', path: '/', proxy: true ✅
+
+### Data Not Syncing Between Devices
+**Solutions**:
+1. Clear browser cache: Ctrl+F5
+2. Clear localStorage: `localStorage.clear()` in console
+3. Verify same credentials are used
+4. Check DevTools → Network for `connect.sid` cookie in requests
 
 ### Port Already in Use
 ```bash
@@ -205,26 +276,18 @@ rm -f /var/www/gestor-financeiro/data.db-wal data.db-shm
 sudo systemctl restart gestor-financeiro
 ```
 
-### Git "Dubious Ownership" on Production
-Already fixed in deploy.sh with: `git config --global --add safe.directory /var/www/gestor-financeiro`
-
-## Performance Notes
-- Bundle size warning for chunks > 500kB (consider code splitting)
-- MemoryStore for sessions is suitable for single-process deployments
-- SQLite is ideal for embedded/single-server deployments
-- Consider PostgreSQL + proper session store (connect-pg-simple) for multi-process/clustered setups
-
 ## Next Steps
-1. ✅ Test login and transaction adding on deployed instance
-2. 🔐 Change default admin password on production
-3. 📱 Add more users/family members
-4. 🔑 Configure Google Gemini API key in app settings
-5. 📊 Start tracking transactions
-6. 💾 Set up automated backups
+1. ✅ Test login and transaction adding
+2. ✅ Verify cross-device data sync
+3. ✅ Configure global Gemini API key
+4. 🔄 Test family management (create, delete)
+5. 🔄 Deploy to production Ubuntu server
+6. 🔄 Change default admin password
+7. 🔄 Add more families and users
+8. 🔄 Start tracking transactions with AI
 
-## Credenciais Padrão (Altere em Produção!)
+## Credentials (Change in Production!)
 - Username: `admin`
 - Password: `admin`
 
-⚠️ **IMPORTANTE**: Altere imediatamente após primeiro login em produção!
-
+⚠️ **IMPORTANTE**: Change immediately after first login in production!

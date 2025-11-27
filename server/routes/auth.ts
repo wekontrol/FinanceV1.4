@@ -48,10 +48,10 @@ router.post('/login', (req: Request, res: Response) => {
 });
 
 router.post('/register', (req: Request, res: Response) => {
-  const { username, password, name, securityQuestion, securityAnswer } = req.body;
+  const { username, password, name, familyName, securityQuestion, securityAnswer } = req.body;
 
-  if (!username || !password || !name) {
-    return res.status(400).json({ error: 'All fields are required' });
+  if (!username || !password || !name || !familyName) {
+    return res.status(400).json({ error: 'All fields are required (username, password, name, familyName)' });
   }
 
   const existingUser = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
@@ -59,15 +59,22 @@ router.post('/register', (req: Request, res: Response) => {
     return res.status(409).json({ error: 'Username already exists' });
   }
 
-  const id = `u${Date.now()}`;
+  const userId = `u${Date.now()}`;
   const hashedPassword = bcrypt.hashSync(password, 10);
   const familyId = `fam_${Date.now()}`;
 
+  // Create family
+  db.prepare(`
+    INSERT INTO families (id, name)
+    VALUES (?, ?)
+  `).run(familyId, familyName.trim());
+
+  // Create user
   db.prepare(`
     INSERT INTO users (id, username, password, name, role, avatar, status, family_id, security_question, security_answer)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
-    id,
+    userId,
     username,
     hashedPassword,
     name,
@@ -82,7 +89,7 @@ router.post('/register', (req: Request, res: Response) => {
   const user = db.prepare(`
     SELECT id, username, name, role, avatar, status, family_id as familyId
     FROM users WHERE id = ?
-  `).get(id);
+  `).get(userId);
 
   res.status(201).json({ user });
 });
