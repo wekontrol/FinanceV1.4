@@ -1,0 +1,31 @@
+root@sml-linux-25:/home/lulo/FinanceV1.4# sudo journalctl -u gestor-financeiro -n 100
+Nov 27 15:43:02 sml-linux-25 npm[30213]: /var/www/gestor-financeiro/node_modules/path-to-regexp/src/index.ts:225
+Nov 27 15:43:02 sml-linux-25 npm[30213]:       throw new PathError(`Missing parameter name at index ${index}`, str);
+Nov 27 15:43:02 sml-linux-25 npm[30213]:             ^
+Nov 27 15:43:02 sml-linux-25 npm[30213]: PathError [TypeError]: Missing parameter name at index 1: *; visit https://git>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at name (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/index.>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at parse (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/index>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at pathToRegexp (/var/www/gestor-financeiro/node_modules/path-to-regexp/sr>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at Object.match (/var/www/gestor-financeiro/node_modules/path-to-regexp/sr>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at matcher (/var/www/gestor-financeiro/node_modules/router/lib/layer.js:86>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at new Layer (/var/www/gestor-financeiro/node_modules/router/lib/layer.js:>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at Function.route (/var/www/gestor-financeiro/node_modules/router/index.js>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at Function.route (/var/www/gestor-financeiro/node_modules/express/lib/app>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at app.<computed> [as get] (/var/www/gestor-financeiro/node_modules/expres>
+Nov 27 15:43:02 sml-linux-25 npm[30213]:     at <anonymous> (/var/www/gestor-financeiro/server/index.ts:50:7) {
+Nov 27 15:43:02 sml-linux-25 npm[30213]:   originalPath: '*'
+Nov 27 15:43:02 sml-linux-25 npm[30213]: }
+Nov 27 15:43:02 sml-linux-25 npm[30213]: Node.js v20.19.5
+Nov 27 15:43:02 sml-linux-25 systemd[1]: gestor-financeiro.service: Main process exited, code=exited, status=1/FAILURE
+Nov 27 15:43:02 sml-linux-25 systemd[1]: gestor-financeiro.service: Failed with result 'exit-code'.
+Nov 27 15:43:12 sml-linux-25 systemd[1]: gestor-financeiro.service: Scheduled restart job, restart counter is at 14.
+Nov 27 15:43:12 sml-linux-25 systemd[1]: Started gestor-financeiro.service - Gestor Financeiro Familiar - Node.js Appli>
+Nov 27 15:43:12 sml-linux-25 npm[30227]: > gestor-financeiro-familiar@1.0.3 start
+Nov 27 15:43:12 sml-linux-25 npm[30227]: > NODE_ENV=production tsx server/index.ts
+Nov 27 15:43:13 sml-linux-25 npm[30250]: Database initialized successfully
+Nov 27 15:43:13 sml-linux-25 npm[30250]: Warning: connect.session() MemoryStore is not
+Nov 27 15:43:13 sml-linux-25 npm[30250]: designed for a production environment, as it will leak
+Nov 27 15:43:13 sml-linux-25 npm[30250]: memory, and will not scale past a single process.
+Nov 27 15:43:13 sml-linux-25 npm[30250]: /var/www/gestor-financeiro/node_modules/path-to-regexp/src/index.ts:225
+Nov 27 15:43:13 sml-linux-25 npm[30250]:       throw new PathError(`Missing parameter name at index ${index}`, str);
+lines 1-29
