@@ -26,7 +26,7 @@ const INITIAL_USERS: User[] = [
     password: 'admin',
     name: 'Super Admin',
     role: UserRole.SUPER_ADMIN,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Super',
+    avatar: '/default-avatar.svg',
     status: UserStatus.APPROVED,
     securityQuestion: { question: 'Nome do primeiro animal', answer: 'rex' }
   }

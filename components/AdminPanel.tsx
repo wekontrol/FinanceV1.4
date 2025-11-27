@@ -792,7 +792,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Avatar / Foto</label>
                        <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
                          <div className="relative group w-16 h-16 rounded-full overflow-hidden bg-white border-2 border-slate-200 shrink-0">
-                            <img src={userFormData.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=new'} className="w-full h-full object-cover" />
+                            <img src={userFormData.avatar || '/default-avatar.svg'} className="w-full h-full object-cover" />
                          </div>
                          <div className="flex-1">
                            <div className="relative">
@@ -812,7 +812,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
               ) : (
                 <button onClick={() => { 
                   setEditingUser(null); 
-                  setUserFormData({ name: '', username: '', password: '', role: UserRole.MEMBER, avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Date.now()}`, birthDate: '', allowParentView: true }); 
+                  setUserFormData({ name: '', username: '', password: '', role: UserRole.MEMBER, avatar: '/default-avatar.svg', birthDate: '', allowParentView: true }); 
                   setIsUserFormOpen(true); 
                 }} className="mb-6 flex items-center gap-2 px-6 py-3 bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300 rounded-xl font-bold hover:bg-primary-100 dark:hover:bg-primary-900/40 transition w-full sm:w-auto justify-center">
                   <UserPlus size={18}/> {isManager ? 'Adicionar Membro' : 'Adicionar Usuário'}

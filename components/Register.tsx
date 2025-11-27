@@ -38,7 +38,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onCancel }) => {
       password: formData.password,
       role: UserRole.MANAGER, // O criador da família é o Gestor
       status: UserStatus.APPROVED, // Auto-aprovação para UX fluida (ou PENDING se quiser moderação)
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.username}`,
+      avatar: '/default-avatar.svg',
       familyId: newFamilyId,
       securityQuestion: { question: 'Nome da família', answer: formData.familyName } // Pergunta padrão
     });
