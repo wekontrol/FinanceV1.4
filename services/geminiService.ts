@@ -79,9 +79,17 @@ export const categorizeTransaction = async (description: string, history: Transa
   }
 };
 
-export const getFinancialAdvice = async (transactions: any[], goals: any[]): Promise<string> => {
+export const getFinancialAdvice = async (transactions: any[], goals: any[], language: string = 'pt'): Promise<string> => {
   const ai = await getAiClient();
   if (!ai) return "Configure sua chave de API do Gemini em Configurações > Integrações para receber conselhos personalizados.";
+
+  const languageNames: Record<string, string> = {
+    pt: 'Portuguese',
+    en: 'English',
+    es: 'Spanish',
+    um: 'Umbundu',
+    ln: 'Lingala'
+  };
 
   try {
     const summary = JSON.stringify({
@@ -92,6 +100,8 @@ export const getFinancialAdvice = async (transactions: any[], goals: any[]): Pro
     const prompt = `
       Analise brevemente este resumo financeiro familiar e dê uma dica curta (máximo 2 frases) de como melhorar a saúde financeira.
       Dados: ${summary}
+      
+      IMPORTANTE: Responda APENAS em ${languageNames[language] || 'Portuguese'}.
     `;
 
     const response = await ai.models.generateContent({
@@ -140,7 +150,7 @@ export const analyzeLoanDocument = async (text: string): Promise<Partial<LoanSim
   }
 };
 
-export const analyzeUserBehavior = async (transactions: Transaction[]): Promise<UserBehaviorAnalysis> => {
+export const analyzeUserBehavior = async (transactions: Transaction[], language: string = 'pt'): Promise<UserBehaviorAnalysis> => {
   const ai = await getAiClient();
   if (!ai) {
     return {
@@ -150,14 +160,27 @@ export const analyzeUserBehavior = async (transactions: Transaction[]): Promise<
     };
   }
 
+  const languageNames: Record<string, string> = {
+    pt: 'Portuguese',
+    en: 'English',
+    es: 'Spanish',
+    um: 'Umbundu',
+    ln: 'Lingala'
+  };
+
   try {
     const summary = JSON.stringify(transactions.slice(0, 20));
 
     const prompt = `
       Analise o comportamento financeiro baseado nas transações. Retorne um JSON com:
       - summary: Resumo breve (1 frase) do comportamento
-      - patterns: Array de 3 padrões observados (ex: "Gasta mais em fins de semana")
-      - recommendations: Array de 3 recomendações
+      - persona: Um nome descritivo para o perfil de gastos (ex: "Economizador Cauteloso")
+      - patternDescription: Descrição de um padrão principal observado
+      - tip: Uma dica para melhorar os gastos
+      - nextMonthProjection: Projeção de despesa para o próximo mês (número)
+      
+      IMPORTANTE: Responda APENAS em ${languageNames[language] || 'Portuguese'}, incluindo todas as strings.
+      Transações: ${summary}
     `;
 
     const response = await ai.models.generateContent({
@@ -175,7 +198,11 @@ export const analyzeUserBehavior = async (transactions: Transaction[]): Promise<
     return {
       summary: "Comece adicionando mais transações.",
       patterns: [],
-      recommendations: []
+      recommendations: [],
+      persona: "Novo Usuário",
+      patternDescription: "Insuficientes dados",
+      tip: "Adicione mais transações para análise",
+      nextMonthProjection: 0
     };
   }
 };
@@ -372,9 +399,17 @@ export const parseTransactionFromReceipt = async (imageUrl: string): Promise<Par
   }
 };
 
-export const analyzeExpensesForWaste = async (transactions: Transaction[]): Promise<{ wasteIndicators: string[], totalWaste: number, suggestions: string[] }> => {
+export const analyzeExpensesForWaste = async (transactions: Transaction[], language: string = 'pt'): Promise<{ wasteIndicators: string[], totalWaste: number, suggestions: string[] }> => {
   const ai = await getAiClient();
   if (!ai) return { wasteIndicators: [], totalWaste: 0, suggestions: [] };
+
+  const languageNames: Record<string, string> = {
+    pt: 'Portuguese',
+    en: 'English',
+    es: 'Spanish',
+    um: 'Umbundu',
+    ln: 'Lingala'
+  };
 
   try {
     const expensesByCategory = transactions.reduce((acc: any, t: any) => {
@@ -392,6 +427,8 @@ export const analyzeExpensesForWaste = async (transactions: Transaction[]): Prom
       - wasteIndicators: Array de 3-5 sinais de possível desperdício (ex: "Gastos elevados em café")
       - totalWaste: Valor estimado em desperdício (número)
       - suggestions: Array de 3 sugestões para reduzir gastos
+      
+      IMPORTANTE: Responda APENAS em ${languageNames[language] || 'Portuguese'}, incluindo todas as strings.
     `;
 
     const response = await ai.models.generateContent({
@@ -410,9 +447,17 @@ export const analyzeExpensesForWaste = async (transactions: Transaction[]): Prom
   }
 };
 
-export const predictFutureExpenses = async (transactions: Transaction[], months: number = 3): Promise<{ predictions: any[], confidence: number, notes: string }> => {
+export const predictFutureExpenses = async (transactions: Transaction[], months: number = 3, language: string = 'pt'): Promise<{ predictions: any[], confidence: number, notes: string }> => {
   const ai = await getAiClient();
   if (!ai) return { predictions: [], confidence: 0, notes: "API não configurada" };
+
+  const languageNames: Record<string, string> = {
+    pt: 'Portuguese',
+    en: 'English',
+    es: 'Spanish',
+    um: 'Umbundu',
+    ln: 'Lingala'
+  };
 
   try {
     const monthlyExpenses = transactions
@@ -432,6 +477,8 @@ export const predictFutureExpenses = async (transactions: Transaction[], months:
       - predictions: Array com previsões de despesa para cada mês (ex: [{ month: "2025-12", predictedExpense: 500 }])
       - confidence: Nível de confiança da previsão (0-100)
       - notes: Observações sobre a previsão (ex: "Tendência crescente detectada", "Padrão sazonal")
+      
+      IMPORTANTE: Responda APENAS em ${languageNames[language] || 'Portuguese'}, incluindo todas as strings.
     `;
 
     const response = await ai.models.generateContent({

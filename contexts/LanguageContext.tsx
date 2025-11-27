@@ -76,6 +76,9 @@ const translations = {
     'dashboard.annual': 'Anual',
     'dashboard.last7days': 'Últimos 7 Dias',
     'dashboard.myNotifications': 'Minhas Notificações',
+    'dashboard.waste_indicators': 'Sinais de Desperdício',
+    'dashboard.click_analyze': 'Clique em "Analisar" para detectar desperdícios',
+    'dashboard.click_forecast': 'Clique em "Prever" para análise dos próximos 3 meses',
 
     // Transactions
     'transactions.title': 'Transações',

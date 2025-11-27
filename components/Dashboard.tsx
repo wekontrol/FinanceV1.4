@@ -100,13 +100,13 @@ const Dashboard: React.FC<DashboardProps> = ({
   };
 
   useEffect(() => {
-    getFinancialAdvice(transactions, savingsGoals).then(setAdvice);
-  }, [transactions, savingsGoals]);
+    getFinancialAdvice(transactions, savingsGoals, language).then(setAdvice);
+  }, [transactions, savingsGoals, language]);
 
   const handleAnalyzeBehavior = async () => {
     setIsAnalyzingBehavior(true);
     try {
-      const result = await analyzeUserBehavior(transactions);
+      const result = await analyzeUserBehavior(transactions, language);
       setBehavior(result);
     } catch (e) {
       alert("Erro ao analisar comportamento.");
@@ -430,19 +430,19 @@ const Dashboard: React.FC<DashboardProps> = ({
           <div className="bg-white/5 backdrop-blur-sm p-4 md:p-6 rounded-[20px]">
             <h3 className="font-bold text-lg mb-3 flex items-center text-white justify-between">
               <span className="flex items-center"><TrendingDown className="mr-2 text-rose-300 animate-pulse shrink-0" size={20} /> {t('dashboard.waste_analysis')}</span>
-              <button onClick={async () => { setIsAnalyzingWaste(true); const w = await analyzeExpensesForWaste(transactions); setWaste(w); setIsAnalyzingWaste(false); }} disabled={isAnalyzingWaste} className="text-xs bg-rose-600 hover:bg-rose-700 px-2 py-1 rounded disabled:opacity-50">
+              <button onClick={async () => { setIsAnalyzingWaste(true); const w = await analyzeExpensesForWaste(transactions, language); setWaste(w); setIsAnalyzingWaste(false); }} disabled={isAnalyzingWaste} className="text-xs bg-rose-600 hover:bg-rose-700 px-2 py-1 rounded disabled:opacity-50">
                 {isAnalyzingWaste ? t('dashboard.analyzing_dot') : t('dashboard.analyzeWaste')}
               </button>
             </h3>
             {waste ? (
               <div className="space-y-2 text-sm">
-                <p className="text-rose-200 font-semibold">Sinais de Desperdício:</p>
+                <p className="text-rose-200 font-semibold">{t('dashboard.waste_indicators')}:</p>
                 <ul className="text-slate-300 text-xs space-y-1 list-disc list-inside">{waste.wasteIndicators?.slice(0, 3).map((w: string, i: number) => <li key={i}>{w}</li>)}</ul>
                 <p className="text-rose-300 font-bold pt-2">Estimativa: {currencyFormatter(waste.totalWaste || 0)} em desperdício</p>
                 <button onClick={() => generateAnalysisPDF(waste, forecast, currencyFormatter, currentUser)} className="mt-2 text-xs bg-rose-500/30 hover:bg-rose-500/50 px-2 py-1 rounded text-rose-200 font-bold">📥 Exportar</button>
               </div>
             ) : (
-              <p className="text-slate-400 text-sm">Clique em "Analisar" para detectar desperdícios</p>
+              <p className="text-slate-400 text-sm">{t('dashboard.click_analyze')}</p>
             )}
           </div>
         </div>
@@ -454,8 +454,8 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="bg-white/5 backdrop-blur-sm p-4 md:p-6 rounded-[20px]">
           <h3 className="font-bold text-lg mb-3 flex items-center text-white justify-between">
             <span className="flex items-center"><TrendingUp className="mr-2 text-emerald-300 animate-pulse shrink-0" size={20} /> Previsões Financeiras (3 meses)</span>
-            <button onClick={async () => { setIsAnalyzingForecast(true); const f = await predictFutureExpenses(transactions); setForecast(f); setIsAnalyzingForecast(false); }} disabled={isAnalyzingForecast} className="text-xs bg-emerald-600 hover:bg-emerald-700 px-2 py-1 rounded disabled:opacity-50">
-              {isAnalyzingForecast ? 'Prevendo...' : 'Prever'}
+            <button onClick={async () => { setIsAnalyzingForecast(true); const f = await predictFutureExpenses(transactions, 3, language); setForecast(f); setIsAnalyzingForecast(false); }} disabled={isAnalyzingForecast} className="text-xs bg-emerald-600 hover:bg-emerald-700 px-2 py-1 rounded disabled:opacity-50">
+              {isAnalyzingForecast ? t('dashboard.predicting') : t('dashboard.forecast')}
             </button>
           </h3>
           {forecast?.predictions?.length > 0 ? (
@@ -472,7 +472,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               <button onClick={() => generateAnalysisPDF(waste, forecast, currencyFormatter, currentUser)} className="mt-2 text-xs bg-emerald-500/30 hover:bg-emerald-500/50 px-2 py-1 rounded text-emerald-200 font-bold">📥 Exportar</button>
             </div>
           ) : (
-            <p className="text-slate-400 text-sm">Clique em "Prever" para análise dos próximos 3 meses</p>
+            <p className="text-slate-400 text-sm">{t('dashboard.click_forecast')}</p>
           )}
         </div>
       </div>
