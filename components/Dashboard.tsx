@@ -352,7 +352,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Financial Health Score Widget */}
-        <div className={`bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-soft border transition-all duration-300 flex flex-col items-center justify-between relative overflow-hidden min-h-[300px] group cursor-help ${healthScore > 70 ? 'border-emerald-200 dark:border-emerald-900/30 hover:border-emerald-300' : healthScore > 40 ? 'border-amber-200 dark:border-amber-900/30 hover:border-amber-300' : 'border-rose-200 dark:border-rose-900/30 hover:border-rose-300'}`}>
+        <div className={`bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-soft border transition-all duration-300 flex flex-col items-center justify-between relative overflow-hidden min-h-[300px] group ${healthScore > 70 ? 'border-emerald-200 dark:border-emerald-900/30 hover:border-emerald-300' : healthScore > 40 ? 'border-amber-200 dark:border-amber-900/30 hover:border-amber-300' : 'border-rose-200 dark:border-rose-900/30 hover:border-rose-300'}`}>
             <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r transition-all duration-300 ${healthScore > 70 ? 'from-emerald-400 to-emerald-500' : healthScore > 40 ? 'from-amber-400 to-amber-500' : 'from-rose-400 to-rose-500'}`}></div>
             
             <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center z-10 w-full justify-center text-center">
