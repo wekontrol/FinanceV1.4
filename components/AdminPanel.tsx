@@ -89,6 +89,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
   const [userFormData, setUserFormData] = useState({ 
     name: '', 
+    email: '',
     username: '',
     password: '',
     role: UserRole.MEMBER, 
@@ -254,6 +255,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       onUpdateUser({ 
         ...editingUser, 
         name: userFormData.name,
+        email: userFormData.email,
         username: userFormData.username,
         avatar: userFormData.avatar,
         birthDate: userFormData.birthDate,
@@ -755,6 +757,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nome</label>
                       <input type="text" required value={userFormData.name} onChange={e => setUserFormData({...userFormData, name: e.target.value})} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email (Opcional)</label>
+                      <input type="email" value={userFormData.email} onChange={e => setUserFormData({...userFormData, email: e.target.value})} className={inputClass} placeholder="usuario@exemplo.com" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Usuário (Login)</label>

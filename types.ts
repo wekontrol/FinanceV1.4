@@ -21,6 +21,7 @@ export interface User {
   id: string;
   username: string; // New: Login ID
   password?: string; // New: Stored (in real app should be hashed, here plain/mock)
+  email?: string; // Email for notifications
   securityQuestion?: SecurityQuestion; // New: Recovery
   name: string;
   role: UserRole;
