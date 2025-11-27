@@ -1,6 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { LayoutDashboard, Wallet, PiggyBank, Users, Settings, LogOut, X, Activity, Camera, TrendingUp, Calculator, PieChart } from 'lucide-react';
 import { User, UserRole } from '../types';
+import ProfileModal from './ProfileModal';
 
 interface SidebarProps {
   appName: string;
@@ -24,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onUpdateUser
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -44,8 +46,14 @@ const Sidebar: React.FC<SidebarProps> = ({
     setIsMobileOpen(false);
   };
 
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click();
+  const handleProfileClick = () => {
+    setShowProfileModal(true);
+  };
+
+  const handleProfileSave = (formData: any) => {
+    if (onUpdateUser) {
+      onUpdateUser({ ...currentUser, ...formData });
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,13 +130,12 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         <div className="p-4 border-t border-slate-50 dark:border-slate-800">
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 flex items-center mb-2 border border-slate-100 dark:border-slate-700 group transition-colors hover:border-slate-200 dark:hover:border-slate-600 active:scale-95 cursor-pointer" onClick={handleAvatarClick}>
-            <div className="relative shrink-0" title="Alterar foto">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 flex items-center mb-2 border border-slate-100 dark:border-slate-700 group transition-colors hover:border-slate-200 dark:hover:border-slate-600 active:scale-95 cursor-pointer" onClick={handleProfileClick}>
+            <div className="relative shrink-0" title="Editar perfil">
               <img src={currentUser.avatar} alt="Avatar" className="w-9 h-9 rounded-full border border-white dark:border-slate-600 shadow-sm object-cover group-hover:opacity-80 transition" />
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition">
-                <Camera size={12} className="text-white" />
+                <span className="text-xs text-white font-bold">Edit</span>
               </div>
-              <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
             </div>
             <div className="ml-3 overflow-hidden min-w-0">
               <p className="text-sm font-bold text-slate-800 dark:text-white truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition" title={currentUser.name}>
@@ -148,6 +155,14 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
       </aside>
+
+      {showProfileModal && (
+        <ProfileModal 
+          user={currentUser} 
+          onClose={() => setShowProfileModal(false)} 
+          onSave={handleProfileSave}
+        />
+      )}
     </>
   );
 };
