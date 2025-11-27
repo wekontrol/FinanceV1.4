@@ -272,20 +272,30 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
             Novo Orçamento
           </h3>
           
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Categoria</label>
-              <select 
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-              >
-                <option value="">Selecione uma categoria...</option>
-                {categoriesNotInBudget.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+          {categoriesNotInBudget.length === 0 ? (
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+              <p className="text-sm font-bold text-amber-700 dark:text-amber-400">
+                ✅ Todas as categorias já possuem orçamento definido!
+              </p>
+              <p className="text-xs text-amber-600 dark:text-amber-300 mt-1">
+                Para adicionar um novo orçamento, primeiro delete um existente ou crie uma nova categoria.
+              </p>
             </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Categoria</label>
+                <select 
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                >
+                  <option value="">Selecione uma categoria...</option>
+                  {categoriesNotInBudget.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
 
             <div>
               <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Limite Mensal</label>
@@ -305,27 +315,44 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
               )}
             </div>
 
-            <div className="flex gap-2 pt-2">
-              <button 
-                onClick={handleAddNewBudget}
-                className="flex-1 p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
-              >
-                <Save size={18} />
-                Criar Orçamento
-              </button>
+              <div className="flex gap-2 pt-2">
+                <button 
+                  onClick={handleAddNewBudget}
+                  className="flex-1 p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
+                >
+                  <Save size={18} />
+                  Criar Orçamento
+                </button>
+                <button 
+                  onClick={() => {
+                    setIsAddingNew(false);
+                    setNewCategory('');
+                    setNewAmount('');
+                  }}
+                  className="flex-1 p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 font-bold transition flex items-center justify-center gap-2"
+                >
+                  <X size={18} />
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {categoriesNotInBudget.length === 0 && (
+            <div className="flex gap-2 pt-4">
               <button 
                 onClick={() => {
                   setIsAddingNew(false);
                   setNewCategory('');
                   setNewAmount('');
                 }}
-                className="flex-1 p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 font-bold transition flex items-center justify-center gap-2"
+                className="w-full p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 font-bold transition flex items-center justify-center gap-2"
               >
                 <X size={18} />
-                Cancelar
+                Fechar
               </button>
             </div>
-          </div>
+          )}
         </div>
       )}
 
