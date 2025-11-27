@@ -29,67 +29,12 @@ const INITIAL_USERS: User[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Super',
     status: UserStatus.APPROVED,
     securityQuestion: { question: 'Nome do primeiro animal', answer: 'rex' }
-  },
-  {
-    id: 'u1',
-    username: 'carlos',
-    password: '123',
-    name: 'Carlos Silva',
-    role: UserRole.MANAGER,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos',
-    status: UserStatus.APPROVED,
-    createdBy: 'u0',
-    familyId: 'fam_1',
-    securityQuestion: { question: 'Cidade natal', answer: 'luanda' }
-  },
-  {
-    id: 'u2',
-    username: 'ana',
-    password: '123',
-    name: 'Ana Silva',
-    role: UserRole.MEMBER,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ana',
-    status: UserStatus.APPROVED,
-    createdBy: 'u1', 
-    familyId: 'fam_1',
-    birthDate: '1985-05-12',
-    allowParentView: true 
-  },
-  {
-    id: 'u3',
-    username: 'joao',
-    password: '123',
-    name: 'Joãozinho Silva',
-    role: UserRole.MEMBER,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Joao',
-    status: UserStatus.APPROVED,
-    createdBy: 'u1',
-    familyId: 'fam_1',
-    birthDate: '2015-08-20', 
-    allowParentView: false 
   }
 ];
 
-const INITIAL_TRANSACTIONS: Transaction[] = [
-  { id: 't2', userId: 'u1', description: 'Salário', amount: 450000.00, date: '2023-10-05', category: 'Salário', type: TransactionType.INCOME, isRecurring: true, frequency: 'monthly' },
-  { id: 't3', userId: 'u1', description: 'Netflix', amount: 3500.00, date: '2023-10-10', category: 'Lazer', type: TransactionType.EXPENSE, isRecurring: true, frequency: 'monthly' },
-  { id: 't4', userId: 'u1', description: 'Aluguel', amount: 150000.00, date: '2023-10-01', category: 'Moradia', type: TransactionType.EXPENSE, isRecurring: true, frequency: 'monthly' },
-];
+const INITIAL_TRANSACTIONS: Transaction[] = [];
 
-const INITIAL_GOALS: SavingsGoal[] = [
-  { 
-    id: 'g1', 
-    name: 'Carro Novo', 
-    targetAmount: 2000000, 
-    currentAmount: 350000, 
-    deadline: '2024-12-31', 
-    color: '#10b981',
-    interestRate: 5,
-    history: [
-      { id: 'gh1', userId: 'u1', date: '2023-08-01', amount: 100000, note: 'Depósito inicial' },
-    ]
-  },
-];
+const INITIAL_GOALS: SavingsGoal[] = [];
 
 // Helper para carregar dados com segurança
 const safeLoad = <T,>(key: string, fallback: T): T => {

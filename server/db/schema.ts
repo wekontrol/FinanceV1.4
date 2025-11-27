@@ -161,35 +161,6 @@ export function initializeDatabase() {
       'fam_admin'
     );
 
-    db.prepare(`
-      INSERT INTO users (id, username, password, name, role, avatar, status, created_by, family_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      'u1',
-      'carlos',
-      bcrypt.hashSync('123', 10),
-      'Carlos Silva',
-      'MANAGER',
-      'https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos',
-      'APPROVED',
-      'u0',
-      'fam_1'
-    );
-
-    db.prepare(`
-      INSERT INTO transactions (id, user_id, description, amount, date, category, type, is_recurring, frequency)
-      VALUES 
-        (?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      't2', 'u1', 'Salário', 450000.00, '2023-10-05', 'Salário', 'RECEITA', 1, 'monthly',
-      't3', 'u1', 'Netflix', 3500.00, '2023-10-10', 'Lazer', 'DESPESA', 1, 'monthly'
-    );
-
-    db.prepare(`
-      INSERT INTO savings_goals (id, user_id, name, target_amount, current_amount, deadline, color, interest_rate)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).run('g1', 'u1', 'Casa Própria', 15000000, 2500000, '2028-12-31', '#10B981', 5);
   }
 
   console.log('Database initialized successfully');
