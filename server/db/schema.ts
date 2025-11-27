@@ -201,6 +201,15 @@ export function initializeDatabase() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
+
+    CREATE TABLE IF NOT EXISTS api_configurations (
+      id TEXT PRIMARY KEY,
+      provider TEXT UNIQUE NOT NULL,
+      api_key TEXT NOT NULL,
+      model TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   const adminExists = db.prepare('SELECT id FROM users WHERE username = ?').get('admin');

@@ -65,4 +65,81 @@ router.post('/notification-config', (req: Request, res: Response) => {
   res.json({ message: 'Configuration saved' });
 });
 
+// Get API configurations
+router.get('/api-configs', (req: Request, res: Response) => {
+  if (req.session?.user?.role !== 'SUPER_ADMIN') {
+    return res.status(403).json({ error: 'Super Admin only' });
+  }
+
+  try {
+    const configs = db.prepare(`SELECT id, provider, model, created_at FROM api_configurations`).all();
+    res.json(configs);
+  } catch (error: any) {
+    console.error('Error fetching API configs:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Save or update API configuration
+router.post('/api-configs', (req: Request, res: Response) => {
+  if (req.session?.user?.role !== 'SUPER_ADMIN') {
+    return res.status(403).json({ error: 'Super Admin only' });
+  }
+
+  const { id, provider, apiKey, model } = req.body;
+
+  try {
+    if (id) {
+      // Update existing
+      db.prepare(`
+        UPDATE api_configurations 
+        SET api_key = ?, model = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(apiKey, model || null, id);
+    } else {
+      // Create new
+      const newId = `cfg_${Date.now()}`;
+      db.prepare(`
+        INSERT INTO api_configurations (id, provider, api_key, model)
+        VALUES (?, ?, ?, ?)
+      `).run(newId, provider, apiKey, model || null);
+    }
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error('Error saving API config:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get API configuration value (for frontend to use)
+router.get('/api-config/:provider', (req: Request, res: Response) => {
+  try {
+    const { provider } = req.params;
+    const config = db.prepare(`SELECT api_key, model FROM api_configurations WHERE provider = ?`).get(provider);
+    if (config) {
+      res.json({ apiKey: config.api_key, model: config.model });
+    } else {
+      res.json({ apiKey: null, model: null });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete API configuration
+router.delete('/api-configs/:id', (req: Request, res: Response) => {
+  if (req.session?.user?.role !== 'SUPER_ADMIN') {
+    return res.status(403).json({ error: 'Super Admin only' });
+  }
+
+  const { id } = req.params;
+  try {
+    db.prepare(`DELETE FROM api_configurations WHERE id = ?`).run(id);
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error('Error deleting API config:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
