@@ -5,6 +5,7 @@ import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit,
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
 import { settingsApi, familiesApi } from '../services/api';
 import { backupApi } from '../services/backupApi';
+import { systemApi } from '../services/systemApi';
 
 interface AdminPanelProps {
   appName: string;
@@ -80,6 +81,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [restoreProgress, setRestoreProgress] = useState({ current: 0, total: 100, status: 'idle' });
+
+  // System Update State
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateProgress, setUpdateProgress] = useState({ current: 0, total: 100, status: 'idle' });
 
   const [userFormData, setUserFormData] = useState({ 
     name: '', 
@@ -866,8 +871,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           )}
         </div>
 
-        {/* 5. Update System (Only Admin) */}
-        {isAdmin && (
+        {/* 5. Update System (Only Super Admin) */}
+        {isSuperAdmin && (
           <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
             <div onClick={() => toggleSection('update')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <div className="flex items-center">
@@ -878,52 +883,64 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
             {expandedSection === 'update' && (
               <div className="p-8 border-t border-slate-100 dark:border-slate-700 animate-slide-down">
-                
-                <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-2">URL do Repositório GitHub</label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                     <input type="text" value={repoUrl} onChange={(e) => setRepoUrl(e.target.value)} className={inputClass} placeholder="https://github.com/usuario/repo" />
-                     <button onClick={saveRepoUrl} className="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-white px-4 py-3 sm:py-0 rounded-xl font-bold text-sm shrink-0">Salvar</button>
-                  </div>
-                </div>
+                <div className="grid gap-6">
+                  {/* Atualização Automática */}
+                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/20 p-6 rounded-2xl border border-emerald-200 dark:border-emerald-800">
+                    <h4 className="font-bold text-emerald-800 dark:text-emerald-400 text-lg mb-4">🚀 Atualização Automática</h4>
+                    <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-4">Atualize seu sistema diretamente pela interface. O processo inclui: git pull, npm install, build e restart.</p>
+                    
+                    {isUpdating ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">{updateProgress.status}</span>
+                          <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">{updateProgress.current}%</span>
+                        </div>
+                        <div className="w-full bg-emerald-200 dark:bg-emerald-900/50 rounded-full h-4 overflow-hidden">
+                          <div 
+                            className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-full transition-all duration-300"
+                            style={{ width: `${updateProgress.current}%` }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={async () => {
+                          if (!confirm('⚠️ Seu sistema será reiniciado!\n\nDeseja atualizar agora?')) return;
+                          setIsUpdating(true);
+                          try {
+                            const pollProgress = setInterval(async () => {
+                              try {
+                                const progress = await systemApi.checkUpdateProgress();
+                                setUpdateProgress(progress);
+                              } catch (e) {}
+                            }, 500);
 
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="text-center md:text-left">
-                    <h4 className="font-bold text-slate-800 dark:text-white mb-2">Status da Versão</h4>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {remoteVersion ? `Versão remota detectada: ${remoteVersion}` : 'Verifique se há novas versões disponíveis.'}
+                            await systemApi.executeUpdate();
+                            
+                            clearInterval(pollProgress);
+                            setUpdateProgress({ current: 100, total: 100, status: 'Atualização concluída! Recarregando...' });
+                            
+                            setTimeout(() => {
+                              window.location.reload();
+                            }, 2000);
+                          } catch (error: any) {
+                            alert('Erro na atualização: ' + error.message);
+                            setIsUpdating(false);
+                            setUpdateProgress({ current: 0, total: 100, status: 'Erro' });
+                          }
+                        }}
+                        className="w-full py-3 px-4 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        <RefreshCw size={18} /> Atualizar Agora
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      ⚠️ <strong>Atenção:</strong> A atualização pode levar alguns minutos. O sistema será reiniciado automaticamente. Todos os usuários serão desconectados.
                     </p>
-                  </div>
-                  
-                  <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-                     {updateStatus === 'uptodate' && (
-                       <span className="text-emerald-500 font-bold text-sm flex items-center bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-lg w-full md:w-auto justify-center">
-                         <CheckCircle size={16} className="mr-2"/> Sistema Atualizado
-                       </span>
-                     )}
-                     
-                     {updateStatus === 'available' && (
-                       <div className="flex flex-col items-center md:items-end gap-2 animate-fade-in w-full md:w-auto">
-                          <span className="text-amber-500 font-bold text-sm flex items-center bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-lg w-full md:w-auto justify-center">
-                            <AlertTriangle size={16} className="mr-2"/> Nova Versão Disponível
-                          </span>
-                          <div className="text-center md:text-right w-full">
-                            <p className="text-xs text-slate-400 mb-1">Para atualizar, acesse o terminal do servidor e execute:</p>
-                            <code className="block bg-slate-900 text-emerald-400 p-2 rounded-lg font-mono text-xs select-all cursor-text text-center break-all">
-                               cd /var/www/gestor-financeiro && sudo ./deploy.sh
-                            </code>
-                          </div>
-                       </div>
-                     )}
-
-                     <button 
-                       onClick={checkForUpdates}
-                       disabled={updateStatus === 'checking'}
-                       className="w-full md:w-auto px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center justify-center"
-                     >
-                       <Github size={18} className={`mr-2 ${updateStatus === 'checking' ? 'animate-spin' : ''}`} />
-                       {updateStatus === 'checking' ? 'Verificando...' : 'Buscar Atualizações'}
-                     </button>
                   </div>
                 </div>
               </div>

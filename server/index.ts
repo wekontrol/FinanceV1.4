@@ -14,6 +14,7 @@ import budgetRoutes from './routes/budget';
 import settingsRoutes from './routes/settings';
 import familiesRoutes from './routes/families';
 import backupRoutes from './routes/backup';
+import systemRoutes from './routes/system';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
@@ -82,6 +83,7 @@ app.use('/api/budget', budgetRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/families', familiesRoutes);
 app.use('/api/backup', backupRoutes);
+app.use('/api/system', systemRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

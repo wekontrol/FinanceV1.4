@@ -10,6 +10,16 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Theme: Supports dark mode preference
 
 ## Recent Implementation (November 27, 2025)
+
+✅ **Atualização do Sistema via UI - Super Admin Only**
+- Super Admin pode atualizar sistema diretamente pela interface
+- Processo automático: git pull → npm install → build → restart
+- Barra de progresso em tempo real (0% → 100%)
+- Status detalhado de cada etapa
+- Confirmação de segurança antes de atualizar
+- Página recarrega automaticamente após conclusão
+- Endpoints: POST `/api/system/update`, GET `/api/system/update-progress`
+
 ✅ **Backup & Restauro com Progresso Visível**
 - Manual backup exporta TODOS os dados em JSON
 - Barra de progresso animada durante backup/restauro
@@ -64,6 +74,8 @@ A comprehensive family financial management platform built with React, TypeScrip
 - **Families**: `GET/DELETE /api/families` (Super Admin only)
 - **Exchange Rates**: `GET /api/settings/rates/:provider` (BNA/FOREX/PARALLEL)
 - **Settings**: `GET/POST /api/settings/:key` (Super Admin only)
+- **Backup**: `POST /api/backup`, `POST /api/backup/restore`, `GET /api/backup/progress` (Admin+)
+- **System**: `POST /api/system/update`, `GET /api/system/update-progress` (Super Admin only)
 - **Transactions/Goals/Users**: Full CRUD endpoints
 
 ## Deployment
@@ -103,10 +115,14 @@ Ideal setup: Always provide `TheFinance` in production for persistent sessions.
 ## Testing Checklist
 - ✅ Backend data synchronization
 - ✅ Multi-device session persistence
-- ✅ Exchange rates auto-refresh (24h)
+- ✅ Exchange rates auto-refresh (24h) - Dados determinísticos com seeded random
 - ✅ Terms & Conditions mandatory acceptance
 - ✅ Family creation and deletion
 - ✅ PostgreSQL sessions (production ready)
+- ✅ Backup & Restauro com progresso visual
+- ✅ System update via UI (Super Admin only)
+- ✅ Gráfico de conversão de moedas (dados consistentes)
+- ✅ Aba de inflação com dados realistas (24.5% inicial Angola 2024)
 
 ## Backup & Restauro - Como Usar
 
@@ -125,12 +141,33 @@ Ideal setup: Always provide `TheFinance` in production for persistent sessions.
 5. Acompanhe o progresso na barra animada
 6. Página recarrega automaticamente após conclusão
 
+## Atualização do Sistema - Como Usar
+
+### **🚀 Atualizar via UI (Super Admin):**
+1. Login como **Super Admin**
+2. Vá para ⚙️ **Admin** > **Atualização do Sistema**
+3. Clique em **"🚀 Atualizar Agora"**
+4. Confirme (⚠️ Sistema será reiniciado!)
+5. Acompanhe a barra de progresso:
+   - ✅ Puxando código do repositório...
+   - ✅ Instalando dependências...
+   - ✅ Compilando aplicação...
+   - ✅ Reiniciando serviço...
+6. Página recarrega automaticamente quando concluído
+
+### **Dicas:**
+- Todos os usuários serão desconectados durante a atualização
+- Processo leva 2-5 minutos (varia com tamanho)
+- Fazer backup antes é recomendado (⚠️)
+- Em produção, execute fora de horário de pico
+
 ## Next Steps
 1. 🔄 Deploy to production (Ubuntu/Render/Cloud)
 2. 🔄 Change default admin password
 3. 🔄 Configure Gemini API key in Settings
 4. 🔄 Add production SSL certificates
 5. 🔄 Set up automated daily backups (cron job)
+6. 🔄 Monitor updates via `/api/system/update-progress` para dashboards customizados
 
 ## Credentials (Change Immediately in Production!)
 - Username: `admin`
