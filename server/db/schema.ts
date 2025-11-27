@@ -87,6 +87,7 @@ export function initializeDatabase() {
       user_id TEXT NOT NULL,
       category TEXT NOT NULL,
       limit_amount REAL NOT NULL,
+      is_default INTEGER DEFAULT 0,
       UNIQUE(user_id, category),
       FOREIGN KEY (user_id) REFERENCES users(id)
     );

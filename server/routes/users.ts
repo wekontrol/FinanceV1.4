@@ -70,6 +70,18 @@ router.post('/', (req: Request, res: Response) => {
   const id = `u${Date.now()}`;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
+  // Orçamentos padrão por categoria
+  const defaultBudgets = [
+    { category: 'Alimentação', limit: 300 },
+    { category: 'Transporte', limit: 200 },
+    { category: 'Lazer', limit: 150 },
+    { category: 'Saúde', limit: 200 },
+    { category: 'Educação', limit: 250 },
+    { category: 'Compras', limit: 400 },
+    { category: 'Utilidades', limit: 300 },
+    { category: 'Outros', limit: 200 }
+  ];
+
   db.prepare(`
     INSERT INTO users (id, username, password, name, role, avatar, status, created_by, family_id, birth_date, allow_parent_view)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -86,6 +98,15 @@ router.post('/', (req: Request, res: Response) => {
     birthDate || null,
     allowParentView ? 1 : 0
   );
+
+  // Cria orçamentos padrão para o novo usuário
+  defaultBudgets.forEach((budget: any) => {
+    const budgetId = `bl${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+    db.prepare(`
+      INSERT INTO budget_limits (id, user_id, category, limit_amount, is_default)
+      VALUES (?, ?, ?, ?, 1)
+    `).run(budgetId, id, budget.category, budget.limit);
+  });
 
   const user = db.prepare(`
     SELECT id, username, name, role, avatar, status, created_by, family_id, birth_date, allow_parent_view

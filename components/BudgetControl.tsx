@@ -332,6 +332,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
         {budgets.map(budget => {
           const limit = budget.limit;
           const cat = budget.category;
+          const isDefault = (budget as any).isDefault || false;
           const spent = categorySpending[cat] || 0;
           const percentage = limit > 0 ? (spent / limit) * 100 : 0;
           const isOverBudget = limit > 0 && spent > limit;
@@ -341,7 +342,10 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
             <div key={cat} className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-6 flex flex-col justify-between transition-transform hover:-translate-y-1 duration-300">
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="font-bold text-slate-800 dark:text-white text-lg">{cat}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-slate-800 dark:text-white text-lg">{cat}</h3>
+                    {isDefault && <span className="text-xs font-bold px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">Padrão</span>}
+                  </div>
                   {isOverBudget && <AlertTriangle className="text-rose-500 animate-pulse" size={22} />}
                   {!isOverBudget && limit > 0 && <CheckCircle className="text-emerald-500" size={22} />}
                 </div>

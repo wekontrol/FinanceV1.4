@@ -135,10 +135,45 @@ router.get('/limits', (req: Request, res: Response) => {
 
   const formattedLimits = limits.map((l: any) => ({
     category: l.category,
-    limit: l.limit_amount
+    limit: l.limit_amount,
+    isDefault: l.is_default === 1
   }));
 
   res.json(formattedLimits);
+});
+
+// Criar orçamentos padrão se não existirem
+router.post('/create-defaults', (req: Request, res: Response) => {
+  const userId = req.session.userId;
+
+  const defaultBudgets = [
+    { category: 'Alimentação', limit: 300 },
+    { category: 'Transporte', limit: 200 },
+    { category: 'Lazer', limit: 150 },
+    { category: 'Saúde', limit: 200 },
+    { category: 'Educação', limit: 250 },
+    { category: 'Compras', limit: 400 },
+    { category: 'Utilidades', limit: 300 },
+    { category: 'Outros', limit: 200 }
+  ];
+
+  let created = 0;
+  defaultBudgets.forEach((budget: any) => {
+    const existing = db.prepare(`
+      SELECT id FROM budget_limits WHERE user_id = ? AND category = ?
+    `).get(userId, budget.category);
+
+    if (!existing) {
+      const budgetId = `bl${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      db.prepare(`
+        INSERT INTO budget_limits (id, user_id, category, limit_amount, is_default)
+        VALUES (?, ?, ?, ?, 1)
+      `).run(budgetId, userId, budget.category, budget.limit);
+      created++;
+    }
+  });
+
+  res.json({ message: `Created ${created} default budgets`, created });
 });
 
 router.post('/limits', (req: Request, res: Response) => {
@@ -171,6 +206,15 @@ router.post('/limits', (req: Request, res: Response) => {
 router.delete('/limits/:category', (req: Request, res: Response) => {
   const userId = req.session.userId;
   const { category } = req.params;
+
+  // Verifica se é um orçamento padrão (não pode deletar)
+  const budget = db.prepare(`
+    SELECT is_default FROM budget_limits WHERE user_id = ? AND category = ?
+  `).get(userId, decodeURIComponent(category)) as any;
+
+  if (budget?.is_default === 1) {
+    return res.status(403).json({ error: 'Não pode deletar orçamentos padrão' });
+  }
 
   db.prepare(`
     DELETE FROM budget_limits WHERE user_id = ? AND category = ?
