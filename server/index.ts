@@ -10,7 +10,7 @@ import transactionRoutes from './routes/transactions';
 import goalRoutes from './routes/goals';
 import userRoutes from './routes/users';
 import familyRoutes from './routes/family';
-import budgetRoutes from './routes/budget';
+import budgetRoutes, { startMonthlyHistoryScheduler } from './routes/budget';
 import settingsRoutes from './routes/settings';
 import familiesRoutes from './routes/families';
 import backupRoutes from './routes/backup';
@@ -112,4 +112,7 @@ app.listen(PORT, '0.0.0.0', () => {
   } else {
     console.log('Running in development mode');
   }
+
+  // Start budget history background scheduler
+  startMonthlyHistoryScheduler();
 });

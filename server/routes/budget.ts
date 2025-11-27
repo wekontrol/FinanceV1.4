@@ -50,6 +50,50 @@ export function autoSaveMonthlyHistory(userId: string) {
   }
 }
 
+// Background scheduler - executa a cada 30 minutos para salvar históricos automáticamente
+export function startMonthlyHistoryScheduler() {
+  // Executa a cada 30 minutos (1800000 ms)
+  const interval = setInterval(() => {
+    try {
+      // Pega todos os usuários que têm orçamentos definidos
+      const users = db.prepare(`
+        SELECT DISTINCT user_id FROM budget_limits
+      `).all() as any[];
+
+      if (users.length > 0) {
+        console.log(`[Budget Scheduler] Verificando ${users.length} usuários para auto-save do histórico...`);
+        users.forEach(user => {
+          autoSaveMonthlyHistory(user.user_id);
+        });
+      }
+    } catch (error) {
+      console.error('[Budget Scheduler] Error:', error);
+    }
+  }, 30 * 60 * 1000); // 30 minutos
+
+  // Também executa uma vez na inicialização (após 1 segundo de delay)
+  setTimeout(() => {
+    try {
+      const users = db.prepare(`
+        SELECT DISTINCT user_id FROM budget_limits
+      `).all() as any[];
+      
+      if (users.length > 0) {
+        console.log(`[Budget Scheduler] Execução inicial: verificando ${users.length} usuários...`);
+        users.forEach(user => {
+          autoSaveMonthlyHistory(user.user_id);
+        });
+      }
+    } catch (error) {
+      console.error('[Budget Scheduler] Initial run error:', error);
+    }
+  }, 1000);
+
+  console.log('📅 [Budget Scheduler] Started - auto-saves history every 30 minutes');
+  
+  return interval;
+}
+
 function requireAuth(req: Request, res: Response, next: Function) {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'Not authenticated' });
