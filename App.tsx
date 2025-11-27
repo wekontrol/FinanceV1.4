@@ -66,6 +66,7 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
+  const [userLanguage, setUserLanguage] = useState<any>('pt');
   const [currency, setCurrency] = useState('AOA'); 
   const [rateProvider, setRateProvider] = useState<RateProvider>('BNA');
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null);
@@ -77,6 +78,11 @@ const App: React.FC = () => {
 
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  
+  const handleUserChange = (user: User) => {
+    setCurrentUser(user);
+    setUserLanguage(user.languagePreference || 'pt');
+  };
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [budgets, setBudgets] = useState<BudgetLimit[]>([]);

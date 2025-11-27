@@ -30,6 +30,7 @@ export interface User {
   createdBy?: string; // ID of the parent/creator
   birthDate?: string; // YYYY-MM-DD
   allowParentView?: boolean; // If > 18, allow parent to see finances
+  languagePreference?: string; // User's language: pt, en, es, um, ln
   familyId?: string; // ID grouping family members
 }
 

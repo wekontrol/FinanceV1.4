@@ -30,6 +30,7 @@ export function initializeDatabase() {
       allow_parent_view INTEGER DEFAULT 0,
       security_question TEXT,
       security_answer TEXT,
+      language_preference TEXT DEFAULT 'pt',
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 

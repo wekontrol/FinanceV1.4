@@ -39,6 +39,12 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
     
     try {
       const response = await authApi.login(username, password);
+      // Save language preference for this user
+      await fetch(`${window.location.origin}/api/users/language`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ languagePreference: language })
+      }).catch(() => {}); // Silent fail if endpoint not ready yet
       onLogin(response.user);
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login');

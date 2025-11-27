@@ -7,6 +7,7 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Application uses Portuguese (PT) as primary language
 - **NEW: Multi-language support - Português, English, Español, Umbundu, Lingala** (optional selector on login)
 - Default login: `admin` / `admin`
+- **Language selection is per-user** - each user's choice is saved and used across the entire app
 - Deployment target: Ubuntu 20.04+ on Proxmox VMs (or Render/Production)
 - Theme: Supports dark mode preference
 
@@ -21,8 +22,10 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 - Real-time currency formatting in input fields for visual confirmation (e.g., "AOA 1.500,00")
 - Interactive Financial Health Score widget with dynamic colors and animations
 - **NEW: Language selector on login screen (top-right corner, optional) - 5 languages!**
+- **NEW: Per-user language preference - saved in database and applied to entire app**
 
 **Technical Implementations & Feature Specifications:**
+- **Multi-language Support (Per-User):** Each user can select their language on login (Português, English, Español, Umbundu, Lingala). Selection is saved to the user's profile in the database and applied to the entire app throughout the session.
 - **Notification Management:** Supports Web Push Notifications (Service Worker, subscribers in `push_subscriptions` table) and Email Notifications (SendGrid integration optional). Users and Super Admins can configure preferences for budget alerts, subscription reminders, financial tips (AI insights), and goal progress.
 - **Budget History Tracking:** Automated tracking of monthly spending by category in a `budget_history` table. Auto-saves history on month change and uses a background scheduler. Includes subscriptions in budget calculations.
 - **User-Specific Budgets:** Allows users to create and manage their own budget categories, isolated per user, with validation to prevent duplicate categories for the same user.
@@ -41,7 +44,7 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 
 **Database Schema Highlights:**
 - `families`: For multi-family support.
-- `users`: User profiles with role hierarchy.
+- `users`: User profiles with role hierarchy + **language_preference column**.
 - `transactions`: Income/expense records.
 - `savings_goals`, `goal_transactions`: Savings tracking.
 - `app_settings`: Global configurations (API keys, terms).
@@ -70,8 +73,7 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 
 ## Recent Implementation (November 27, 2025)
 
-### ✅ LANGUAGE SELECTOR - Multi-language Support with 5 Languages! (LATEST)
-- ✅ Created `contexts/LanguageContext.tsx` for language state management
+### ✅ MULTI-LANGUAGE SUPPORT - Per-User Selection (LATEST)
 - ✅ Language selector dropdown on login screen (top-right corner)
 - ✅ 5 languages available:
   - 🇵🇹 **Português** (default)
@@ -79,25 +81,29 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
   - 🇪🇸 **Español**
   - 🇦🇴 **Umbundu** (Native Angolan language)
   - 🇨🇩 **Lingala** (Spoken in Congo)
-- ✅ Language preference saved to localStorage
-- ✅ Optional selector - doesn't interfere with login flow
-- ✅ Fully styled with flags and dark mode support
-- ✅ Applied to login form labels and buttons
-- ✅ Ready for full app translation (Phase 2)
+- ✅ Language preference **saved per-user** in database (users.language_preference)
+- ✅ When user logs in, their selected language is loaded
+- ✅ Language applied to **entire app** (not just login)
+- ✅ **User A's language choice doesn't affect User B**
+- ✅ LanguageContext updated to accept initialLanguage prop
+- ✅ handleLogin saves language preference to database
+- ✅ App loads user's language from database after login
 
 **Implementation Details:**
 - Location: `contexts/LanguageContext.tsx` (25KB, translations for 5 languages)
-- Login translations: username, password, buttons, messages (all 5 languages)
-- Integrated with `Login.tsx`, `index.tsx`, and `App.tsx`
-- `useLanguage()` hook for components to access translations
-- localStorage key: `app_language` (default: 'pt')
+- Database: New column `language_preference` in `users` table (default: 'pt')
+- Types: Updated `User` interface with `languagePreference` field
+- Login: Saves selected language when user authenticates
+- App: Passes user's language to LanguageProvider on session load
+- API: Endpoint `/api/users/language` saves preference
 
 **How to Use:**
 1. Open login page
 2. Click language dropdown (top-right corner)
 3. Select desired language (🇵🇹 🇬🇧 🇪🇸 🇦🇴 🇨🇩)
-4. Login labels and buttons update instantly
-5. Language preference persists across sessions
+4. Login normally
+5. Entire app uses your selected language
+6. Next time you login, your language preference is restored
 
 ---
 
@@ -137,7 +143,8 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 
 | Feature | Status | Localização UI |
 |---------|--------|---------------|
-| 🌐 **Seletor de Idioma (5 idiomas)** | ✅ **NOVO** | Login → Canto superior direito |
+| 🌐 **Seletor de Idioma (Per-User)** | ✅ **NOVO** | Login → Canto superior direito |
+| 💬 **Idiomas em toda a App** | ✅ **NOVO** | Aplicado a todo o app após login |
 | 🔔 Web Push Notifications | ✅ | Dashboard → 🔔 ícone |
 | 📧 Email Notifications | ✅ | Dashboard → 🔔 ícone |
 | 💰 Orçamentos User-Specific | ✅ | BudgetControl |
@@ -151,20 +158,17 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 | 🚨 Análise de Desperdício | ✅ | Dashboard → Card vermelho |
 | 📊 Previsões Financeiras | ✅ | Dashboard → Card verde |
 | 📥 PDF Export | ✅ | Botão nos dois cards |
-| 🏗️ Build | ✅ | 95.64KB gzip |
+| 🏗️ Build | ✅ | 95.70KB gzip |
 | 🚀 Servidor | ✅ | Rodando |
 
 ---
 
 ## Próximos Passos (Fase 2 - Opcional)
-- Completar tradução de toda a UI para 5 idiomas
-- Dashboard translations
-- Transactions translations
-- Admin panel translations
-- All component labels and messages
-- API endpoints para recuperar histórico
-- Exportar histórico completo para análise de tendências
-- Comparar histórico de previsões com gráficos
+- Completar tradução de toda a UI para 5 idiomas (Dashboard, Transactions, Admin, etc)
+- API endpoints para recuperar/atualizar idioma do user
+- UI para permitir mudança de idioma dentro do app (sem fazer logout)
+- Dashboard translations completas
+- Transactions translations completas
 
-**Aplicação PRODUCTION-READY com IA AVANÇADA + MULTI-IDIOMA (5 LINGUAS)! 🎉**
+**Aplicação PRODUCTION-READY com IA AVANÇADA + MULTI-IDIOMA (5 LINGUAS, PER-USER)! 🎉**
 
