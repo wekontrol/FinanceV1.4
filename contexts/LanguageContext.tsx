@@ -141,6 +141,35 @@ const translations = {
     'family.addEvent': 'Adicionar Evento',
     'family.complete': 'Concluir',
     'family.delete': 'Excluir',
+    'family.selectMembers': 'Selecionar Membros',
+    'family.noData': 'Dados Mascarados',
+
+    // InflationControl
+    'inflation.title': 'Inflação',
+    'inflation.purchaseAmount': 'Valor de Compra',
+    'inflation.realValue': 'Valor Real',
+    'inflation.currentRate': 'Taxa Atual',
+    'inflation.baseCurrency': 'Moeda Base',
+    'inflation.targetCurrency': 'Moeda Alvo',
+    'inflation.period': 'Período',
+    'inflation.swap': 'Trocar',
+
+    // Simulations
+    'simulations.title': 'Simulações',
+    'simulations.loanAmount': 'Valor do Empréstimo',
+    'simulations.interestRate': 'Taxa de Juros',
+    'simulations.termMonths': 'Duração (Meses)',
+    'simulations.calculate': 'Calcular',
+    'simulations.save': 'Guardar',
+    'simulations.delete': 'Excluir',
+    'simulations.system': 'Sistema',
+    'simulations.uploadPDF': 'Carregar PDF',
+
+    // InflationControl messages
+    'inflation.maintainsRates': 'BNA mantém taxas inalteradas.',
+    'inflation.basketRises': 'Cesta básica sobe 2.3%.',
+    'inflation.highVolatility': 'Alta volatilidade no mercado paralelo.',
+    'inflation.transportInflation': 'Transportes impulsionam inflação.',
 
     // General
     'app.dashboard': 'Dashboard',
@@ -284,6 +313,35 @@ const translations = {
     'family.addEvent': 'Add Event',
     'family.complete': 'Complete',
     'family.delete': 'Delete',
+    'family.selectMembers': 'Select Members',
+    'family.noData': 'Masked Data',
+
+    // InflationControl
+    'inflation.title': 'Inflation',
+    'inflation.purchaseAmount': 'Purchase Amount',
+    'inflation.realValue': 'Real Value',
+    'inflation.currentRate': 'Current Rate',
+    'inflation.baseCurrency': 'Base Currency',
+    'inflation.targetCurrency': 'Target Currency',
+    'inflation.period': 'Period',
+    'inflation.swap': 'Swap',
+
+    // Simulations
+    'simulations.title': 'Simulations',
+    'simulations.loanAmount': 'Loan Amount',
+    'simulations.interestRate': 'Interest Rate',
+    'simulations.termMonths': 'Duration (Months)',
+    'simulations.calculate': 'Calculate',
+    'simulations.save': 'Save',
+    'simulations.delete': 'Delete',
+    'simulations.system': 'System',
+    'simulations.uploadPDF': 'Upload PDF',
+
+    // InflationControl messages
+    'inflation.maintainsRates': 'BNA maintains rates unchanged.',
+    'inflation.basketRises': 'Basic basket rises 2.3%.',
+    'inflation.highVolatility': 'High market volatility.',
+    'inflation.transportInflation': 'Transport drives inflation.',
 
     // General
     'app.dashboard': 'Dashboard',

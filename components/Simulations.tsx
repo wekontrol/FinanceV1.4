@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Calculator, Upload, Loader2, DollarSign, Calendar, Percent, PieChart as PieChartIcon, ArrowRight, Save, Clock, Trash2 } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { LoanSimulation, AmortizationRow, SavedSimulation } from '../types';
 import { analyzeLoanDocument } from '../services/geminiService';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -19,6 +20,7 @@ const Simulations: React.FC<SimulationsProps> = ({
   onSaveSimulation, 
   onDeleteSimulation 
 }) => {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [schedule, setSchedule] = useState<AmortizationRow[]>([]);
   const [saveName, setSaveName] = useState('');

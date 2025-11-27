@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Transaction, TransactionType, User, FamilyTask, FamilyEvent } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Users, CheckSquare, Square, Trash2, Plus, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
@@ -33,6 +34,7 @@ const FamilyMode: React.FC<FamilyModeProps> = ({
   deleteEvent,
   canViewData
 }) => {
+  const { t } = useLanguage();
   // ISOLATION: Filter users to only show members of the same family
   const familyUsers = useMemo(() => {
     return allUsers.filter(u => u.familyId === currentUser.familyId);

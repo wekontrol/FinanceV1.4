@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getInflationHistory, getCurrencyHistory } from '../services/marketData';
+import { useLanguage } from '../contexts/LanguageContext';
 import { InflationDataPoint, CurrencyHistoryPoint, RateProvider } from '../types';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 import { TrendingUp, TrendingDown, AlertCircle, ShoppingCart, ArrowRightLeft } from 'lucide-react';
@@ -17,6 +18,7 @@ const InflationControl: React.FC<InflationControlProps> = ({
   setRateProvider, 
   currencyFormatter = (val) => `${val.toFixed(2)}` 
 }) => {
+  const { t } = useLanguage();
   const [data, setData] = useState<InflationDataPoint[]>([]);
   const [currentInflation, setCurrentInflation] = useState(0);
   const [purchaseAmount, setPurchaseAmount] = useState(10000); 

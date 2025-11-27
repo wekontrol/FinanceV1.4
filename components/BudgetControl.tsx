@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Transaction, TransactionType, BudgetLimit } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 import { PieChart, Save, AlertTriangle, CheckCircle, Edit3, Sparkles, Loader2, Plus, X, History, Calendar } from 'lucide-react';
 import Hint from './Hint';
 import { suggestBudgets } from '../services/geminiService';
@@ -25,6 +26,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
   saveBudget,
   currencyFormatter 
 }) => {
+  const { t } = useLanguage();
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [editAmount, setEditAmount] = useState<string>('');
   const [isSuggesting, setIsSuggesting] = useState(false);
