@@ -207,6 +207,7 @@ export function initializeDatabase() {
       provider TEXT UNIQUE NOT NULL,
       api_key TEXT NOT NULL,
       model TEXT,
+      is_default INTEGER DEFAULT 0,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     );

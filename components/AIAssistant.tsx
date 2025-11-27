@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, Loader2, Minimize2, X, Maximize2 } from 'lucide-react';
-import { getAiChatResponseStreaming } from '../services/geminiService';
+import { getAiChatResponseStreaming } from '../services/aiProviderService';
 import { Transaction, SavingsGoal } from '../types';
 
 interface AIAssistantProps {

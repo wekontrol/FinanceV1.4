@@ -165,4 +165,32 @@ router.delete('/api-config/:provider', (req: Request, res: Response) => {
   }
 });
 
+// Get default AI provider
+router.get('/default-ai-provider', (req: Request, res: Response) => {
+  try {
+    const config = db.prepare(`SELECT provider FROM api_configurations WHERE is_default = 1`).get() as { provider: string } | undefined;
+    res.json({ provider: config?.provider || 'google_gemini' });
+  } catch (error: any) {
+    console.error('[GET /default-ai-provider] Error:', error);
+    res.json({ provider: 'google_gemini' });
+  }
+});
+
+// Set default AI provider
+router.post('/default-ai-provider', (req: Request, res: Response) => {
+  const { provider } = req.body;
+  console.log('[POST /default-ai-provider] Setting:', provider);
+  try {
+    // Unset all others
+    db.prepare(`UPDATE api_configurations SET is_default = 0`).run();
+    // Set this one
+    db.prepare(`UPDATE api_configurations SET is_default = 1 WHERE provider = ?`).run(provider);
+    console.log('[POST /default-ai-provider] Set successfully');
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error('[POST /default-ai-provider] Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

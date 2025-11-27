@@ -7,7 +7,7 @@ import {
 } from 'recharts';
 import { Transaction, TransactionType, SavingsGoal, BudgetLimit, UserBehaviorAnalysis } from '../types';
 import { TrendingUp, TrendingDown, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Wallet, BrainCircuit, Lightbulb, User, PieChart as PieChartIcon, Download, Bell, X } from 'lucide-react';
-import { getFinancialAdvice, analyzeUserBehavior, analyzeExpensesForWaste, predictFutureExpenses } from '../services/geminiService';
+import { getFinancialAdvice, analyzeUserBehavior, analyzeExpensesForWaste, predictFutureExpenses } from '../services/aiProviderService';
 import { generatePDFReport, generateAnalysisPDF } from '../services/reportService';
 import Hint from './Hint';
 import AlertsPanel from './AlertsPanel';

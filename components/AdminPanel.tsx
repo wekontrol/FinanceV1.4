@@ -679,6 +679,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                         <Network size={18} className="mr-2" /> Puter (Gratuito)
                       </button>
                     </div>
+                    <button
+                      onClick={async () => {
+                        try {
+                          await fetch('/api/settings/default-ai-provider', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ provider: activeProvider })
+                          });
+                          setKeySaved(true);
+                          setTimeout(() => setKeySaved(false), 2000);
+                          alert(`✅ ${activeProvider === 'gemini' ? 'Gemini' : activeProvider === 'openrouter' ? 'OpenRouter' : 'Puter'} definido como IA padrão!`);
+                        } catch (error) {
+                          alert('Erro ao confirmar seleção');
+                        }
+                      }}
+                      className="w-full mt-3 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg"
+                    >
+                      ✓ Confirmar Seleção
+                    </button>
                   </div>
 
                   {activeProvider === 'gemini' && (

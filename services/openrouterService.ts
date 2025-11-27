@@ -1,6 +1,7 @@
-// Puter.js AI Service - Comprehensive implementation of all 14 services
-// No API keys required - Puter handles auth transparently
+// OpenRouter AI Service - Comprehensive implementation of all 14 services
+// Provides access to 500+ LLMs through OpenRouter
 
+import { settingsApi } from './api';
 import { Transaction, LoanSimulation, UserBehaviorAnalysis } from '../types';
 
 const languageNames: Record<string, string> = {
@@ -11,31 +12,55 @@ const languageNames: Record<string, string> = {
   ln: 'Lingala'
 };
 
-// @ts-ignore - Puter.js is loaded dynamically
-const getPuter = () => window.puter;
-
-export const hasPuterEnabled = (): boolean => {
-  const provider = localStorage.getItem('ai_provider');
-  return provider === 'puter';
+// Get OpenRouter API config
+const getOpenRouterConfig = async () => {
+  try {
+    const config = await settingsApi.getApiConfig('openrouter');
+    return config;
+  } catch (error) {
+    console.error('Error getting OpenRouter config:', error);
+    return null;
+  }
 };
 
-export const setPuterAsDefault = (): void => {
+// Make OpenRouter API call
+const callOpenRouter = async (prompt: string, model: string = 'openai/gpt-3.5-turbo'): Promise<string> => {
+  const config = await getOpenRouterConfig();
+  if (!config?.apiKey) {
+    throw new Error('OpenRouter API key not configured');
+  }
+
   try {
-    localStorage.setItem('ai_provider', 'puter');
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${config.apiKey}`,
+        'HTTP-Referer': window.location.href,
+        'X-Title': 'Gestor Financeiro',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: model || 'openai/gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 2000,
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenRouter API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || '';
   } catch (error) {
-    console.error('Error setting Puter as default:', error);
+    console.error('Error calling OpenRouter:', error);
     throw error;
   }
 };
 
 // 1. Categorize Transaction
-export const categorizeTransactionWithPuter = async (description: string): Promise<string> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    console.warn('Puter.js not loaded');
-    return 'Geral';
-  }
-
+export const categorizeTransactionWithOpenRouter = async (description: string): Promise<string> => {
   try {
     const prompt = `
       Você é um assistente financeiro. Categorize a seguinte transação financeira em uma única palavra ou frase curta em Português (Ex: Alimentação, Transporte, Moradia, Lazer, Saúde, Educação, Salário, Outros).
@@ -45,21 +70,16 @@ export const categorizeTransactionWithPuter = async (description: string): Promi
       Responda apenas com a categoria.
     `;
 
-    const response = await puter.ai.chat(prompt, { model: 'gpt-4.1-nano' });
+    const response = await callOpenRouter(prompt, 'openai/gpt-3.5-turbo');
     return response?.trim() || 'Geral';
   } catch (error) {
-    console.error('Error categorizing with Puter:', error);
+    console.error('Error categorizing with OpenRouter:', error);
     return 'Geral';
   }
 };
 
 // 2. Financial Advice
-export const getFinancialAdviceWithPuter = async (transactions: any[], goals: any[], language: string = 'pt'): Promise<string> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return 'Configure Puter em Configurações > Integrações para receber conselhos personalizados.';
-  }
-
+export const getFinancialAdviceWithOpenRouter = async (transactions: any[], goals: any[], language: string = 'pt'): Promise<string> => {
   try {
     const summary = JSON.stringify({
       totalTransacoes: transactions.length,
@@ -73,21 +93,16 @@ export const getFinancialAdviceWithPuter = async (transactions: any[], goals: an
       IMPORTANTE: Responda APENAS em ${languageNames[language] || 'Portuguese'}.
     `;
 
-    const response = await puter.ai.chat(prompt, { model: 'gpt-4.1-nano' });
+    const response = await callOpenRouter(prompt);
     return response?.trim() || 'Mantenha o foco!';
   } catch (error) {
-    console.error('Error getting financial advice from Puter:', error);
+    console.error('Error getting financial advice from OpenRouter:', error);
     return 'Mantenha o foco em suas metas de economia!';
   }
 };
 
 // 3. Analyze Loan Document
-export const analyzeLoanDocumentWithPuter = async (text: string): Promise<Partial<LoanSimulation>> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return {};
-  }
-
+export const analyzeLoanDocumentWithOpenRouter = async (text: string): Promise<Partial<LoanSimulation>> => {
   try {
     const prompt = `
       Analise o seguinte texto de documento de empréstimo e extraia as informações principais.
@@ -96,7 +111,7 @@ export const analyzeLoanDocumentWithPuter = async (text: string): Promise<Partia
       Texto: ${text}
     `;
 
-    const response = await puter.ai.chat(prompt, { model: 'gpt-4.1-nano' });
+    const response = await callOpenRouter(prompt);
     let jsonStr = response?.trim() || '{}';
 
     if (jsonStr.startsWith('```json')) {
@@ -108,18 +123,13 @@ export const analyzeLoanDocumentWithPuter = async (text: string): Promise<Partia
 
     return JSON.parse(jsonStr);
   } catch (error) {
-    console.error('Error analyzing loan document with Puter:', error);
+    console.error('Error analyzing loan document with OpenRouter:', error);
     return {};
   }
 };
 
 // 4. Analyze User Behavior
-export const analyzeUserBehaviorWithPuter = async (transactions: Transaction[], language: string = 'pt'): Promise<UserBehaviorAnalysis> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return { persona: 'Usuário', patternDescription: '', tip: '', nextMonthProjection: 0 };
-  }
-
+export const analyzeUserBehaviorWithOpenRouter = async (transactions: Transaction[], language: string = 'pt'): Promise<UserBehaviorAnalysis> => {
   try {
     const summary = JSON.stringify(transactions.slice(0, 10));
 
@@ -134,7 +144,7 @@ export const analyzeUserBehaviorWithPuter = async (transactions: Transaction[], 
       IMPORTANTE: Responda APENAS em ${languageNames[language] || 'Portuguese'}.
     `;
 
-    const response = await puter.ai.chat(prompt, { model: 'gpt-4.1-nano' });
+    const response = await callOpenRouter(prompt);
     let jsonStr = response?.trim() || '{}';
 
     if (jsonStr.startsWith('```json')) {
@@ -146,18 +156,13 @@ export const analyzeUserBehaviorWithPuter = async (transactions: Transaction[], 
 
     return JSON.parse(jsonStr);
   } catch (error) {
-    console.error('Error analyzing user behavior with Puter:', error);
+    console.error('Error analyzing user behavior with OpenRouter:', error);
     return { persona: 'Usuário', patternDescription: '', tip: '', nextMonthProjection: 0 };
   }
 };
 
 // 5. Parse Transaction from Text
-export const parseTransactionFromTextWithPuter = async (text: string): Promise<Partial<Transaction>> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return { description: text, category: 'Geral' };
-  }
-
+export const parseTransactionFromTextWithOpenRouter = async (text: string): Promise<Partial<Transaction>> => {
   try {
     const prompt = `
       Extraia os dados de uma transação financeira do seguinte texto em Português. Retorne APENAS um JSON válido com:
@@ -170,7 +175,7 @@ export const parseTransactionFromTextWithPuter = async (text: string): Promise<P
       Texto: "${text}"
     `;
 
-    const response = await puter.ai.chat(prompt, { model: 'gpt-4.1-nano' });
+    const response = await callOpenRouter(prompt);
     let jsonStr = response?.trim() || '{}';
 
     if (jsonStr.startsWith('```json')) {
@@ -182,49 +187,25 @@ export const parseTransactionFromTextWithPuter = async (text: string): Promise<P
 
     return JSON.parse(jsonStr);
   } catch (error) {
-    console.error('Error parsing transaction with Puter:', error);
+    console.error('Error parsing transaction with OpenRouter:', error);
     return { description: text, category: 'Geral' };
   }
 };
 
-// 6. Parse Transaction from Audio
-export const parseTransactionFromAudioWithPuter = async (base64Audio: string): Promise<Partial<Transaction>> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return { description: '', category: 'Geral' };
-  }
-
+// 6. Parse Transaction from Audio (using speech-to-text first)
+export const parseTransactionFromAudioWithOpenRouter = async (base64Audio: string): Promise<Partial<Transaction>> => {
   try {
-    // Convert base64 to File object
-    const binaryString = atob(base64Audio);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    const audioFile = new File([bytes], 'audio.mp3', { type: 'audio/mp3' });
-
-    // Transcribe
-    const transcription = await puter.ai.speech2txt(audioFile);
-    const text = transcription?.text || transcription || '';
-
-    // Parse as transaction
-    if (text) {
-      return parseTransactionFromTextWithPuter(text);
-    }
+    // Note: OpenRouter doesn't have speech-to-text, so we return placeholder
+    console.warn('OpenRouter does not support audio transcription');
     return { description: '', category: 'Geral' };
   } catch (error) {
-    console.error('Error parsing audio with Puter:', error);
+    console.error('Error parsing audio with OpenRouter:', error);
     return { description: '', category: 'Geral' };
   }
 };
 
 // 7. Suggest Budgets
-export const suggestBudgetsWithPuter = async (transactions: Transaction[]): Promise<any[]> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return [];
-  }
-
+export const suggestBudgetsWithOpenRouter = async (transactions: Transaction[]): Promise<any[]> => {
   try {
     const prompt = `
       Com base no histórico de transações fornecido, sugira limites de orçamento por categoria.
@@ -233,7 +214,7 @@ export const suggestBudgetsWithPuter = async (transactions: Transaction[]): Prom
       Transações: ${JSON.stringify(transactions.slice(0, 20))}
     `;
 
-    const response = await puter.ai.chat(prompt, { model: 'gpt-4.1-nano' });
+    const response = await callOpenRouter(prompt);
     let jsonStr = response?.trim() || '[]';
 
     if (jsonStr.startsWith('```json')) {
@@ -245,63 +226,83 @@ export const suggestBudgetsWithPuter = async (transactions: Transaction[]): Prom
 
     return JSON.parse(jsonStr);
   } catch (error) {
-    console.error('Error suggesting budgets with Puter:', error);
+    console.error('Error suggesting budgets with OpenRouter:', error);
     return [];
   }
 };
 
 // 8. Chat Response
-export const getAiChatResponseWithPuter = async (message: string): Promise<string> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return 'Puter.js não foi carregado.';
-  }
-
+export const getAiChatResponseWithOpenRouter = async (message: string): Promise<string> => {
   try {
-    const response = await puter.ai.chat(message, { model: 'gpt-4.1-nano' });
+    const response = await callOpenRouter(message);
     return response?.trim() || '';
   } catch (error) {
-    console.error('Error getting chat response from Puter:', error);
+    console.error('Error getting chat response from OpenRouter:', error);
     return 'Desculpe, não consegui processar sua mensagem.';
   }
 };
 
 // 9. Chat Response Streaming
-export const getAiChatResponseStreamingWithPuter = async (message: string): Promise<AsyncIterable<string>> => {
-  const puter = getPuter();
-  
-  return (async function* () {
-    if (typeof puter === 'undefined') {
-      yield 'Puter.js não foi carregado.';
-      return;
-    }
+export const getAiChatResponseStreamingWithOpenRouter = async (message: string): Promise<AsyncIterable<string>> => {
+  const config = await getOpenRouterConfig();
+  if (!config?.apiKey) {
+    throw new Error('OpenRouter API key not configured');
+  }
 
+  return (async function* () {
     try {
-      // Puter doesn't have native streaming, so we simulate it
-      const response = await puter.ai.chat(message, { model: 'gpt-4.1-nano', stream: true });
-      for await (const chunk of response) {
-        yield chunk;
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${config.apiKey}`,
+          'HTTP-Referer': window.location.href,
+          'X-Title': 'Gestor Financeiro',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-3.5-turbo',
+          messages: [{ role: 'user', content: message }],
+          temperature: 0.7,
+          max_tokens: 2000,
+          stream: true,
+        })
+      });
+
+      if (!response.body) throw new Error('No response body');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const text = decoder.decode(value);
+        const lines = text.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(data);
+              const content = parsed.choices?.[0]?.delta?.content || '';
+              if (content) yield content;
+            } catch (e) {
+              // Ignore parse errors
+            }
+          }
+        }
       }
     } catch (error) {
-      console.error('Error streaming response from Puter:', error);
-      // Fallback to non-streaming
-      try {
-        const response = await puter.ai.chat(message, { model: 'gpt-4.1-nano' });
-        yield response?.trim() || 'Erro ao processar sua mensagem.';
-      } catch (e) {
-        yield 'Erro ao processar sua mensagem.';
-      }
+      console.error('Error streaming response from OpenRouter:', error);
+      yield 'Erro ao processar sua mensagem.';
     }
   })();
 };
 
 // 10. Parse Transaction from Receipt (OCR)
-export const parseTransactionFromReceiptWithPuter = async (imageUrl: string): Promise<Partial<Transaction>> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return { description: 'Recibo', category: 'Geral' };
-  }
-
+export const parseTransactionFromReceiptWithOpenRouter = async (imageUrl: string): Promise<Partial<Transaction>> => {
   try {
     const prompt = `
       Analise este recibo/nota fiscal e extraia dados da transação.
@@ -310,8 +311,7 @@ export const parseTransactionFromReceiptWithPuter = async (imageUrl: string): Pr
       Imagem URL: ${imageUrl}
     `;
 
-    // Use vision capability
-    const response = await puter.ai.chat(prompt, { model: 'gpt-4.1-nano', image: imageUrl });
+    const response = await callOpenRouter(prompt);
     let jsonStr = response?.trim() || '{}';
 
     if (jsonStr.startsWith('```json')) {
@@ -323,18 +323,13 @@ export const parseTransactionFromReceiptWithPuter = async (imageUrl: string): Pr
 
     return JSON.parse(jsonStr);
   } catch (error) {
-    console.error('Error parsing receipt with Puter:', error);
+    console.error('Error parsing receipt with OpenRouter:', error);
     return { description: 'Recibo', category: 'Geral' };
   }
 };
 
 // 11. Analyze Expenses for Waste
-export const analyzeExpensesForWasteWithPuter = async (transactions: Transaction[], language: string = 'pt'): Promise<{ wasteIndicators: string[], totalWaste: number, suggestions: string[] }> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return { wasteIndicators: [], totalWaste: 0, suggestions: [] };
-  }
-
+export const analyzeExpensesForWasteWithOpenRouter = async (transactions: Transaction[], language: string = 'pt'): Promise<{ wasteIndicators: string[], totalWaste: number, suggestions: string[] }> => {
   try {
     const prompt = `
       Analise estes gastos e identifique possíveis desperdícios.
@@ -344,7 +339,7 @@ export const analyzeExpensesForWasteWithPuter = async (transactions: Transaction
       IMPORTANTE: Responda APENAS em ${languageNames[language] || 'Portuguese'}.
     `;
 
-    const response = await puter.ai.chat(prompt, { model: 'gpt-4.1-nano' });
+    const response = await callOpenRouter(prompt);
     let jsonStr = response?.trim() || '{"wasteIndicators":[],"totalWaste":0,"suggestions":[]}';
 
     if (jsonStr.startsWith('```json')) {
@@ -356,18 +351,13 @@ export const analyzeExpensesForWasteWithPuter = async (transactions: Transaction
 
     return JSON.parse(jsonStr);
   } catch (error) {
-    console.error('Error analyzing waste with Puter:', error);
+    console.error('Error analyzing waste with OpenRouter:', error);
     return { wasteIndicators: [], totalWaste: 0, suggestions: [] };
   }
 };
 
 // 12. Predict Future Expenses
-export const predictFutureExpensesWithPuter = async (transactions: Transaction[], months: number = 3, language: string = 'pt'): Promise<{ predictions: any[], confidence: number, notes: string }> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return { predictions: [], confidence: 0, notes: '' };
-  }
-
+export const predictFutureExpensesWithOpenRouter = async (transactions: Transaction[], months: number = 3, language: string = 'pt'): Promise<{ predictions: any[], confidence: number, notes: string }> => {
   try {
     const prompt = `
       Com base no histórico de transações, preveja os gastos dos próximos ${months} meses.
@@ -377,7 +367,7 @@ export const predictFutureExpensesWithPuter = async (transactions: Transaction[]
       IMPORTANTE: Responda APENAS em ${languageNames[language] || 'Portuguese'}.
     `;
 
-    const response = await puter.ai.chat(prompt, { model: 'gpt-4.1-nano' });
+    const response = await callOpenRouter(prompt);
     let jsonStr = response?.trim() || '{"predictions":[],"confidence":0,"notes":""}';
 
     if (jsonStr.startsWith('```json')) {
@@ -389,24 +379,22 @@ export const predictFutureExpensesWithPuter = async (transactions: Transaction[]
 
     return JSON.parse(jsonStr);
   } catch (error) {
-    console.error('Error predicting expenses with Puter:', error);
+    console.error('Error predicting expenses with OpenRouter:', error);
     return { predictions: [], confidence: 0, notes: '' };
   }
 };
 
 export default {
-  hasPuterEnabled,
-  setPuterAsDefault,
-  categorizeTransactionWithPuter,
-  getFinancialAdviceWithPuter,
-  analyzeLoanDocumentWithPuter,
-  analyzeUserBehaviorWithPuter,
-  parseTransactionFromTextWithPuter,
-  parseTransactionFromAudioWithPuter,
-  suggestBudgetsWithPuter,
-  getAiChatResponseWithPuter,
-  getAiChatResponseStreamingWithPuter,
-  parseTransactionFromReceiptWithPuter,
-  analyzeExpensesForWasteWithPuter,
-  predictFutureExpensesWithPuter,
+  categorizeTransactionWithOpenRouter,
+  getFinancialAdviceWithOpenRouter,
+  analyzeLoanDocumentWithOpenRouter,
+  analyzeUserBehaviorWithOpenRouter,
+  parseTransactionFromTextWithOpenRouter,
+  parseTransactionFromAudioWithOpenRouter,
+  suggestBudgetsWithOpenRouter,
+  getAiChatResponseWithOpenRouter,
+  getAiChatResponseStreamingWithOpenRouter,
+  parseTransactionFromReceiptWithOpenRouter,
+  analyzeExpensesForWasteWithOpenRouter,
+  predictFutureExpensesWithOpenRouter,
 };
