@@ -352,47 +352,27 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Financial Health Score Widget */}
-        <div className={`bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-soft border transition-all duration-300 flex flex-col items-center justify-between relative overflow-hidden min-h-[300px] group ${healthScore > 70 ? 'border-emerald-200 dark:border-emerald-900/30 hover:border-emerald-300' : healthScore > 40 ? 'border-amber-200 dark:border-amber-900/30 hover:border-amber-300' : 'border-rose-200 dark:border-rose-900/30 hover:border-rose-300'}`}>
+        <div className={`bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-soft border transition-all duration-300 flex flex-col items-center justify-center relative overflow-hidden h-[180px] md:h-[200px] group ${healthScore > 70 ? 'border-emerald-200 dark:border-emerald-900/30 hover:border-emerald-300' : healthScore > 40 ? 'border-amber-200 dark:border-amber-900/30 hover:border-amber-300' : 'border-rose-200 dark:border-rose-900/30 hover:border-rose-300'}`}>
             <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r transition-all duration-300 ${healthScore > 70 ? 'from-emerald-400 to-emerald-500' : healthScore > 40 ? 'from-amber-400 to-amber-500' : 'from-rose-400 to-rose-500'}`}></div>
             
-            <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center z-10 w-full justify-center text-center">
-              💰 Saúde Financeira
-            </h3>
-            
-            <div className="h-40 w-full relative flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadialBarChart innerRadius="70%" outerRadius="100%" data={healthData} startAngle={180} endAngle={0} cy="85%">
-                   <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                   <RadialBar background={{ fill: '#f1f5f9' }} dataKey="value" cornerRadius={10} />
-                </RadialBarChart>
-              </ResponsiveContainer>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 text-center mt-4 animate-bounce-in">
-                 <span className={`text-3xl md:text-5xl font-extrabold transition-colors duration-300 ${healthScore > 70 ? 'text-emerald-500' : healthScore > 40 ? 'text-amber-500' : 'text-rose-500'}`}>
-                   {healthScore}
-                 </span>
-                 <span className="text-xs text-slate-400 block font-bold mt-1">/ 100</span>
+            <div className="flex items-center justify-between w-full gap-4">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center z-10 w-full justify-center text-center">
+                  💰 Score
+                </h3>
+                <div className="animate-bounce-in">
+                   <span className={`text-2xl md:text-3xl font-extrabold transition-colors duration-300 ${healthScore > 70 ? 'text-emerald-500' : healthScore > 40 ? 'text-amber-500' : 'text-rose-500'}`}>
+                     {healthScore}
+                   </span>
+                   <span className="text-[10px] text-slate-400 block font-bold">/ 100</span>
+                </div>
               </div>
-            </div>
-            
-            <div className="text-center z-10 mt-4 w-full">
-               <p className={`text-xs md:text-sm font-bold py-2 px-4 rounded-full bg-gradient-to-r transition-all duration-300 ${healthScore > 70 ? 'from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/20 text-emerald-700 dark:text-emerald-300' : healthScore > 40 ? 'from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/20 text-amber-700 dark:text-amber-300' : 'from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-900/20 text-rose-700 dark:text-rose-300'}`}>
-                 {healthScore > 80 ? '✨ Excelente!' : healthScore > 50 ? '⚠️ Bom, mas atenção' : '🚨 Crítico'}
-               </p>
-            </div>
-            
-            {/* Fatores que compõem o score */}
-            <div className="w-full mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 space-y-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-slide-up">
-              <div className="flex justify-between items-center px-2 py-1 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                <span className="text-slate-600 dark:text-slate-400">📊 Taxa Poupança</span>
-                <span className="font-bold text-slate-800 dark:text-white">40%</span>
-              </div>
-              <div className="flex justify-between items-center px-2 py-1 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                <span className="text-slate-600 dark:text-slate-400">💸 Razão Despesa</span>
-                <span className="font-bold text-slate-800 dark:text-white">30%</span>
-              </div>
-              <div className="flex justify-between items-center px-2 py-1 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                <span className="text-slate-600 dark:text-slate-400">🎯 Metas Ativas</span>
-                <span className="font-bold text-slate-800 dark:text-white">30%</span>
+              
+              <div className="flex-1 text-center z-10">
+                 <p className={`text-[10px] md:text-xs font-bold py-1.5 px-2 rounded-full bg-gradient-to-r transition-all duration-300 ${healthScore > 70 ? 'from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/20 text-emerald-700 dark:text-emerald-300' : healthScore > 40 ? 'from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/20 text-amber-700 dark:text-amber-300' : 'from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-900/20 text-rose-700 dark:text-rose-300'}`}>
+                   {healthScore > 80 ? '✨ Ótimo' : healthScore > 50 ? '⚠️ Bom' : '🚨 Crítico'}
+                 </p>
+                 <p className="text-[9px] text-slate-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">40% poupança<br/>30% despesa<br/>30% metas</p>
               </div>
             </div>
         </div>
