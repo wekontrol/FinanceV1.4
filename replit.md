@@ -65,21 +65,21 @@ A comprehensive family financial management platform built with React, TypeScrip
 
 **For Render/Cloud:**
 1. Connect GitHub repository
-2. Set `DATABASE_URL` environment variable (PostgreSQL connection string)
+2. Set `TheFinance` environment variable (PostgreSQL connection string)
 3. Deploy - sessions automatically use PostgreSQL
 
 **Production Environment Variables:**
 - `NODE_ENV=production`
-- `DATABASE_URL=postgresql://user:pass@host:5432/dbname` (for sessions storage)
+- `TheFinance=postgresql://user:pass@host:5432/dbname` (for sessions storage)
 - `SESSION_SECRET=your-secret-key`
 - `PORT=10000` (or your cloud provider's port)
 
 ## Session Storage - How It Works
 1. **Development**: Uses memory store (in-process)
-2. **Production with DATABASE_URL**: Uses PostgreSQL
-3. **Production without DATABASE_URL**: Falls back to memory (with warning)
+2. **Production with TheFinance**: Uses PostgreSQL
+3. **Production without TheFinance**: Falls back to memory (with warning)
 
-Ideal setup: Always provide `DATABASE_URL` in production for persistent sessions.
+Ideal setup: Always provide `TheFinance` in production for persistent sessions.
 
 ## External APIs
 - **ExchangeRate-API**: Real-time currency rates (https://exchangerate-api.com/)
@@ -96,7 +96,7 @@ Ideal setup: Always provide `DATABASE_URL` in production for persistent sessions
 
 ## Next Steps
 1. 🔄 Deploy to production (Ubuntu/Render/Cloud)
-2. 🔄 Set DATABASE_URL environment variable
+2. 🔄 Set TheFinance environment variable
 3. 🔄 Change default admin password
 4. 🔄 Configure Gemini API key in Settings
 5. 🔄 Add production SSL certificates

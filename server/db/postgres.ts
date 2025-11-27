@@ -2,7 +2,7 @@ import { Pool } from 'pg';
 
 // PostgreSQL connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.TheFinance,
   max: 20, // Connection pool size
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
