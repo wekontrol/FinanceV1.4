@@ -298,6 +298,11 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 min="0"
                 step="0.01"
               />
+              {newAmount && (
+                <p className="text-right text-xs font-bold text-primary-600 dark:text-primary-400 mt-1">
+                  {currencyFormatter(Number(newAmount))}
+                </p>
+              )}
             </div>
 
             <div className="flex gap-2 pt-2">
@@ -374,14 +379,21 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
               <div className="border-t border-slate-50 dark:border-slate-700 pt-4">
                 {editingCategory === cat ? (
                   <div className="flex items-center space-x-2 animate-fade-in">
-                    <input 
-                      type="number" 
-                      value={editAmount}
-                      onChange={(e) => setEditAmount(e.target.value)}
-                      className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
-                      autoFocus
-                      placeholder="Novo Limite"
-                    />
+                    <div className="flex-1 flex flex-col">
+                      <input 
+                        type="number" 
+                        value={editAmount}
+                        onChange={(e) => setEditAmount(e.target.value)}
+                        className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+                        autoFocus
+                        placeholder="Novo Limite"
+                      />
+                      {editAmount && (
+                        <p className="text-right text-xs font-bold text-primary-600 dark:text-primary-400 mt-1">
+                          {currencyFormatter(Number(editAmount))}
+                        </p>
+                      )}
+                    </div>
                     <button 
                       onClick={() => handleSave(cat)}
                       className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 shadow"

@@ -537,6 +537,11 @@ const Transactions: React.FC<TransactionsProps> = ({
                   placeholder="0.00"
                   className={`${inputClass} text-lg font-bold tabular-nums`}
                 />
+                {formData.amount && (
+                  <p className="text-right text-xs font-bold text-primary-600 dark:text-primary-400 mt-1">
+                    {currencyFormatter(Number(formData.amount))}
+                  </p>
+                )}
               </div>
 
               <div>

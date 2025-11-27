@@ -9,7 +9,7 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Deployment target: Ubuntu 20.04+ on Proxmox VMs (or Render/Production)
 - Theme: Supports dark mode preference
 
-## Recent Implementation (November 27, 2025 - Enhanced Frequencies + Category Validation)
+## Recent Implementation (November 27, 2025 - Final: Currency Previews + Frequencies + Validation)
 
 ✅ **HISTÓRICO DE ORÇAMENTOS - Budget History Tracking (100% Automático)**
 1. **Nova Tabela** - `budget_history` armazena gastos mensais por categoria
@@ -40,6 +40,16 @@ A comprehensive family financial management platform built with React, TypeScrip
 3. **Validações** - Avisa se categoria/valor vazios ou valor ≤ 0
 4. **Animações** - Slide-in-left ao aparecer, validações inline
 5. **Testado & Funcionando** - Adiciona novos orçamentos corretamente
+
+✅ **PREVISUALIZAÇÕES DE MOEDA - Confirmação Visual de Valores**
+1. **Campos com Prévia** - Transações, Orçamentos, Metas, Empréstimos
+2. **Formatação Em Tempo Real** - Mostra "AOA 1.500,00" enquanto digita
+3. **Validação Visual** - Usuário confirma valor antes de enviar
+4. **Todos os Componentes Atualizados**:
+   - Transactions.tsx: Campo de valor em nova transação
+   - BudgetControl.tsx: Limite mensal (novo + edição)
+   - Goals.tsx: Alvo + Saldo Inicial (já implementado)
+   - Simulations.tsx: Valor do empréstimo (já implementado)
 
 ✅ **FREQUÊNCIAS EXPANDIDAS - 6 Opções de Recorrência**
 1. **Semanal** - Cada semana
