@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import db from '../db/schema';
+import { autoSaveMonthlyHistory } from './budget';
 
 const router = Router();
 
@@ -43,6 +44,9 @@ router.post('/login', (req: Request, res: Response) => {
 
   req.session.userId = user.id;
   req.session.user = userWithoutPassword;
+
+  // Auto-save budget history if month changed
+  autoSaveMonthlyHistory(user.id);
 
   res.json({ user: userWithoutPassword });
 });

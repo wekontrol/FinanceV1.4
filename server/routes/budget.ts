@@ -3,6 +3,53 @@ import db from '../db/schema';
 
 const router = Router();
 
+// Função para salvar automaticamente histórico do mês anterior ao final do mês
+export function autoSaveMonthlyHistory(userId: string) {
+  try {
+    const lastSave = db.prepare(`
+      SELECT value FROM app_settings WHERE key = ?
+    `).get(`budget_history_saved_${userId}`) as any;
+
+    const lastMonth = lastSave?.value || '2000-01';
+    const currentMonth = new Date().toISOString().slice(0, 7);
+
+    // Se mudou de mês, salva histórico do mês anterior
+    if (lastMonth !== currentMonth) {
+      const previousMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().slice(0, 7);
+      
+      const limits = db.prepare(`
+        SELECT * FROM budget_limits WHERE user_id = ?
+      `).all(userId);
+
+      const transactions = db.prepare(`
+        SELECT category, SUM(amount) as total
+        FROM transactions
+        WHERE user_id = ? AND type = 'DESPESA' AND date LIKE ?
+        GROUP BY category
+      `).all(userId, `${previousMonth}%`) as any[];
+
+      limits.forEach((limit: any) => {
+        const spent = transactions.find(t => t.category === limit.category);
+        const id = `bh${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+        
+        db.prepare(`
+          INSERT OR REPLACE INTO budget_history (id, user_id, category, month, limit_amount, spent_amount)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `).run(id, userId, limit.category, previousMonth, limit.limit_amount, spent ? spent.total : 0);
+      });
+
+      // Atualiza a data do último salvamento
+      db.prepare(`
+        INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)
+      `).run(`budget_history_saved_${userId}`, currentMonth);
+
+      console.log(`Auto-saved budget history for user ${userId}: ${limits.length} categories from ${previousMonth}`);
+    }
+  } catch (error) {
+    console.error('Error in autoSaveMonthlyHistory:', error);
+  }
+}
+
 function requireAuth(req: Request, res: Response, next: Function) {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'Not authenticated' });
