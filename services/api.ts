@@ -19,7 +19,7 @@ export const authApi = {
     return handleResponse(response);
   },
 
-  register: async (data: { username: string; password: string; name: string; securityQuestion?: string; securityAnswer?: string }) => {
+  register: async (data: { username: string; password: string; name: string; familyName: string; securityQuestion?: string; securityAnswer?: string }) => {
     const response = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

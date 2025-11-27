@@ -61,7 +61,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
         username: registerUsername,
         password: registerPassword,
         name: registerName,
-        familyName,
+        familyName: familyName,
         securityQuestion,
         securityAnswer
       });
