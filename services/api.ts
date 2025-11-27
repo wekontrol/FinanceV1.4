@@ -107,6 +107,24 @@ export const budgetApi = {
     return handleResponse(response);
   },
 
+  setLimit: async (category: string, limit: number) => {
+    const response = await fetch(`${API_BASE}/budget/limits`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ category, limit })
+    });
+    return handleResponse(response);
+  },
+
+  deleteLimit: async (category: string) => {
+    const response = await fetch(`${API_BASE}/budget/limits/${category}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  },
+
   getHistory: async () => {
     const response = await fetch(`${API_BASE}/budget/history`, { credentials: 'include' });
     return handleResponse(response);

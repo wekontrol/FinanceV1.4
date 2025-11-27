@@ -9,7 +9,7 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Deployment target: Ubuntu 20.04+ on Proxmox VMs (or Render/Production)
 - Theme: Supports dark mode preference
 
-## Recent Implementation (November 27, 2025 - Final Session)
+## Recent Implementation (November 27, 2025 - Auto-Save Budget History + Bug Fixes)
 
 ✅ **HISTÓRICO DE ORÇAMENTOS - Budget History Tracking (100% Automático)**
 1. **Nova Tabela** - `budget_history` armazena gastos mensais por categoria
