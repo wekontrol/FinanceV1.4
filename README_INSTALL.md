@@ -16,9 +16,11 @@ sudo ./deploy.sh
 
 O script configura tudo automaticamente:
 - ✅ Node.js 20
+- ✅ Git com configuração correta
 - ✅ Pacotes npm
 - ✅ Compilação para produção
 - ✅ Serviço systemd com restart automático
+- ✅ Permissões de arquivo corretas
 - ✅ Logs centralizados
 
 **Tempo total**: 5-10 minutos
@@ -56,33 +58,25 @@ node -v  # deve mostrar v20.x.x
 npm -v   # deve mostrar 10.x.x
 ```
 
-### 3. Clonar e Preparar Aplicação
+### 3. Configurar Git
 
 ```bash
-# Clonar/copiar projeto
-cd /var/www
-sudo mkdir -p gestor-financeiro
-sudo chown $USER:$USER gestor-financeiro
-cd gestor-financeiro
+# Configurar git globalmente para evitar problemas de permissão
+git config --global --add safe.directory /var/www/gestor-financeiro
+git config --global user.name "Deploy Script"
+git config --global user.email "deploy@gestor-financeiro.local"
+```
+
+### 4. Clonar e Preparar Aplicação
+
+```bash
+# Criar diretório
+sudo mkdir -p /var/www/gestor-financeiro
+cd /var/www/gestor-financeiro
 
 # Copiar arquivos do projeto
 # (Use git clone, scp, ou outro método disponível)
-```
-
-### 4. Instalar Dependências
-
-```bash
-cd /var/www/gestor-financeiro
-
-# Limpar cache antigo (se houver)
-rm -rf node_modules
-rm -f package-lock.json
-
-# Instalar dependências
-npm install
-
-# Compilar para produção
-npm run build
+sudo chown -R $USER:$USER /var/www/gestor-financeiro
 ```
 
 ### 5. Criar Usuário para a Aplicação
@@ -96,7 +90,19 @@ sudo chown -R nodeapp:nodeapp /var/www/gestor-financeiro
 sudo chmod -R 755 /var/www/gestor-financeiro
 ```
 
-### 6. Configurar Serviço Systemd
+### 6. Instalar Dependências e Compilar
+
+```bash
+cd /var/www/gestor-financeiro
+
+# Instalar como usuário nodeapp
+sudo -u nodeapp npm install
+
+# Compilar para produção
+sudo -u nodeapp npm run build
+```
+
+### 7. Configurar Serviço Systemd
 
 Criar arquivo `/etc/systemd/system/gestor-financeiro.service`:
 
@@ -110,6 +116,7 @@ Cole o seguinte conteúdo:
 [Unit]
 Description=Gestor Financeiro Familiar - Node.js Application
 After=network.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -121,6 +128,9 @@ RestartSec=10
 StandardOutput=journal
 StandardError=journal
 
+LimitNOFILE=65535
+LimitNPROC=65535
+
 Environment="NODE_ENV=production"
 Environment="PORT=5000"
 
@@ -128,7 +138,7 @@ Environment="PORT=5000"
 WantedBy=multi-user.target
 ```
 
-### 7. Ativar e Iniciar Serviço
+### 8. Ativar e Iniciar Serviço
 
 ```bash
 # Recarregar configuração systemd
@@ -144,12 +154,16 @@ sudo systemctl start gestor-financeiro
 sudo systemctl status gestor-financeiro
 ```
 
-### 8. Acessar Aplicação
+### 9. Acessar Aplicação
 
 A aplicação estará disponível em:
 ```
 http://<seu-ip-do-servidor>:5000
 ```
+
+**Credenciais padrão:**
+- Usuário: `admin`
+- Senha: `admin`
 
 ---
 
@@ -269,25 +283,32 @@ sudo kill -9 <PID>
 ```bash
 # Ajustar permissões
 sudo chown -R nodeapp:nodeapp /var/www/gestor-financeiro
+sudo chmod -R 755 /var/www/gestor-financeiro
+```
+
+### Erro: "Git detected dubious ownership"
+
+```bash
+# Configurar git
+git config --global --add safe.directory /var/www/gestor-financeiro
 ```
 
 ### Aplicação não inicia
 
 ```bash
-# Verificar logs
+# Verificar logs detalhados
 sudo journalctl -u gestor-financeiro -n 100
 
-# Testar localmente
-cd /var/www/gestor-financeiro
-npm start
+# Testar manualmente (como usuário nodeapp)
+sudo -u nodeapp npm start
 ```
 
-### Database Lock Error
+### Database Lock Error (SQLite)
 
 ```bash
-# SQLite pode ficar travado. Resetar:
+# Remover arquivos de lock
 cd /var/www/gestor-financeiro
-rm -f data.db data.db-shm data.db-wal
+rm -f data.db-wal data.db-shm
 sudo systemctl restart gestor-financeiro
 ```
 
@@ -303,11 +324,11 @@ sudo systemctl stop gestor-financeiro
 cd /var/www/gestor-financeiro
 rm -rf node_modules dist
 rm -f package-lock.json
-rm -f data.db data.db-shm data.db-wal
+rm -f data.db data.db-wal data.db-shm
 
 # Reinstalar
-npm install
-npm run build
+sudo -u nodeapp npm install
+sudo -u nodeapp npm run build
 
 # Reiniciar
 sudo systemctl start gestor-financeiro
@@ -332,11 +353,11 @@ A base de dados SQLite está em `/var/www/gestor-financeiro/data.db`
 Para fazer backup:
 
 ```bash
-# Backup da database
+# Backup simples
 sudo cp /var/www/gestor-financeiro/data.db \
         /var/www/gestor-financeiro/data.db.backup
 
-# Ou para outro local
+# Ou para outro local com data
 sudo cp /var/www/gestor-financeiro/data.db \
         /backup/gestor-financeiro-$(date +%Y%m%d).db
 ```

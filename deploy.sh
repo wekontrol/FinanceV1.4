@@ -6,11 +6,16 @@ set -e
 # Configuração não interativa para apt
 export DEBIAN_FRONTEND=noninteractive
 
-echo ">>> [1/6] Atualizando sistema..."
+echo ">>> [1/7] Atualizando sistema..."
 sudo apt-get update
 sudo apt-get install -y curl git build-essential
 
-echo ">>> [2/6] Verificando Node.js..."
+echo ">>> [2/7] Configurando Git globalmente..."
+git config --global --add safe.directory /var/www/gestor-financeiro
+git config --global user.name "Deploy Script"
+git config --global user.email "deploy@gestor-financeiro.local"
+
+echo ">>> [3/7] Verificando Node.js..."
 if ! command -v node &> /dev/null; then
     echo "Instalando Node.js 20..."
     curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
@@ -19,44 +24,51 @@ else
     echo "Node.js já instalado: $(node -v)"
 fi
 
-echo ">>> [3/6] Limpando instalação anterior..."
-# Remove lixo que causa erro de versão
-rm -rf node_modules
-rm -rf dist
-rm -f package-lock.json
-
-echo ">>> [4/6] Instalando e compilando..."
-# Instala dependências
-npm install
-# Cria a pasta dist (produção)
-npm run build
-
-echo ">>> [5/6] Configurando serviço Node.js..."
+echo ">>> [4/7] Preparando diretório da aplicação..."
 APP_DIR="/var/www/gestor-financeiro"
 APP_USER="nodeapp"
 
-# Cria usuário para rodar a aplicação (se não existir)
+# Criar usuário se não existir
 if ! id "$APP_USER" &>/dev/null; then
     sudo useradd -m -s /bin/bash "$APP_USER"
     echo "Usuário $APP_USER criado"
 fi
 
-# Cria pasta do servidor e copia arquivos
+# Criar diretório
 sudo mkdir -p $APP_DIR
-sudo rm -rf $APP_DIR/*
-sudo cp -r . $APP_DIR/
+sudo chown -R root:root $APP_DIR
+sudo chmod 755 $APP_DIR
 
-# Ajusta permissões
+echo ">>> [5/7] Clonando/Copiando código e instalando dependências..."
+# Copiar arquivos atuais para APP_DIR
+sudo cp -r . $APP_DIR/
+cd $APP_DIR
+
+# Ajustar permissões para instalação
+sudo chown -R $APP_USER:$APP_USER $APP_DIR
+sudo chmod -R u+rwX $APP_DIR
+
+# Limpar cache antigo
+sudo -u $APP_USER sh -c 'rm -rf node_modules && rm -rf dist && rm -f package-lock.json'
+
+# Instalar como o usuário da aplicação
+sudo -u $APP_USER npm install
+
+# Compilar para produção
+sudo -u $APP_USER npm run build
+
+# Garantir permissões corretas após build
 sudo chown -R $APP_USER:$APP_USER $APP_DIR
 sudo chmod -R 755 $APP_DIR
 
-echo ">>> [6/6] Configurando systemd para manter a aplicação rodando..."
+echo ">>> [6/7] Configurando serviço systemd..."
 
 # Cria arquivo de serviço systemd
 sudo tee /etc/systemd/system/gestor-financeiro.service > /dev/null <<EOF
 [Unit]
 Description=Gestor Financeiro Familiar - Node.js Application
 After=network.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -68,6 +80,10 @@ RestartSec=10
 StandardOutput=journal
 StandardError=journal
 
+# Limites de recursos
+LimitNOFILE=65535
+LimitNPROC=65535
+
 Environment="NODE_ENV=production"
 Environment="PORT=5000"
 
@@ -78,21 +94,29 @@ EOF
 # Habilita e inicia o serviço
 sudo systemctl daemon-reload
 sudo systemctl enable gestor-financeiro
+
+echo ">>> [7/7] Iniciando serviço..."
 sudo systemctl start gestor-financeiro
 
 # Verifica se o serviço está rodando
-sleep 2
+sleep 3
 if sudo systemctl is-active --quiet gestor-financeiro; then
-    echo "✓ Serviço iniciado com sucesso!"
+    echo ""
+    echo "✓ SUCESSO! Serviço iniciado com sucesso!"
     echo "✓ Acesse a aplicação em: http://$(hostname -I | awk '{print $1}'):5000"
+    echo ""
+    echo "Credenciais padrão:"
+    echo "  Usuário: admin"
+    echo "  Senha: admin"
+    echo ""
+    echo "Comandos úteis:"
+    echo "  Ver logs em tempo real: sudo journalctl -u gestor-financeiro -f"
+    echo "  Restart da aplicação: sudo systemctl restart gestor-financeiro"
+    echo "  Status do serviço: sudo systemctl status gestor-financeiro"
+    echo "  Parar aplicação: sudo systemctl stop gestor-financeiro"
 else
-    echo "✗ Erro ao iniciar o serviço. Verifique logs com: sudo journalctl -u gestor-financeiro -n 50"
+    echo "✗ ERRO ao iniciar o serviço!"
+    echo "Verificando logs..."
+    sudo journalctl -u gestor-financeiro -n 50
     exit 1
 fi
-
-echo ">>> SUCESSO! O aplicativo deve estar acessível pelo IP."
-echo ""
-echo "Próximas ações úteis:"
-echo "  Ver logs em tempo real: sudo journalctl -u gestor-financeiro -f"
-echo "  Restart da aplicação: sudo systemctl restart gestor-financeiro"
-echo "  Parar aplicação: sudo systemctl stop gestor-financeiro"
