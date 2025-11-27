@@ -11,6 +11,13 @@ A comprehensive family financial management platform built with React, TypeScrip
 
 ## Recent Implementation (November 27, 2025 - Final Session)
 
+✅ **HISTÓRICO DE ORÇAMENTOS - Budget History Tracking**
+1. **Nova Tabela** - `budget_history` armazena gastos mensais por categoria
+2. **Endpoints Backend** - GET `/api/budget/history`, POST `/api/budget/history/save`
+3. **Visualizador de Histórico** - Mostra últimos 12 meses de gastos vs limites
+4. **Seletor de Mês** - Dropdown para comparar meses anteriores
+5. **Botão Salvar Histórico** - Registra dados do mês atual manualmente
+
 ✅ **GITHUB REPOSITORY CONFIGURAÇÃO - Super Admin Config**
 1. **GitHub Repo URL Input** - Super Admin pode configurar URL do repositório
 2. **Sistema de Update Corrigido** - Agora usa `/bin/bash` explicitamente (fix para "spawn /bin/sh ENOENT")

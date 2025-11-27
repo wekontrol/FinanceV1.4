@@ -116,4 +116,66 @@ router.get('/summary', (req: Request, res: Response) => {
   res.json(summary);
 });
 
+// Get budget history for all months
+router.get('/history', (req: Request, res: Response) => {
+  const userId = req.session.userId;
+  
+  const history = db.prepare(`
+    SELECT * FROM budget_history 
+    WHERE user_id = ? 
+    ORDER BY month DESC 
+    LIMIT 12
+  `).all(userId);
+
+  const grouped = history.reduce((acc: any, row: any) => {
+    if (!acc[row.month]) {
+      acc[row.month] = [];
+    }
+    acc[row.month].push({
+      category: row.category,
+      limit: row.limit_amount,
+      spent: row.spent_amount
+    });
+    return acc;
+  }, {});
+
+  res.json(grouped);
+});
+
+// Save current month to history (called at end of month or manually)
+router.post('/history/save', (req: Request, res: Response) => {
+  const userId = req.session.userId;
+  const currentMonth = new Date().toISOString().slice(0, 7);
+
+  try {
+    const limits = db.prepare(`
+      SELECT * FROM budget_limits WHERE user_id = ?
+    `).all(userId);
+
+    const transactions = db.prepare(`
+      SELECT category, SUM(amount) as total
+      FROM transactions
+      WHERE user_id = ? AND type = 'DESPESA' AND date LIKE ?
+      GROUP BY category
+    `).all(userId, `${currentMonth}%`) as any[];
+
+    let saved = 0;
+    limits.forEach((limit: any) => {
+      const spent = transactions.find(t => t.category === limit.category);
+      const id = `bh${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      
+      db.prepare(`
+        INSERT OR REPLACE INTO budget_history (id, user_id, category, month, limit_amount, spent_amount)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(id, userId, limit.category, currentMonth, limit.limit_amount, spent ? spent.total : 0);
+      
+      saved++;
+    });
+
+    res.json({ message: `Histórico de ${saved} categorias salvo para ${currentMonth}` });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao salvar histórico' });
+  }
+});
+
 export default router;

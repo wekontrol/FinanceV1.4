@@ -89,6 +89,18 @@ export function initializeDatabase() {
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
 
+    CREATE TABLE IF NOT EXISTS budget_history (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      category TEXT NOT NULL,
+      month TEXT NOT NULL,
+      limit_amount REAL NOT NULL,
+      spent_amount REAL DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(user_id, category, month),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+
     CREATE TABLE IF NOT EXISTS family_tasks (
       id TEXT PRIMARY KEY,
       family_id TEXT NOT NULL,

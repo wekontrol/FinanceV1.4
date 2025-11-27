@@ -1,15 +1,22 @@
 
 import React, { useState, useMemo } from 'react';
 import { Transaction, TransactionType, BudgetLimit } from '../types';
-import { PieChart, Save, AlertTriangle, CheckCircle, Edit3, Sparkles, Loader2, Plus, X } from 'lucide-react';
+import { PieChart, Save, AlertTriangle, CheckCircle, Edit3, Sparkles, Loader2, Plus, X, History, Calendar } from 'lucide-react';
 import Hint from './Hint';
 import { suggestBudgets } from '../services/geminiService';
+import { budgetApi } from '../services/api';
 
 interface BudgetControlProps {
   transactions: Transaction[];
   budgets: BudgetLimit[];
   saveBudget: (budget: BudgetLimit) => void;
   currencyFormatter: (value: number) => string;
+}
+
+interface HistoryEntry {
+  category: string;
+  limit: number;
+  spent: number;
 }
 
 const BudgetControl: React.FC<BudgetControlProps> = ({ 
@@ -24,6 +31,9 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newCategory, setNewCategory] = useState<string>('');
   const [newAmount, setNewAmount] = useState<string>('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [budgetHistory, setBudgetHistory] = useState<Record<string, HistoryEntry[]>>({});
+  const [selectedMonth, setSelectedMonth] = useState<string>('');
 
   const categories = useMemo(() => {
     const transactionCategories = new Set(transactions.map(t => t.category));
@@ -99,6 +109,29 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
 
   const categoriesNotInBudget = categories.filter(cat => !budgets.find(b => b.category === cat));
 
+  const loadHistory = async () => {
+    try {
+      const data = await budgetApi.getHistory();
+      setBudgetHistory(data);
+      const months = Object.keys(data).sort().reverse();
+      if (months.length > 0) {
+        setSelectedMonth(months[0]);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+    }
+  };
+
+  const handleSaveHistory = async () => {
+    try {
+      const result = await budgetApi.saveHistory();
+      alert(result.message);
+      loadHistory();
+    } catch (error: any) {
+      alert('Erro ao salvar histórico: ' + error.message);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 rounded-3xl text-white shadow-lg shadow-blue-500/20 relative overflow-hidden">
@@ -111,17 +144,111 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
               </h2>
               <p className="text-blue-100 font-medium max-w-xl text-sm md:text-base">Defina tetos de gastos para cada categoria. Manter-se dentro do orçamento é o primeiro passo para a liberdade financeira.</p>
             </div>
-            <button 
-              data-tour="ai-budget-suggest"
-              onClick={handleAiSuggestion}
-              disabled={isSuggesting}
-              className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-5 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-white/30 transition disabled:opacity-70"
-            >
-              {isSuggesting ? <Loader2 className="animate-spin" size={20} /> : <Sparkles size={20} className="text-yellow-300" />}
-              Sugerir com IA
-            </button>
+            <div className="flex gap-2 flex-wrap md:flex-nowrap">
+              <button 
+                onClick={() => {
+                  setShowHistory(true);
+                  loadHistory();
+                }}
+                className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 md:px-5 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-white/30 transition text-sm md:text-base"
+              >
+                <History size={18} />
+                Histórico
+              </button>
+              <button 
+                data-tour="ai-budget-suggest"
+                onClick={handleAiSuggestion}
+                disabled={isSuggesting}
+                className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 md:px-5 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-white/30 transition disabled:opacity-70 text-sm md:text-base"
+              >
+                {isSuggesting ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} className="text-yellow-300" />}
+                Sugerir com IA
+              </button>
+            </div>
          </div>
       </div>
+
+      {/* Visualizar Histórico */}
+      {showHistory && (
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-6 animate-slide-in-left">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-bold text-slate-800 dark:text-white text-lg flex items-center gap-2">
+              <History size={20} className="text-primary-600" />
+              Histórico de Orçamentos
+            </h3>
+            <button 
+              onClick={() => setShowHistory(false)}
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {/* Seletor de Mês */}
+            <div>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Selecione um mês:</label>
+              <select 
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+              >
+                <option value="">Escolha um mês...</option>
+                {Object.keys(budgetHistory).sort().reverse().map(month => (
+                  <option key={month} value={month}>{month}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Dados do Mês Selecionado */}
+            {selectedMonth && budgetHistory[selectedMonth] && (
+              <div className="space-y-3">
+                {budgetHistory[selectedMonth].map((item) => {
+                  const percentage = item.limit > 0 ? (item.spent / item.limit) * 100 : 0;
+                  const isOverBudget = item.limit > 0 && item.spent > item.limit;
+                  
+                  return (
+                    <div key={item.category} className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-bold text-slate-800 dark:text-white">{item.category}</h4>
+                        <span className={`text-xs font-bold px-2 py-1 rounded-full ${isOverBudget ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                          {percentage.toFixed(0)}%
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-slate-600 dark:text-slate-400">Limite: <span className="font-bold">{item.limit.toFixed(2)} Kz</span></span>
+                        <span className={`font-bold ${isOverBudget ? 'text-rose-600' : 'text-slate-800 dark:text-white'}`}>
+                          Gasto: {item.spent.toFixed(2)} Kz
+                        </span>
+                      </div>
+
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                        <div 
+                          className={`h-2 transition-all duration-300 ${isOverBudget ? 'bg-rose-500' : 'bg-emerald-500'}`}
+                          style={{ width: `${Math.min(percentage, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {Object.keys(budgetHistory).length === 0 && (
+              <p className="text-center text-slate-400 py-8">Nenhum histórico disponível. Clique em "Salvar Histórico" para começar.</p>
+            )}
+
+            <button 
+              onClick={handleSaveHistory}
+              className="w-full p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
+            >
+              <Save size={18} />
+              Salvar Histórico Atual
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Adicionar Novo Orçamento */}
       {isAddingNew && (

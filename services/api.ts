@@ -91,6 +91,38 @@ export const transactionsApi = {
   }
 };
 
+export const budgetApi = {
+  getLimits: async () => {
+    const response = await fetch(`${API_BASE}/budget/limits`, { credentials: 'include' });
+    return handleResponse(response);
+  },
+  
+  saveBudget: async (data: any) => {
+    const response = await fetch(`${API_BASE}/budget/limits`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(data)
+    });
+    return handleResponse(response);
+  },
+
+  getHistory: async () => {
+    const response = await fetch(`${API_BASE}/budget/history`, { credentials: 'include' });
+    return handleResponse(response);
+  },
+
+  saveHistory: async () => {
+    const response = await fetch(`${API_BASE}/budget/history/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({})
+    });
+    return handleResponse(response);
+  }
+};
+
 export const goalsApi = {
   getAll: async () => {
     const response = await fetch(`${API_BASE}/goals`, {
@@ -230,33 +262,6 @@ export const familyApi = {
 
   deleteEvent: async (id: string) => {
     const response = await fetch(`${API_BASE}/family/events/${id}`, {
-      method: 'DELETE',
-      credentials: 'include'
-    });
-    return handleResponse(response);
-  }
-};
-
-export const budgetApi = {
-  getLimits: async () => {
-    const response = await fetch(`${API_BASE}/budget/limits`, {
-      credentials: 'include'
-    });
-    return handleResponse(response);
-  },
-
-  setLimit: async (category: string, limit: number) => {
-    const response = await fetch(`${API_BASE}/budget/limits`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ category, limit })
-    });
-    return handleResponse(response);
-  },
-
-  deleteLimit: async (category: string) => {
-    const response = await fetch(`${API_BASE}/budget/limits/${category}`, {
       method: 'DELETE',
       credentials: 'include'
     });
