@@ -154,6 +154,20 @@ export function initializeDatabase() {
       last_update TEXT DEFAULT CURRENT_TIMESTAMP,
       next_update TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS notification_preferences (
+      id TEXT PRIMARY KEY,
+      user_id TEXT,
+      is_global INTEGER DEFAULT 0,
+      budget_alerts INTEGER DEFAULT 1,
+      subscription_alerts INTEGER DEFAULT 1,
+      financial_tips INTEGER DEFAULT 1,
+      goal_progress INTEGER DEFAULT 1,
+      email_notifications INTEGER DEFAULT 1,
+      push_notifications INTEGER DEFAULT 1,
+      UNIQUE(user_id, is_global),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
   `);
 
   const adminExists = db.prepare('SELECT id FROM users WHERE username = ?').get('admin');

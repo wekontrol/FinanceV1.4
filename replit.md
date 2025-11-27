@@ -9,7 +9,22 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Deployment target: Ubuntu 20.04+ on Proxmox VMs (or Render/Production)
 - Theme: Supports dark mode preference
 
-## Recent Implementation (November 27, 2025 - Final: Currency Previews + Frequencies + Validation)
+## Recent Implementation (November 27, 2025 - Final: Notifications + User-Specific Budgets + Frequencies)
+
+✅ **GESTÃO DE NOTIFICAÇÕES - Notification Management System**
+1. **Super Admin (Global)** - Configurar preferências de notificações para toda plataforma
+2. **Utilizadores (Pessoal)** - Cada utilizador controla suas próprias notificações
+3. **Tipos de Notificação**:
+   - 🎯 Alertas de Orçamento (limite próximo/excedido)
+   - 📅 Alertas de Assinatura (vencimentos)
+   - 💡 Dicas Financeiras (IA insights)
+   - 🏆 Progresso de Metas (atualizações)
+4. **Canais de Entrega**:
+   - 📧 Email (alertas críticos)
+   - 🔔 Web Push/App (notificações em tempo real)
+5. **Tabela `notification_preferences`** - Isolamento por utilizador + global para super admin
+6. **API Endpoints** - GET/POST `/api/notifications/preferences`
+7. **Componente React** - NotificationSettings.tsx para UI de gestão
 
 ✅ **HISTÓRICO DE ORÇAMENTOS - Budget History Tracking (100% Automático)**
 1. **Nova Tabela** - `budget_history` armazena gastos mensais por categoria
