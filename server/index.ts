@@ -17,6 +17,7 @@ import backupRoutes from './routes/backup';
 import systemRoutes from './routes/system';
 import notificationRoutes from './routes/notifications';
 import pushRoutes from './routes/push';
+import emailRoutes from './routes/email';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
@@ -87,6 +88,7 @@ app.use('/api/families', familiesRoutes);
 app.use('/api/backup', backupRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/push', pushRoutes);
+app.use('/api/email', emailRoutes);
 app.use('/api/system', systemRoutes);
 
 // Health check

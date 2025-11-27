@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bell, Save, AlertCircle } from 'lucide-react';
 import { notificationApi } from '../services/notificationApi';
 import PushNotificationButton from './PushNotificationButton';
+import EmailNotificationButton from './EmailNotificationButton';
 
 interface NotificationSettingsProps {
   isSuperAdmin?: boolean;
@@ -96,7 +97,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ isSuperAdmi
         </div>
 
         <div>
-          <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">Canal de Entrega</h4>
+          <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">Preferências de Entrega</h4>
           <div className="space-y-2">
             <Toggle label="Notificações por Email" key="email_notifications" />
             <Toggle label="Notificações Push (Web/App)" key="push_notifications" />
@@ -104,10 +105,17 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ isSuperAdmi
         </div>
 
         {!isSuperAdmin && (
-          <div>
-            <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">Ativar Push Web</h4>
-            <PushNotificationButton />
-          </div>
+          <>
+            <div>
+              <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">🔔 Ativar Notificações Push</h4>
+              <PushNotificationButton />
+            </div>
+
+            <div>
+              <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">📧 Configurar Email</h4>
+              <EmailNotificationButton />
+            </div>
+          </>
         )}
       </div>
 
