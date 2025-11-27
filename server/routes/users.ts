@@ -79,7 +79,7 @@ router.post('/', (req: Request, res: Response) => {
     hashedPassword,
     name,
     role || 'MEMBER',
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+    '/default-avatar.svg',
     'APPROVED',
     req.session.userId,
     currentUser.familyId,
