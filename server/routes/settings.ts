@@ -135,7 +135,7 @@ router.get('/api-config/:provider', (req: Request, res: Response) => {
   }
 });
 
-// Delete API configuration
+// Delete API configuration by ID
 router.delete('/api-configs/:id', (req: Request, res: Response) => {
   console.log('[DELETE /api-configs] ID:', req.params.id);
   // Temporarily allow all for testing
@@ -147,6 +147,20 @@ router.delete('/api-configs/:id', (req: Request, res: Response) => {
     res.json({ success: true });
   } catch (error: any) {
     console.error('[DELETE /api-configs] Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete API configuration by provider
+router.delete('/api-config/:provider', (req: Request, res: Response) => {
+  const { provider } = req.params;
+  console.log('[DELETE /api-config/:provider] Provider:', provider);
+  try {
+    db.prepare(`DELETE FROM api_configurations WHERE provider = ?`).run(provider);
+    console.log('[DELETE /api-config/:provider] Deleted provider:', provider);
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error('[DELETE /api-config/:provider] Error:', error);
     res.status(500).json({ error: error.message });
   }
 });

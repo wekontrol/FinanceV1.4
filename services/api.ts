@@ -321,6 +321,14 @@ export const settingsApi = {
       body: JSON.stringify({ provider, apiKey, model })
     });
     return handleResponse(response);
+  },
+
+  deleteApiConfig: async (provider: string) => {
+    const response = await fetch(`${API_BASE}/settings/api-config/${provider}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+    return handleResponse(response);
   }
 };
 
