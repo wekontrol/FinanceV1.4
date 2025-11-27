@@ -1,0 +1,61 @@
+vite v5.4.21 building for production...
+✓ 2599 modules transformed.
+dist/index.html                              6.72 kB │ gzip:   2.29 kB
+dist/assets/purify.es-C_uT9hQ1.js           21.98 kB │ gzip:   8.74 kB
+dist/assets/index.es-BZ6VLLcb.js           150.44 kB │ gzip:  51.42 kB
+dist/assets/html2canvas.esm-CBrSDip1.js    201.42 kB │ gzip:  48.03 kB
+dist/assets/index-gNboUCbz.js            1,427.88 kB │ gzip: 382.94 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 7.83s
+>>> [5/6] Configurando serviço Node.js...
+Usuário nodeapp criado
+>>> [6/6] Configurando systemd para manter a aplicação rodando...
+Created symlink /etc/systemd/system/multi-user.target.wants/gestor-financeiro.service → /etc/systemd/system/gestor-financeiro.service.
+✗ Erro ao iniciar o serviço. Verifique logs com: sudo journalctl -u gestor-financeiro -n 50
+root@hermantest:/home/herman/FinanceV1.4#
+root@hermantest:/home/herman/FinanceV1.4#
+root@hermantest:/home/herman/FinanceV1.4# git pull
+sudo systemctl restart gestor-financeiro
+Already up to date.
+root@hermantest:/home/herman/FinanceV1.4# sudo systemctl status gestor-financeiro
+sudo journalctl -u gestor-financeiro -n 30
+● gestor-financeiro.service - Gestor Financeiro Familiar - Node.js Application
+     Loaded: loaded (/etc/systemd/system/gestor-financeiro.service; enabled; preset: enabled)
+     Active: activating (auto-restart) (Result: exit-code) since Thu 2025-11-27 15:20:17 UTC; 2s ago
+    Process: 10854 ExecStart=/usr/bin/npm start (code=exited, status=1/FAILURE)
+   Main PID: 10854 (code=exited, status=1/FAILURE)
+        CPU: 686ms
+Nov 27 15:20:06 hermantest npm[10841]: Node.js v20.19.6
+Nov 27 15:20:06 hermantest systemd[1]: gestor-financeiro.service: Main process exited, code=exited, status=1/FAILURE
+Nov 27 15:20:06 hermantest systemd[1]: gestor-financeiro.service: Failed with result 'exit-code'.
+Nov 27 15:20:17 hermantest systemd[1]: gestor-financeiro.service: Scheduled restart job, restart counter is at 23.
+Nov 27 15:20:17 hermantest systemd[1]: Started gestor-financeiro.service - Gestor Financeiro Familiar - Node.js Applica>
+Nov 27 15:20:17 hermantest npm[10854]: > gestor-financeiro-familiar@1.0.3 start
+Nov 27 15:20:17 hermantest npm[10854]: > NODE_ENV=production tsx server/index.ts
+Nov 27 15:20:17 hermantest npm[10877]: Database initialized successfully
+Nov 27 15:20:17 hermantest npm[10877]: Warning: connect.session() MemoryStore is not
+Nov 27 15:20:17 hermantest npm[10877]: designed for a production environment, as it will leak
+Nov 27 15:20:17 hermantest npm[10877]: memory, and will not scale past a single process.
+Nov 27 15:20:17 hermantest npm[10877]: /var/www/gestor-financeiro/node_modules/path-to-regexp/src/index.ts:225
+Nov 27 15:20:17 hermantest npm[10877]:       throw new PathError(`Missing parameter name at index ${index}`, str);
+Nov 27 15:20:17 hermantest npm[10877]:             ^
+Nov 27 15:20:17 hermantest npm[10877]: PathError [TypeError]: Missing parameter name at index 2: /*; visit https://git.>
+Nov 27 15:20:17 hermantest npm[10877]:     at name (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/index.ts>
+Nov 27 15:20:17 hermantest npm[10877]:     at parse (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/index.t>
+Nov 27 15:20:17 hermantest npm[10877]:     at pathToRegexp (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/>
+Nov 27 15:20:17 hermantest npm[10877]:     at Object.match (/var/www/gestor-financeiro/node_modules/path-to-regexp/src/>
+Nov 27 15:20:17 hermantest npm[10877]:     at matcher (/var/www/gestor-financeiro/node_modules/router/lib/layer.js:86:2>
+Nov 27 15:20:17 hermantest npm[10877]:     at new Layer (/var/www/gestor-financeiro/node_modules/router/lib/layer.js:93>
+Nov 27 15:20:17 hermantest npm[10877]:     at Function.route (/var/www/gestor-financeiro/node_modules/router/index.js:4>
+Nov 27 15:20:17 hermantest npm[10877]:     at Function.route (/var/www/gestor-financeiro/node_modules/express/lib/appli>
+Nov 27 15:20:17 hermantest npm[10877]:     at app.<computed> [as get] (/var/www/gestor-financeiro/node_modules/express/>
+Nov 27 15:20:17 hermantest npm[10877]:     at <anonymous> (/var/www/gestor-financeiro/server/index.ts:50:7) {
+Nov 27 15:20:17 hermantest npm[10877]:   originalPath: '/*'
+Nov 27 15:20:17 hermantest npm[10877]: }
+Nov 27 15:20:17 hermantest npm[10877]: Node.js v20.19.6
+Nov 27 15:20:17 hermantest systemd[1]: gestor-financeiro.service: Main process exited, code=exited, status=1/FAILURE
+lines 1-29
