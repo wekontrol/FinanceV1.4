@@ -5,24 +5,37 @@ import {
   PieChart, Pie, Cell, RadialBarChart, RadialBar, PolarAngleAxis, Sector
 } from 'recharts';
 import { Transaction, TransactionType, SavingsGoal, BudgetLimit, UserBehaviorAnalysis } from '../types';
-import { TrendingUp, TrendingDown, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Wallet, BrainCircuit, Lightbulb, User, PieChart as PieChartIcon } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Wallet, BrainCircuit, Lightbulb, User, PieChart as PieChartIcon, Download } from 'lucide-react';
 import { getFinancialAdvice, analyzeUserBehavior } from '../services/geminiService';
+import { generatePDFReport } from '../services/reportService';
 import Hint from './Hint';
+import AlertsPanel from './AlertsPanel';
+import CategoryBreakdown from './CategoryBreakdown';
 
 interface DashboardProps {
   transactions: Transaction[];
   savingsGoals: SavingsGoal[];
   budgets: BudgetLimit[]; 
   currencyFormatter: (value: number) => string;
+  currentInflation?: number;
+  currentUser?: any;
 }
 
 const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#6366f1', '#06b6d4', '#84cc16'];
 
 type DateRange = '7days' | 'month' | 'year' | 'all';
 
-const Dashboard: React.FC<DashboardProps> = ({ transactions, savingsGoals, budgets = [], currencyFormatter }) => {
+const Dashboard: React.FC<DashboardProps> = ({ 
+  transactions, 
+  savingsGoals, 
+  budgets = [], 
+  currencyFormatter,
+  currentInflation = 0,
+  currentUser
+}) => {
   const [advice, setAdvice] = useState<string>("Analisando suas finanças com IA...");
   const [dateRange, setDateRange] = useState<DateRange>('month');
+  const [showAlerts, setShowAlerts] = useState(true);
   
   const [behavior, setBehavior] = useState<UserBehaviorAnalysis | null>(null);
   const [isAnalyzingBehavior, setIsAnalyzingBehavior] = useState(false);
@@ -102,6 +115,21 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, savingsGoals, budge
         case '7days':
           const sevenDaysAgo = new Date();
           sevenDaysAgo.setDate(now.getDate() - 7);
+      {/* Alertas e Gráficos */}
+      {showAlerts && (
+        <AlertsPanel transactions={transactions} budgets={budgets} currentInflation={currentInflation} onClose={() => setShowAlerts(false)} />
+      )}
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 md:p-8">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-bold">📊 Despesas por Categoria</h3>
+          {currentUser && (
+            <button onClick={() => generatePDFReport(transactions, savingsGoals, "month", currencyFormatter, currentUser)} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-bold">
+              <Download size={16} /> Exportar PDF
+            </button>
+          )}
+        </div>
+        <CategoryBreakdown transactions={transactions} currencyFormatter={currencyFormatter} />
+      </div>
           return tDate >= sevenDaysAgo;
         case 'month':
           return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();

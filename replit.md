@@ -11,6 +11,11 @@ A comprehensive family financial management platform built with React, TypeScrip
 
 ## Recent Implementation (November 27, 2025)
 
+✅ **3 Novos Recursos Implementados**
+1. **Alertas Inteligentes** - Limites de orçamento, transações recorrentes, inflação alta
+2. **Relatórios em PDF** - Exportar dados mensais/anuais com tabelas compiladas
+3. **Gráficos por Categoria** - Pie chart mostrando distribuição de despesas
+
 ✅ **Dados de Inflação - World Bank API**
 - Conectado com World Bank API para dados reais de inflação de Angola
 - Endpoint: `https://api.worldbank.org/v2/country/AO/indicator/FP.CPI.TOTL.ZG`
