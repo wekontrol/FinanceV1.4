@@ -26,6 +26,18 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false
+    sourcemap: false,
+    chunkSizeWarningLimit: 1500, // Increased limit for large bundle
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'charts': ['recharts'],
+          'ui-icons': ['lucide-react'],
+          'pdf': ['jspdf', 'jspdf-autotable'],
+          'auth': ['bcryptjs']
+        }
+      }
+    }
   }
 });
