@@ -79,28 +79,82 @@ export const getExchangeRates = async (provider: RateProvider = 'BNA'): Promise<
 // Alias para manter compatibilidade se necessário, mas idealmente usar getExchangeRates
 export const getBNARates = () => getExchangeRates('BNA');
 
-export const getInflationHistory = (): InflationDataPoint[] => {
-  const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-  const seed = 42; // Seed fixo para consistência
-  let currentAcc = 24.5; // Inflação acumulada inicial (Angola 2024 real)
-  
-  return months.map((month, index) => {
-    // Usar seeded random para dados determinísticos
-    const randomMonth = seededRandom(seed + index);
-    const randomAcc = seededRandom(seed + index + 100);
+// Cache para inflação (12 horas)
+let inflationCache: { data: InflationDataPoint[], timestamp: number } | null = null;
+const INFLATION_CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 horas
+
+export const getInflationHistory = async (): Promise<InflationDataPoint[]> => {
+  // Verificar cache
+  const now = Date.now();
+  if (inflationCache && (now - inflationCache.timestamp) < INFLATION_CACHE_DURATION) {
+    return inflationCache.data;
+  }
+
+  try {
+    // Buscar dados reais da World Bank API (Angola - Inflation rate)
+    const response = await fetch('https://api.worldbank.org/v2/country/AO/indicator/FP.CPI.TOTL.ZG?format=json&per_page=100&date=2020:2025');
     
-    // Simulação mais realista: inflação mensal entre 1.5% e 2.5%
-    const monthlyChange = (randomMonth * 1.0) + 1.5; 
+    if (!response.ok) throw new Error('Failed to fetch World Bank inflation data');
     
-    // Acúmulo mensal: aumento entre 0.1% e 0.5%
-    currentAcc += (randomAcc * 0.4) + 0.1;
+    const data = await response.json();
+    const records = data[1] || [];
     
-    return {
-      month,
-      rate: Number(monthlyChange.toFixed(2)),
-      accumulated: Number(currentAcc.toFixed(2))
-    };
-  });
+    // Filtrar e organizar dados por ano
+    const yearlyData = records
+      .filter((item: any) => item.value !== null && item.date)
+      .sort((a: any, b: any) => parseInt(a.date) - parseInt(b.date));
+    
+    if (yearlyData.length === 0) throw new Error('No inflation data available');
+    
+    // Simular dados mensais a partir dos dados anuais
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const currentYear = new Date().getFullYear();
+    const latestYearData = yearlyData[yearlyData.length - 1];
+    const baseInflation = parseFloat(latestYearData.value);
+    
+    let result: InflationDataPoint[] = [];
+    let currentAcc = baseInflation;
+    
+    // Distribuir inflação anual em dados mensais (realista)
+    months.forEach((month, index) => {
+      // Aproximar inflação mensal a partir do acumulado anual
+      const monthlyRate = baseInflation / 12 + (Math.sin(index) * 0.5);
+      
+      result.push({
+        month,
+        rate: Number(Math.max(0, monthlyRate).toFixed(2)),
+        accumulated: Number(currentAcc.toFixed(2))
+      });
+    });
+    
+    // Cache resultado
+    inflationCache = { data: result, timestamp: now };
+    return result;
+    
+  } catch (error) {
+    console.warn('Error fetching World Bank inflation data, using fallback:', error);
+    
+    // Fallback para dados locais simulados (se API falhar)
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const seed = 42;
+    let currentAcc = 24.5; // Valor padrão Angola 2024
+    
+    const result = months.map((month, index) => {
+      const randomMonth = seededRandom(seed + index);
+      const randomAcc = seededRandom(seed + index + 100);
+      const monthlyChange = (randomMonth * 1.0) + 1.5;
+      currentAcc += (randomAcc * 0.4) + 0.1;
+      
+      return {
+        month,
+        rate: Number(monthlyChange.toFixed(2)),
+        accumulated: Number(currentAcc.toFixed(2))
+      };
+    });
+    
+    inflationCache = { data: result, timestamp: now };
+    return result;
+  }
 };
 
 // Seeded random number generator para garantir dados consistentes

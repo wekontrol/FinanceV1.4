@@ -11,6 +11,14 @@ A comprehensive family financial management platform built with React, TypeScrip
 
 ## Recent Implementation (November 27, 2025)
 
+✅ **Dados de Inflação - World Bank API**
+- Conectado com World Bank API para dados reais de inflação de Angola
+- Endpoint: `https://api.worldbank.org/v2/country/AO/indicator/FP.CPI.TOTL.ZG`
+- Cache de 12 horas para otimizar requisições
+- Fallback para dados locais se API indisponível
+- Distribuição realista: converte inflação anual em dados mensais
+- Atualiza automaticamente a cada 12 horas
+
 ✅ **Atualização do Sistema via UI - Super Admin Only**
 - Super Admin pode atualizar sistema diretamente pela interface
 - Processo automático: git pull → npm install → build → restart

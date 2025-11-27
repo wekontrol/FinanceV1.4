@@ -30,10 +30,18 @@ const InflationControl: React.FC<InflationControlProps> = ({
   const [currencyHistory, setCurrencyHistory] = useState<CurrencyHistoryPoint[]>([]);
 
   useEffect(() => {
-    const history = getInflationHistory();
-    setData(history);
-    const lastValue = history[history.length - 1].accumulated;
-    setCurrentInflation(lastValue);
+    const loadInflationData = async () => {
+      try {
+        const history = await getInflationHistory();
+        setData(history);
+        const lastValue = history[history.length - 1].accumulated;
+        setCurrentInflation(lastValue);
+      } catch (error) {
+        console.error('Error loading inflation history:', error);
+      }
+    };
+    
+    loadInflationData();
     
     const news = [
       "BNA mantém taxas inalteradas.",
