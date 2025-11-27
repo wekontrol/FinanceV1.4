@@ -10,11 +10,20 @@ A comprehensive family financial management platform built with React, TypeScrip
 - Theme: Supports dark mode preference
 
 ## Recent Implementation (November 27, 2025)
+✅ **Backup & Restauro com Progresso Visível**
+- Manual backup exporta TODOS os dados em JSON
+- Barra de progresso animada durante backup/restauro
+- Status em tempo real (Lendo BD... Exportando... Completo!)
+- Restauro restaura TODOS os dados do arquivo JSON
+- Confirmação obrigatória antes de restauro
+- Endpoints: POST `/api/backup`, POST `/api/backup/restore`, GET `/api/backup/progress`
+
 ✅ **PostgreSQL Session Storage** - Removed memory leak warning
 - Sessions now persist in PostgreSQL database
 - Auto-creates `session` table in production
 - Scales horizontally (multi-server ready)
 - Fixed: "Warning: connect.session() MemoryStore is not designed for production"
+- Variável de ambiente: `TheFinance` (automaticamente configurada pelo deploy.sh)
 
 ✅ **Dynamic Exchange Rates** - Real-time daily updates
 - Fetches live rates from ExchangeRate-API (exchangerate-api.com)
@@ -99,13 +108,29 @@ Ideal setup: Always provide `TheFinance` in production for persistent sessions.
 - ✅ Family creation and deletion
 - ✅ PostgreSQL sessions (production ready)
 
+## Backup & Restauro - Como Usar
+
+### **📥 Fazer Backup Manual:**
+1. Login como Admin/Super Admin
+2. Vá para ⚙️ **Configurações** > **Backup & Restauro**
+3. Clique em **"Fazer Backup Agora"**
+4. Veja a barra de progresso (0% → 100%)
+5. O arquivo `backup-YYYY-MM-DD.json` será baixado automaticamente
+
+### **📤 Restaurar de um Backup:**
+1. Acesse ⚙️ **Configurações** > **Backup & Restauro**
+2. Clique em **"Escolher Arquivo JSON"**
+3. Selecione o arquivo `backup-*.json`
+4. Confirme a operação (⚠️ Aviso: Todos os dados serão substituídos!)
+5. Acompanhe o progresso na barra animada
+6. Página recarrega automaticamente após conclusão
+
 ## Next Steps
 1. 🔄 Deploy to production (Ubuntu/Render/Cloud)
-2. 🔄 Set TheFinance environment variable
-3. 🔄 Change default admin password
-4. 🔄 Configure Gemini API key in Settings
-5. 🔄 Add production SSL certificates
-6. 🔄 Set up automated backups
+2. 🔄 Change default admin password
+3. 🔄 Configure Gemini API key in Settings
+4. 🔄 Add production SSL certificates
+5. 🔄 Set up automated daily backups (cron job)
 
 ## Credentials (Change Immediately in Production!)
 - Username: `admin`

@@ -4,6 +4,7 @@ import { BackupConfig, User, UserRole, UserStatus } from '../types';
 import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2, FileText } from 'lucide-react';
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
 import { settingsApi, familiesApi } from '../services/api';
+import { backupApi } from '../services/backupApi';
 
 interface AdminPanelProps {
   appName: string;
@@ -73,6 +74,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'available' | 'uptodate' | 'error'>('idle');
   const [repoUrl, setRepoUrl] = useState(() => localStorage.getItem('repo_url') || 'https://github.com/SEU_USUARIO/gestor-financeiro');
   const [remoteVersion, setRemoteVersion] = useState('');
+
+  // Backup State
+  const [backupProgress, setBackupProgress] = useState({ current: 0, total: 100, status: 'idle' });
+  const [isBackingUp, setIsBackingUp] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [restoreProgress, setRestoreProgress] = useState({ current: 0, total: 100, status: 'idle' });
 
   const [userFormData, setUserFormData] = useState({ 
     name: '', 
@@ -929,37 +936,130 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
             <div onClick={() => toggleSection('backup')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <div className="flex items-center">
-                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg mr-4 shrink-0"><Server size={20} /></div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Rede & Backup</h3>
+                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg mr-4 shrink-0"><HardDrive size={20} /></div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Backup & Restauro</h3>
               </div>
               {expandedSection === 'backup' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
             {expandedSection === 'backup' && (
               <div className="p-8 border-t border-slate-100 dark:border-slate-700 animate-slide-down">
-                <div className="grid gap-6">
-                  <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">Caminho SMB</label>
-                    <input type="text" value={localConfig.networkPath} onChange={(e) => setLocalConfig({...localConfig, networkPath: e.target.value})} className={`${inputClass} font-mono text-sm mt-2`} />
+                <div className="grid gap-8">
+                  {/* Backup Manual */}
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 p-6 rounded-2xl border border-blue-200 dark:border-blue-800">
+                    <h4 className="font-bold text-blue-800 dark:text-blue-400 text-lg mb-4">📥 Backup Manual da Base de Dados</h4>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 mb-4">Cria um arquivo JSON com todos os seus dados. Pode ser restaurado depois.</p>
+                    
+                    {isBackingUp ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-bold text-blue-700 dark:text-blue-300">{backupProgress.status}</span>
+                          <span className="text-sm font-bold text-blue-700 dark:text-blue-300">{backupProgress.current}%</span>
+                        </div>
+                        <div className="w-full bg-blue-200 dark:bg-blue-900/50 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-300"
+                            style={{ width: `${backupProgress.current}%` }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={async () => {
+                          setIsBackingUp(true);
+                          try {
+                            const backup = await backupApi.createBackup();
+                            setBackupProgress({ current: 100, total: 100, status: 'Completo!' });
+                            
+                            const dataStr = JSON.stringify(backup.data, null, 2);
+                            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                            const url = URL.createObjectURL(dataBlob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `backup-${new Date().toISOString().split('T')[0]}.json`;
+                            link.click();
+                            URL.revokeObjectURL(url);
+                            
+                            setTimeout(() => {
+                              setIsBackingUp(false);
+                              setBackupProgress({ current: 0, total: 100, status: 'idle' });
+                            }, 1500);
+                          } catch (error: any) {
+                            alert('Erro no backup: ' + error.message);
+                            setIsBackingUp(false);
+                            setBackupProgress({ current: 0, total: 100, status: 'Erro' });
+                          }
+                        }}
+                        className="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        <Download size={18} /> Fazer Backup Agora
+                      </button>
+                    )}
                   </div>
-                  <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase">Pasta Raiz</label>
-                    <input type="text" value={localConfig.rootDataFolder} onChange={(e) => setLocalConfig({...localConfig, rootDataFolder: e.target.value})} className={`${inputClass} font-mono text-sm mt-2`} />
-                  </div>
-                  <button onClick={() => { updateBackupConfig(localConfig); alert('Salvo'); }} className="bg-primary-600 text-white py-3 rounded-xl font-bold hover:bg-primary-700 shadow-lg shadow-primary-500/20 transition w-full">Salvar Configuração</button>
-                  
-                  <div className="grid md:grid-cols-2 gap-4 mt-4">
-                    <div className="bg-slate-800 text-white p-6 rounded-2xl flex flex-col justify-between shadow-xl">
-                      <div><h4 className="font-bold text-lg mb-1">Backup Manual</h4><p className="text-sm text-slate-400">Último: {backupConfig.lastBackup || 'Nunca'}</p></div>
-                      <button onClick={triggerManualBackup} className="mt-6 bg-white text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-slate-200 flex items-center justify-center gap-2 transition"><HardDrive size={18}/> Download Backup</button>
-                    </div>
-                    <div className="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-2xl flex flex-col justify-between border border-orange-200 dark:border-orange-800">
-                      <div><h4 className="font-bold text-orange-800 dark:text-orange-400 text-lg mb-1">Restaurar Dados</h4><p className="text-sm text-orange-700/70 dark:text-orange-400/70">Substitui todos os dados atuais.</p></div>
-                      <label className="mt-6 bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-200 dark:hover:bg-orange-700 flex items-center justify-center gap-2 cursor-pointer transition">
-                        <Upload size={18}/> 
-                        <span>Carregar JSON</span>
-                        <input type="file" accept=".json" className="hidden" onChange={handleRestoreFileChange} />
+
+                  {/* Restauro */}
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/20 p-6 rounded-2xl border border-orange-200 dark:border-orange-800">
+                    <h4 className="font-bold text-orange-800 dark:text-orange-400 text-lg mb-4">📤 Restaurar Base de Dados</h4>
+                    <p className="text-sm text-orange-700 dark:text-orange-300 mb-4">⚠️ Substituirá TODOS os dados atuais. Esta ação é irreversível!</p>
+                    
+                    {isRestoring ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-bold text-orange-700 dark:text-orange-300">{restoreProgress.status}</span>
+                          <span className="text-sm font-bold text-orange-700 dark:text-orange-300">{restoreProgress.current}%</span>
+                        </div>
+                        <div className="w-full bg-orange-200 dark:bg-orange-900/50 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className="bg-gradient-to-r from-orange-500 to-orange-600 h-full transition-all duration-300"
+                            style={{ width: `${restoreProgress.current}%` }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="w-full py-3 px-4 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-lg">
+                        <Upload size={18} /> Escolher Arquivo JSON
+                        <input 
+                          type="file" 
+                          accept=".json" 
+                          className="hidden" 
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            
+                            if (!confirm('⚠️ CUIDADO!\n\nTodos os seus dados atuais serão perdidos!\nTem certeza que deseja restaurar?')) {
+                              return;
+                            }
+
+                            setIsRestoring(true);
+                            try {
+                              const text = await file.text();
+                              const backup = JSON.parse(text);
+                              
+                              setRestoreProgress({ current: 30, total: 100, status: 'Validando backup...' });
+                              
+                              const result = await backupApi.restoreBackup(backup);
+                              
+                              setRestoreProgress({ current: 100, total: 100, status: 'Restauro completo!' });
+                              
+                              setTimeout(() => {
+                                alert('Dados restaurados com sucesso!\nA página será recarregada.');
+                                window.location.reload();
+                              }, 1500);
+                            } catch (error: any) {
+                              alert('Erro na restauração: ' + error.message);
+                              setIsRestoring(false);
+                              setRestoreProgress({ current: 0, total: 100, status: 'Erro' });
+                            }
+                          }}
+                        />
                       </label>
-                    </div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      💡 <strong>Dica:</strong> Faça backups regularmente! Em produção, recomendamos backups automáticos diários.
+                    </p>
                   </div>
                 </div>
               </div>
