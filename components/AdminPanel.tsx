@@ -179,9 +179,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         setEditingConfig(null);
         loadApiConfigs();
       } else {
-        alert('Erro ao salvar chave: ' + (await response.text()));
+        const errorText = await response.text();
+        console.error('Save API Config Error:', response.status, errorText);
+        alert('Erro ao salvar chave: ' + errorText);
       }
     } catch (error) {
+      console.error('Save API Config Exception:', error);
       alert('Erro ao salvar chave: ' + (error as Error).message);
     }
   };

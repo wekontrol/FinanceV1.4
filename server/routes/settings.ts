@@ -115,7 +115,7 @@ router.post('/api-configs', (req: Request, res: Response) => {
 router.get('/api-config/:provider', (req: Request, res: Response) => {
   try {
     const { provider } = req.params;
-    const config = db.prepare(`SELECT api_key, model FROM api_configurations WHERE provider = ?`).get(provider);
+    const config = db.prepare(`SELECT api_key, model FROM api_configurations WHERE provider = ?`).get(provider) as { api_key: string; model: string } | undefined;
     if (config) {
       res.json({ apiKey: config.api_key, model: config.model });
     } else {
