@@ -3,17 +3,25 @@
 ## Overview
 A comprehensive family financial management platform built with React, TypeScript, and Express.js. This application provides intelligent financial tracking, AI-powered insights using **3 interchangeable AI providers** (Google Gemini, OpenRouter, Puter), and family-friendly features for household budget management. Complete multi-language support (Portuguese, English, Spanish, Umbundu, Lingala) with per-user language preferences and per-provider AI routing.
 
-## ✅ DEFAULT BUDGETS SYSTEM - NOW WORKING!
+## ✅ EXPANDED DEFAULT BUDGETS SYSTEM - 16 CATEGORIES!
 
-**Default Budgets Created for Each User:**
-- **Alimentação** - 300 (Food)
-- **Transporte** - 200 (Transportation)
-- **Lazer** - 150 (Entertainment)
-- **Saúde** - 200 (Health)
-- **Educação** - 250 (Education)
-- **Compras** - 400 (Shopping)
-- **Utilidades** - 300 (Utilities)
-- **Outros** - 200 (Other)
+**16 Default Budget Categories Created for Each User:**
+1. **Renda** - 0 (Income tracking)
+2. **Energia** - 150 (Electricity)
+3. **Água** - 80 (Water)
+4. **Transporte** - 200 (Transportation)
+5. **Alimentação** - 300 (Food)
+6. **Combustível** - 200 (Fuel)
+7. **Compras domésticas** - 150 (Household shopping)
+8. **Lazer** - 150 (Entertainment)
+9. **Roupas** - 100 (Clothing)
+10. **Saúde** - 200 (Health)
+11. **Cuidados pessoais** - 80 (Personal care)
+12. **Juros / Multas** - 100 (Interest/Fines)
+13. **Reparações e Manutenção** - 150 (Repairs & Maintenance)
+14. **Presentes** - 100 (Gifts)
+15. **Eventos** - 200 (Events)
+16. **Viagens** - 300 (Travel)
 
 **How It Works:**
 - ✅ Default budgets created automatically when user registers
@@ -90,7 +98,8 @@ server/
   ├── db/schema.ts (api_configurations table + budget_limits.is_default field)
   └── routes/
       ├── settings.ts (endpoints for default provider management)
-      └── budget.ts (endpoints for budget management + create-defaults)
+      ├── budget.ts (endpoints for budget management + create-defaults - 16 categories)
+      └── users.ts (user creation with 16 default budgets)
 ```
 
 ### Database Schema:
@@ -130,14 +139,17 @@ CREATE TABLE budget_limits (
 - `GET /api/budget/limits` - Get user budgets (returns isDefault flag)
 - `POST /api/budget/limits` - Save/update budget
 - `DELETE /api/budget/limits/:category` - Delete budget (protected: returns 403 for default)
-- `POST /api/budget/create-defaults` - Create default budgets if missing
+- `POST /api/budget/create-defaults` - Create default budgets if missing (16 categories)
 
 ## TESTING INSTRUCTIONS
 
-### Test Default Budgets:
+### Test 16 Default Budget Categories:
 1. Login as **admin/admin**
 2. Go to **Dashboard** → **Orçamentos**
-3. See 8 default budgets with "Padrão" badge in blue
+3. See **16 default budgets** with "Padrão" badge in blue:
+   - Renda, Energia, Água, Transporte, Alimentação, Combustível
+   - Compras domésticas, Lazer, Roupas, Saúde, Cuidados pessoais, Juros / Multas
+   - Reparações e Manutenção, Presentes, Eventos, Viagens
 4. Try to edit any default budget - ✅ works
 5. Try to delete a default budget - ❌ button disabled or error
 6. Create a custom budget - ✅ can delete it
@@ -161,7 +173,7 @@ CREATE TABLE budget_limits (
 - ✅ Build time: ~22 seconds
 - ✅ Workflow: Running
 - ✅ Three AI Providers: Fully Implemented
-- ✅ Default Budgets: Fully Implemented
+- ✅ 16 Default Budget Categories: Fully Implemented
 - ✅ Multi-language Support: Working with all 14 AI services
 - ✅ Dynamic Provider Switching: Database-backed
 - ✅ All Components: Updated and working
@@ -173,8 +185,8 @@ CREATE TABLE budget_limits (
 - ✅ `services/openrouterService.ts` - NEW: 14 complete AI services for OpenRouter
 - ✅ `server/db/schema.ts` - MODIFIED: Added is_default fields for budgets and API configs
 - ✅ `server/routes/settings.ts` - MODIFIED: Added provider default management
-- ✅ `server/routes/budget.ts` - MODIFIED: Added create-defaults endpoint + delete protection
-- ✅ `server/routes/users.ts` - MODIFIED: Create default budgets on user registration
+- ✅ `server/routes/budget.ts` - MODIFIED: Added create-defaults endpoint + delete protection + 16 categories
+- ✅ `server/routes/users.ts` - MODIFIED: Create 16 default budgets on user registration
 - ✅ `components/AdminPanel.tsx` - MODIFIED: Added "✓ Confirmar Seleção" button
 - ✅ `components/BudgetControl.tsx` - MODIFIED: Show "Padrão" badge for default budgets
 - ✅ `components/Dashboard.tsx` - MODIFIED: Use aiProviderService
@@ -184,7 +196,7 @@ CREATE TABLE budget_limits (
 ## SYSTEM IS PRODUCTION READY ✨
 
 **Status: FULLY FUNCTIONAL & COMPLETE**
-- ✅ Default budgets working perfectly
+- ✅ 16 Default budget categories working perfectly
 - ✅ Abstraction layer working flawlessly
 - ✅ All 14 AI services implemented for 3 providers
 - ✅ Provider switching fully operational
@@ -199,6 +211,6 @@ CREATE TABLE budget_limits (
 - Test with real API keys (Gemini, OpenRouter)
 - Deploy to production
 - Monitor provider usage and response times
-- Consider adding more default budget categories
+- Analyze user spending patterns with 16 categories
 
 🚀 **READY FOR PRODUCTION** - All features implemented and tested
