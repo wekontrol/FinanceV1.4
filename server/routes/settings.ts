@@ -93,10 +93,20 @@ router.post('/api-configs', (req: Request, res: Response) => {
       db.prepare(`UPDATE api_configurations SET api_key = ?, model = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(apiKey, model || null, id);
       console.log('[POST /api-configs] Update successful');
     } else {
-      const newId = `cfg_${Date.now()}`;
-      console.log('[POST /api-configs] Inserting new config:', newId, 'provider:', provider);
-      db.prepare(`INSERT INTO api_configurations (id, provider, api_key, model) VALUES (?, ?, ?, ?)`).run(newId, provider, apiKey, model || null);
-      console.log('[POST /api-configs] Insert successful');
+      // Check if provider already exists
+      const existing = db.prepare(`SELECT id FROM api_configurations WHERE provider = ?`).get(provider) as { id: string } | undefined;
+      
+      if (existing) {
+        // Update existing provider
+        db.prepare(`UPDATE api_configurations SET api_key = ?, model = ?, updated_at = CURRENT_TIMESTAMP WHERE provider = ?`).run(apiKey, model || null, provider);
+        console.log('[POST /api-configs] Updated existing provider:', provider);
+      } else {
+        // Insert new
+        const newId = `cfg_${Date.now()}`;
+        console.log('[POST /api-configs] Inserting new config:', newId, 'provider:', provider);
+        db.prepare(`INSERT INTO api_configurations (id, provider, api_key, model) VALUES (?, ?, ?, ?)`).run(newId, provider, apiKey, model || null);
+        console.log('[POST /api-configs] Insert successful');
+      }
     }
     
     res.json({ success: true, message: 'API configuration saved' });

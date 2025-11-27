@@ -152,25 +152,38 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   const handleSaveApiConfig = async () => {
+    console.log('handleSaveApiConfig called');
+    console.log('Provider:', newConfigProvider);
+    console.log('Key:', newConfigKey ? '***' + newConfigKey.slice(-4) : 'EMPTY');
+    
     if (!newConfigProvider || !newConfigKey) {
       alert('Preenchimento obrigatório: Provedor e Chave de API');
       return;
     }
 
     try {
+      const payload = {
+        id: editingConfig?.id || null,
+        provider: newConfigProvider,
+        apiKey: newConfigKey,
+        model: newConfigModel
+      };
+      
+      console.log('Payload to send:', { ...payload, apiKey: '***' });
+
       const response = await fetch('/api/settings/api-configs', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: editingConfig?.id || null,
-          provider: newConfigProvider,
-          apiKey: newConfigKey,
-          model: newConfigModel
-        })
+        body: JSON.stringify(payload)
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (response.ok) {
+        const responseData = await response.json();
+        console.log('Success response:', responseData);
         setKeySaved(true);
         setTimeout(() => setKeySaved(false), 2000);
         setNewConfigProvider('');
