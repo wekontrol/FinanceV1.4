@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BackupConfig, User, UserRole, UserStatus } from '../types';
 import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2, FileText } from 'lucide-react';
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
+import { hasPuterEnabled, setPuterAsDefault } from '../services/puterService';
 import { settingsApi, familiesApi } from '../services/api';
 import { backupApi } from '../services/backupApi';
 import { systemApi } from '../services/systemApi';
@@ -48,8 +49,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [forceResetPassword, setForceResetPassword] = useState('');
 
   // AI Integration State
-  const [activeProvider, setActiveProvider] = useState<'gemini' | 'openrouter'>(() => {
-    return (localStorage.getItem('ai_provider') as 'gemini' | 'openrouter') || 'gemini';
+  const [activeProvider, setActiveProvider] = useState<'gemini' | 'openrouter' | 'puter'>(() => {
+    return (localStorage.getItem('ai_provider') as 'gemini' | 'openrouter' | 'puter') || 'gemini';
   });
   
   // Gemini State
@@ -577,6 +578,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                       >
                         <Cpu size={18} className="mr-2" /> OpenRouter
                       </button>
+                      <button
+                        onClick={() => setActiveProvider('puter')}
+                        className={`flex items-center justify-center px-4 py-3 rounded-xl border-2 font-bold transition active:scale-95 ${activeProvider === 'puter' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50'}`}
+                      >
+                        <Network size={18} className="mr-2" /> Puter (Gratuito)
+                      </button>
                     </div>
                   </div>
 
@@ -662,6 +669,54 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                           <CheckCircle className="mr-1" size={12}/> Chave OpenRouter configurada e ativa.
                         </p>
                       )}
+                    </div>
+                  )}
+
+                  {activeProvider === 'puter' && (
+                    <div className="animate-fade-in">
+                      <h4 className="font-bold mb-2 text-slate-700 dark:text-white flex items-center">
+                        <Network className="mr-2 text-emerald-500" size={18} /> Configuração Puter.js
+                      </h4>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                        Acesso grátis e ilimitado a 400+ modelos de IA (GPT, Claude, Gemini, etc). Sem configuração necessária!
+                      </p>
+                      
+                      <div className="space-y-4 bg-emerald-50 dark:bg-emerald-900/10 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                        <div>
+                          <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100 mb-2">✨ Recursos Disponíveis:</p>
+                          <ul className="text-xs text-emerald-800 dark:text-emerald-300 space-y-1">
+                            <li>🤖 Chat com GPT-5, Claude, Gemini e 400+ modelos</li>
+                            <li>🎙️ Conversão de áudio em texto (Speech-to-Text)</li>
+                            <li>🖼️ Geração e análise de imagens</li>
+                            <li>🔊 Síntese de voz (Text-to-Speech)</li>
+                            <li>💾 Cloud storage seguro</li>
+                            <li>🗄️ Banco de dados NoSQL</li>
+                            <li>🆓 Totalmente gratuito para desenvolvedores</li>
+                          </ul>
+                        </div>
+                      </div>
+                      
+                      <button 
+                        onClick={() => {
+                          localStorage.setItem('ai_provider', 'puter');
+                          setKeySaved(true);
+                          setTimeout(() => setKeySaved(false), 1500);
+                        }}
+                        className={`w-full mt-4 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg flex items-center justify-center ${keySaved ? 'bg-emerald-700' : ''}`}
+                      >
+                        {keySaved ? <Check size={20} className="mr-2" /> : null}
+                        {keySaved ? 'Puter Ativado!' : 'Ativar Puter'}
+                      </button>
+
+                      {hasPuterEnabled() && (
+                        <p className="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center">
+                          <CheckCircle className="mr-1" size={12}/> Puter configurado e pronto para uso.
+                        </p>
+                      )}
+
+                      <p className="mt-4 text-xs text-slate-400">
+                        📚 Saiba mais em <a href="https://puter.com/" target="_blank" rel="noreferrer" className="text-emerald-500 hover:underline">puter.com</a> ou <a href="https://docs.puter.com/" target="_blank" rel="noreferrer" className="text-emerald-500 hover:underline">documentação</a>.
+                      </p>
                     </div>
                   )}
 

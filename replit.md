@@ -1,7 +1,7 @@
 # Gestor Financeiro Familiar - Production Ready Setup
 
 ## Overview
-A comprehensive family financial management platform built with React, TypeScript, and Express.js. This application provides intelligent financial tracking, AI-powered insights using Google's Gemini AI, and family-friendly features for household budget management. It offers multi-user support with role hierarchy, real-time financial data, and robust administrative controls. The project aims to deliver a production-ready solution for household budget management with advanced features like AI insights, real-time notifications, and detailed financial reporting.
+A comprehensive family financial management platform built with React, TypeScript, and Express.js. This application provides intelligent financial tracking, AI-powered insights using Google's Gemini AI, Puter.js, and family-friendly features for household budget management. It offers multi-user support with role hierarchy, real-time financial data, and robust administrative controls. The project aims to deliver a production-ready solution for household budget management with advanced features like AI insights, real-time notifications, and detailed financial reporting.
 
 ## User Preferences
 - Application uses Portuguese (PT) as primary language
@@ -34,6 +34,8 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 - **Dynamic Exchange Rates:** Fetches real-time rates from ExchangeRate-API, cached for 24 hours.
 - **Terms & Conditions:** Mandatory acceptance during registration, editable by Super Admin, stored in the database.
 - **Family Management:** Supports multi-family structures with family-based user hierarchy and protection for the admin family.
+- **User Profile Management:** Edit avatar, name, email, and password from sidebar modal. Profile changes persist to database.
+- **AI Integration System:** Three providers available (Gemini, OpenRouter, Puter.js) with seamless switching.
 
 **Deployment:**
 - Automated deployment script for Ubuntu Proxmox VMs handles Node.js installation, build, PostgreSQL configuration, and systemd service setup.
@@ -54,13 +56,39 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 ## External Dependencies
 - **ExchangeRate-API**: Real-time currency exchange rates (exchangerate-api.com).
 - **Google Gemini**: AI for financial insights.
+- **Puter.js**: Free AI (400+ models), cloud storage, database, auth, hosting - no limits.
+- **OpenRouter**: Multi-model AI access (GPT, Claude, Llama, etc).
 - **SendGrid**: Email notification delivery (optional - configure via env vars).
 - **DiceBear**: Avatar generation.
 - **World Bank API**: Inflation data for Angola (`FP.CPI.TOTL.ZG` indicator), with caching and fallback mechanisms.
 - **PostgreSQL**: Primary database for session storage in production.
 - **SQLite**: Local database (`data.db`) for application data in development/local setups.
 
-## Recent Implementation (November 27, 2025 - Complete Notification System)
+## Recent Implementation (November 27, 2025 - PUTER.JS INTEGRATION + COMPLETE PROFILE MANAGEMENT)
+
+### ✅ PUTER.JS INTEGRATION - FREE UNLIMITED AI PROVIDER
+- ✅ Installed `@heyputer/puter.js` npm package
+- ✅ Added Puter.js script tag to index.html (`<script src="https://js.puter.com/v2/"></script>`)
+- ✅ Created `services/puterService.ts` with helper functions for transcription, chat, etc.
+- ✅ Modified AdminPanel to show Puter as third AI provider option
+- ✅ Puter button highlighted green (emerald) for easy identification
+- ✅ Information panel shows all available Puter resources (Chat, Speech-to-Text, Image generation, Cloud storage, NoSQL database, etc)
+- ✅ Zero configuration needed - Puter.js handles everything client-side
+- ✅ Ready for production deployment
+
+### ✅ USER PROFILE MODAL - COMPLETE EDITING
+- ✅ ProfileModal.tsx component with full profile editing
+- ✅ Avatar upload and preview with hover "Trocar" button
+- ✅ Name editing
+- ✅ Email editing (optional, for notifications)
+- ✅ Username display (read-only)
+- ✅ Password change section with current password verification
+- ✅ Password confirmation matching validation
+- ✅ Minimum length requirement (4 characters)
+- ✅ Clear error messages for all validations
+- ✅ Success message after saving (1.5s auto-close)
+- ✅ Accessible from Sidebar avatar/name click
+- ✅ Dark mode support
 
 ### ✅ NOTIFICAÇÕES COMPLETO - Full Notification Management System (PRODUCTION READY)
 
@@ -127,7 +155,11 @@ The application is built with a React frontend (Vite, Tailwind CSS) and an Expre
 | 📅 Frequências (6 opções) | ✅ | Semanal, Quinzenal, Mensal, Trimestral, Semestral, Anual |
 | 💵 Currency Previews | ✅ | Real-time em inputs |
 | 📈 Budget History | ✅ | Auto-save com 12 meses |
-| 🏗️ Build | ✅ | Sem erros (426KB gzip) |
+| ✏️ Edit Profile (Avatar, Name, Email, Password) | ✅ | Completo com validações |
+| 🤖 AI Providers (Gemini, OpenRouter, Puter.js) | ✅ | Seamless switching |
+| 🎙️ Speech-to-Text (via Puter.js) | ✅ | Unlimited requests |
+| 🏗️ Build | ✅ | Sem erros (451KB gzip) |
 | 🚀 Servidor | ✅ | Rodando |
 
 **Aplicação PRODUCTION-READY! 🎉**
+
