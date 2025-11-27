@@ -35,22 +35,10 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
   const [budgetHistory, setBudgetHistory] = useState<Record<string, HistoryEntry[]>>({});
   const [selectedMonth, setSelectedMonth] = useState<string>('');
 
-  const defaultCategories = ['Alimentação', 'Transporte', 'Moradia', 'Lazer', 'Saúde', 'Educação', 'Outros'];
-
-  const validCategories = useMemo(() => {
-    const transactionCategories = new Set(transactions.map(t => t.category));
-    const budgetCategories = new Set(budgets.map(b => b.category));
-    const all = new Set([...transactionCategories, ...budgetCategories, ...defaultCategories]);
-    return all;
-  }, [transactions, budgets]);
-
-  const categories = useMemo(() => {
-    return Array.from(validCategories).sort();
-  }, [validCategories]);
-
-  const isValidCategory = (category: string): boolean => {
-    return validCategories.has(category.trim());
-  };
+  // Get all existing budget categories for current user
+  const existingBudgetCategories = useMemo(() => {
+    return new Set(budgets.map(b => b.category));
+  }, [budgets]);
 
   const categorySpending = useMemo(() => {
     const now = new Date();
@@ -100,12 +88,12 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
 
   const handleAddNewBudget = () => {
     if (!newCategory.trim() || !newAmount.trim()) {
-      alert("Selecione uma categoria e defina um valor.");
+      alert("Defina uma categoria e um valor.");
       return;
     }
 
-    if (!isValidCategory(newCategory)) {
-      alert(`❌ Categoria inválida: "${newCategory}"\n\nCategories válidas são:\n${Array.from(validCategories).sort().join(', ')}`);
+    if (existingBudgetCategories.has(newCategory.trim())) {
+      alert(`❌ Você já tem um orçamento para "${newCategory}"`);
       return;
     }
     
@@ -115,13 +103,11 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
       return;
     }
 
-    saveBudget({ category: newCategory, limit: amount });
+    saveBudget({ category: newCategory.trim(), limit: amount });
     setNewCategory('');
     setNewAmount('');
     setIsAddingNew(false);
   };
-
-  const categoriesNotInBudget = categories.filter(cat => !budgets.find(b => b.category === cat));
 
   const loadHistory = async () => {
     try {
@@ -272,30 +258,20 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
             Novo Orçamento
           </h3>
           
-          {categoriesNotInBudget.length === 0 ? (
-            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-              <p className="text-sm font-bold text-amber-700 dark:text-amber-400">
-                ✅ Todas as categorias já possuem orçamento definido!
-              </p>
-              <p className="text-xs text-amber-600 dark:text-amber-300 mt-1">
-                Para adicionar um novo orçamento, primeiro delete um existente ou crie uma nova categoria.
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Nome da Categoria</label>
+              <input 
+                type="text" 
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="Ex: Alimentação, Transporte, Saúde..."
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+              />
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Crie uma categoria única para este orçamento
               </p>
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Categoria</label>
-                <select 
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-                >
-                  <option value="">Selecione uma categoria...</option>
-                  {categoriesNotInBudget.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
 
             <div>
               <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Limite Mensal</label>
@@ -315,44 +291,27 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
               )}
             </div>
 
-              <div className="flex gap-2 pt-2">
-                <button 
-                  onClick={handleAddNewBudget}
-                  className="flex-1 p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
-                >
-                  <Save size={18} />
-                  Criar Orçamento
-                </button>
-                <button 
-                  onClick={() => {
-                    setIsAddingNew(false);
-                    setNewCategory('');
-                    setNewAmount('');
-                  }}
-                  className="flex-1 p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 font-bold transition flex items-center justify-center gap-2"
-                >
-                  <X size={18} />
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          )}
-          
-          {categoriesNotInBudget.length === 0 && (
-            <div className="flex gap-2 pt-4">
+            <div className="flex gap-2 pt-2">
+              <button 
+                onClick={handleAddNewBudget}
+                className="flex-1 p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
+              >
+                <Save size={18} />
+                Criar Orçamento
+              </button>
               <button 
                 onClick={() => {
                   setIsAddingNew(false);
                   setNewCategory('');
                   setNewAmount('');
                 }}
-                className="w-full p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 font-bold transition flex items-center justify-center gap-2"
+                className="flex-1 p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 font-bold transition flex items-center justify-center gap-2"
               >
                 <X size={18} />
-                Fechar
+                Cancelar
               </button>
             </div>
-          )}
+          </div>
         </div>
       )}
 
@@ -368,8 +327,9 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
           </button>
         )}
 
-        {categories.map(cat => {
-          const limit = budgets.find(b => b.category === cat)?.limit || 0;
+        {budgets.map(budget => {
+          const limit = budget.limit;
+          const cat = budget.category;
           const spent = categorySpending[cat] || 0;
           const percentage = limit > 0 ? (spent / limit) * 100 : 0;
           const isOverBudget = limit > 0 && spent > limit;

@@ -34,13 +34,14 @@ A comprehensive family financial management platform built with React, TypeScrip
 4. **Validação** - Verifica se URL contém "github.com"
 5. **Integrado com Update System** - Sistema de atualização lê URL configurada
 
-✅ **ADICIONAR ORÇAMENTOS - Budget Management**
+✅ **ADICIONAR ORÇAMENTOS - Budget Management (User-Specific)**
 1. **Botão Flutuante** - Card com ícone `+` para adicionar novos orçamentos
-2. **Formulário Interativo** - Dropdown com categorias disponíveis (não mostra as já configuradas)
-3. **Validações Rigorosas** - Avisa se categoria/valor vazios ou valor ≤ 0
-4. **Categorias Limitadas** - Se todas as categorias têm orçamento, mostra mensagem clara
-5. **Feedback Intuitivo** - Orienta o usuário sobre próximas ações (deletar ou criar novo)
-6. **Testado & Funcionando** - Adiciona novos orçamentos corretamente
+2. **Formulário com Input de Texto** - Usuário digita nome da categoria (não dropdown)
+3. **Isolamento por Usuário** - Cada usuário tem seus próprios orçamentos
+4. **Validações Rigorosas** - Avisa se categoria já existe para o usuário
+5. **Flexibilidade** - Dois usuários podem criar "Alimentação" diferentes
+6. **Backend Validação** - UNIQUE(user_id, category) previne duplicatas por usuário
+7. **Testado & Funcionando** - Adiciona novos orçamentos corretamente
 
 ✅ **PREVISUALIZAÇÕES DE MOEDA - Confirmação Visual de Valores**
 1. **Campos com Prévia** - Transações, Orçamentos, Metas, Empréstimos
