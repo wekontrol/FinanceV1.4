@@ -147,14 +147,22 @@ router.post('/create-defaults', (req: Request, res: Response) => {
   const userId = req.session.userId;
 
   const defaultBudgets = [
-    { category: 'Alimentação', limit: 300 },
+    { category: 'Renda', limit: 0 },
+    { category: 'Energia', limit: 150 },
+    { category: 'Água', limit: 80 },
     { category: 'Transporte', limit: 200 },
+    { category: 'Alimentação', limit: 300 },
+    { category: 'Combustível', limit: 200 },
+    { category: 'Compras domésticas', limit: 150 },
     { category: 'Lazer', limit: 150 },
+    { category: 'Roupas', limit: 100 },
     { category: 'Saúde', limit: 200 },
-    { category: 'Educação', limit: 250 },
-    { category: 'Compras', limit: 400 },
-    { category: 'Utilidades', limit: 300 },
-    { category: 'Outros', limit: 200 }
+    { category: 'Cuidados pessoais', limit: 80 },
+    { category: 'Juros / Multas', limit: 100 },
+    { category: 'Reparações e Manutenção', limit: 150 },
+    { category: 'Presentes', limit: 100 },
+    { category: 'Eventos', limit: 200 },
+    { category: 'Viagens', limit: 300 }
   ];
 
   let created = 0;
