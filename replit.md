@@ -19,6 +19,13 @@ A comprehensive family financial management platform built with React, TypeScrip
 5. **Rastreamento** - `app_settings` guarda última data de salvamento por usuário
 6. **UI Visualizador** - Mostra últimos 12 meses de gastos vs limites com seletor de mês
 7. **Botão Manual** - Ainda permite salvar manualmente se desejado (opcional)
+8. **Inclui Assinaturas** - Orçamento soma despesas simples + assinaturas/recorrências atividades
+
+✅ **SINCRONIZAÇÃO COM ASSINATURAS - Subscriptions in Budget**
+1. **Cálculo Unificado** - Orçamento = Despesas Simples + Assinaturas Ativas
+2. **Backend Atualizado** - `GET /api/budget/summary` inclui transações recorrentes
+3. **Histórico Completo** - `POST /api/budget/history/save` salva gastos totais (simples + recorrentes)
+4. **Rastreamento Real** - Mostra o consumo real mensal de cada categoria
 
 ✅ **GITHUB REPOSITORY CONFIGURAÇÃO - Super Admin Config**
 1. **GitHub Repo URL Input** - Super Admin pode configurar URL do repositório

@@ -28,14 +28,27 @@ export function autoSaveMonthlyHistory(userId: string) {
         GROUP BY category
       `).all(userId, `${previousMonth}%`) as any[];
 
+      // Adiciona também as assinaturas ativas no mês anterior
+      const recurringTransactions = db.prepare(`
+        SELECT category, SUM(amount) as total
+        FROM transactions
+        WHERE user_id = ? AND type = 'DESPESA' AND is_recurring = 1 AND date LIKE ?
+        GROUP BY category
+      `).all(userId, `${previousMonth}%`) as any[];
+
+      let saved = 0;
       limits.forEach((limit: any) => {
         const spent = transactions.find(t => t.category === limit.category);
+        const recurring = recurringTransactions.find(t => t.category === limit.category);
+        const totalSpent = (spent?.total || 0) + (recurring?.total || 0);
         const id = `bh${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
         
         db.prepare(`
           INSERT OR REPLACE INTO budget_history (id, user_id, category, month, limit_amount, spent_amount)
           VALUES (?, ?, ?, ?, ?, ?)
-        `).run(id, userId, limit.category, previousMonth, limit.limit_amount, spent ? spent.total : 0);
+        `).run(id, userId, limit.category, previousMonth, limit.limit_amount, totalSpent);
+        
+        saved++;
       });
 
       // Atualiza a data do último salvamento
@@ -173,21 +186,22 @@ router.get('/summary', (req: Request, res: Response) => {
   const currentMonth = new Date().toISOString().slice(0, 7);
 
   let transactions;
+  // Despesas simples + assinaturas/recorrências do mês atual
   if (user.role === 'SUPER_ADMIN' || user.role === 'MANAGER') {
     transactions = db.prepare(`
       SELECT category, SUM(amount) as total
       FROM transactions t
       JOIN users u ON t.user_id = u.id
-      WHERE u.family_id = ? AND type = 'DESPESA' AND date LIKE ?
+      WHERE u.family_id = ? AND type = 'DESPESA' AND (date LIKE ? OR (is_recurring = 1 AND date <= ?))
       GROUP BY category
-    `).all(user.familyId, `${currentMonth}%`);
+    `).all(user.familyId, `${currentMonth}%`, new Date().toISOString().split('T')[0]);
   } else {
     transactions = db.prepare(`
       SELECT category, SUM(amount) as total
       FROM transactions
-      WHERE user_id = ? AND type = 'DESPESA' AND date LIKE ?
+      WHERE user_id = ? AND type = 'DESPESA' AND (date LIKE ? OR (is_recurring = 1 AND date <= ?))
       GROUP BY category
-    `).all(userId, `${currentMonth}%`);
+    `).all(userId, `${currentMonth}%`, new Date().toISOString().split('T')[0]);
   }
 
   const limits = db.prepare(`
