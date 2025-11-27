@@ -574,6 +574,13 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, in
     return initialLanguage;
   });
 
+  // Actualiza a linguagem quando initialLanguage muda (ex: quando user faz login)
+  useEffect(() => {
+    if (initialLanguage && initialLanguage !== language) {
+      setLanguageState(initialLanguage);
+    }
+  }, [initialLanguage]);
+
   useEffect(() => {
     localStorage.setItem('app_language', language);
     document.documentElement.lang = language === 'um' ? 'pt' : language;

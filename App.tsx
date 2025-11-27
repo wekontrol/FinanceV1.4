@@ -100,6 +100,7 @@ const App: React.FC = () => {
       try {
         const response = await authApi.me();
         setCurrentUser(response.user);
+        setUserLanguage(response.user.languagePreference || 'pt');
         setIsLoggedIn(true);
         await loadAllData();
       } catch (error) {
