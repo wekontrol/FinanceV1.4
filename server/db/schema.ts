@@ -20,6 +20,7 @@ export function initializeDatabase() {
       username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       name TEXT NOT NULL,
+      email TEXT,
       role TEXT NOT NULL DEFAULT 'MEMBER',
       avatar TEXT,
       status TEXT NOT NULL DEFAULT 'PENDING',

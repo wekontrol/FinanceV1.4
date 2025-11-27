@@ -11,6 +11,7 @@ interface RegisterProps {
 const Register: React.FC<RegisterProps> = ({ onRegister, onCancel }) => {
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     username: '',
     password: '',
     confirmPassword: '',
@@ -34,6 +35,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onCancel }) => {
 
     onRegister({
       name: formData.name,
+      email: formData.email || undefined,
       username: formData.username,
       password: formData.password,
       role: UserRole.MANAGER, // O criador da família é o Gestor
@@ -102,6 +104,18 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onCancel }) => {
               className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
               placeholder="usuario.login"
             />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email (Opcional)</label>
+            <input 
+              type="email" 
+              value={formData.email}
+              onChange={e => setFormData({...formData, email: e.target.value})}
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder="seu.email@exemplo.com"
+            />
+            <p className="text-[10px] text-slate-400 mt-1">Para receber notificações por email.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

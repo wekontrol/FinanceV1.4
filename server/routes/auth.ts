@@ -52,7 +52,7 @@ router.post('/login', (req: Request, res: Response) => {
 });
 
 router.post('/register', (req: Request, res: Response) => {
-  const { username, password, name, familyName, securityQuestion, securityAnswer } = req.body;
+  const { username, password, name, email, familyName, securityQuestion, securityAnswer } = req.body;
 
   if (!username || !password || !name || !familyName) {
     return res.status(400).json({ error: 'All fields are required (username, password, name, familyName)' });
@@ -75,13 +75,14 @@ router.post('/register', (req: Request, res: Response) => {
 
   // Create user
   db.prepare(`
-    INSERT INTO users (id, username, password, name, role, avatar, status, family_id, security_question, security_answer)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO users (id, username, password, name, email, role, avatar, status, family_id, security_question, security_answer)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     userId,
     username,
     hashedPassword,
     name,
+    email || null,
     'MANAGER',
     '/default-avatar.svg',
     'APPROVED',
