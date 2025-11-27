@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Transaction, TransactionType, BudgetLimit } from '../types';
-import { PieChart, Save, AlertTriangle, CheckCircle, Edit3, Sparkles, Loader2 } from 'lucide-react';
+import { PieChart, Save, AlertTriangle, CheckCircle, Edit3, Sparkles, Loader2, Plus, X } from 'lucide-react';
 import Hint from './Hint';
 import { suggestBudgets } from '../services/geminiService';
 
@@ -21,6 +21,9 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [editAmount, setEditAmount] = useState<string>('');
   const [isSuggesting, setIsSuggesting] = useState(false);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [newCategory, setNewCategory] = useState<string>('');
+  const [newAmount, setNewAmount] = useState<string>('');
 
   const categories = useMemo(() => {
     const transactionCategories = new Set(transactions.map(t => t.category));
@@ -76,6 +79,26 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
     }
   };
 
+  const handleAddNewBudget = () => {
+    if (!newCategory.trim() || !newAmount.trim()) {
+      alert("Selecione uma categoria e defina um valor.");
+      return;
+    }
+    
+    const amount = Number(newAmount);
+    if (amount <= 0) {
+      alert("O valor deve ser maior que zero.");
+      return;
+    }
+
+    saveBudget({ category: newCategory, limit: amount });
+    setNewCategory('');
+    setNewAmount('');
+    setIsAddingNew(false);
+  };
+
+  const categoriesNotInBudget = categories.filter(cat => !budgets.find(b => b.category === cat));
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 rounded-3xl text-white shadow-lg shadow-blue-500/20 relative overflow-hidden">
@@ -100,7 +123,78 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
          </div>
       </div>
 
+      {/* Adicionar Novo Orçamento */}
+      {isAddingNew && (
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-6 animate-slide-in-left">
+          <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-4 flex items-center gap-2">
+            <Plus size={20} className="text-primary-600" />
+            Novo Orçamento
+          </h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Categoria</label>
+              <select 
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+              >
+                <option value="">Selecione uma categoria...</option>
+                {categoriesNotInBudget.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Limite Mensal</label>
+              <input 
+                type="number" 
+                value={newAmount}
+                onChange={(e) => setNewAmount(e.target.value)}
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button 
+                onClick={handleAddNewBudget}
+                className="flex-1 p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
+              >
+                <Save size={18} />
+                Criar Orçamento
+              </button>
+              <button 
+                onClick={() => {
+                  setIsAddingNew(false);
+                  setNewCategory('');
+                  setNewAmount('');
+                }}
+                className="flex-1 p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 font-bold transition flex items-center justify-center gap-2"
+              >
+                <X size={18} />
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-tour="budget-cards">
+        {/* Botão Flutuante para Adicionar */}
+        {!isAddingNew && (
+          <button 
+            onClick={() => setIsAddingNew(true)}
+            className="h-full min-h-[280px] bg-gradient-to-br from-primary-50 dark:from-primary-900/20 to-primary-100/50 dark:to-primary-900/10 border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-3xl flex flex-col items-center justify-center hover:border-primary-500 dark:hover:border-primary-500 transition hover:shadow-md dark:hover:shadow-primary-500/20"
+          >
+            <Plus size={40} className="text-primary-500 mb-2" />
+            <span className="font-bold text-primary-600 dark:text-primary-400">Adicionar Orçamento</span>
+          </button>
+        )}
+
         {categories.map(cat => {
           const limit = budgets.find(b => b.category === cat)?.limit || 0;
           const spent = categorySpending[cat] || 0;
