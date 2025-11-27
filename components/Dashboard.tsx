@@ -35,7 +35,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   currentInflation = 0,
   currentUser
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [advice, setAdvice] = useState<string>(t("dashboard.analyzing"));
   const [dateRange, setDateRange] = useState<DateRange>('month');
   const [showAlerts, setShowAlerts] = useState(true);
