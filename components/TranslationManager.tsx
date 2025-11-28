@@ -237,6 +237,12 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Page Title */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">🌐 {t("sidebar.translations")}</h1>
+        <p className="text-slate-600 dark:text-slate-400">{t("translations.manager_title")}</p>
+      </div>
+
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <Languages className="text-primary-600" size={24} />
