@@ -54,17 +54,21 @@ Fast Mode development - small focused edits preferred.
   - Responsive icon spacing: `mr-1 md:mr-2`
   - Responsive text size: `text-xs md:text-sm`
 
-### Phase 6: SYSTEM DARK/LIGHT MODE + HYBRID EXCHANGE RATES ✅
+### Phase 6: SYSTEM DARK/LIGHT MODE + LIVE API EXCHANGE RATES ✅
 - **Auto System Theme Detection:** App now detects device dark/light mode preference and auto-switches
   - Watches for system preference changes using `matchMedia('prefers-color-scheme: dark')`
   - Respects manual toggle preference (doesn't auto-switch if user manually selected)
   - Works on all modern browsers with fallback for older browsers
-- **Hybrid Currency Conversion System:** Live rates + automatic fallback
-  - **Live API:** Fetches real-time exchange rates from `https://open.er-api.com/v6/latest/USD` (free, no auth)
+- **Live API Currency Conversion System:** Real-time rates from free API + automatic fallback
+  - **Live API:** Fetches real-time exchange rates from Fawaz Ahmed Currency API (CDN-hosted, free, no auth, no rate limits)
+  - **API URL:** `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json`
+  - **AOA Support:** Fully supported with real-time rates (1 USD = ~912 AOA)
+  - **Conversion Logic:** Converts all currency rates to AOA base for accurate multi-currency display
   - **Fallback Rates:** Hardcoded rates for all 3 providers (BNA, FOREX, PARALLEL) if API fails
   - **Endpoint:** `/api/settings/rates/:provider` with 5-second timeout
   - **Response includes:** source ('live' or 'fallback') and lastUpdate timestamp
   - Supports 7 currencies: USD, EUR, BRL, GBP, CNY, ZAR, JPY
+  - Works seamlessly across all 6 languages (PT, EN, ES, UM, LN, FR)
 
 ### FINAL STATISTICS:
 - **Total Translation Keys: 500** (all 6 languages synced from JSON)

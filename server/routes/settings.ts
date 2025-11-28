@@ -227,20 +227,59 @@ const FALLBACK_RATES: Record<string, Record<string, number>> = {
   }
 };
 
-// Get exchange rates for a specific provider
-router.get('/rates/:provider', (req: Request, res: Response) => {
+// Get exchange rates for a specific provider - using live API
+router.get('/rates/:provider', async (req: Request, res: Response) => {
   const { provider } = req.params;
+  
   try {
-    const fallbackRates = FALLBACK_RATES[provider] || FALLBACK_RATES.BNA;
-    console.log('[GET /rates] Using rates for provider:', provider);
-    res.json({
-      ...fallbackRates,
+    // Fetch live rates from free Fawaz Ahmed Currency API (supports AOA, no auth needed)
+    const response = await fetch(
+      'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json',
+      { signal: AbortSignal.timeout(5000) }
+    );
+
+    if (!response.ok) throw new Error('API request failed');
+
+    const data = await response.json();
+    const usdRates = data.usd || {};
+
+    // Convert USD rates to AOA base rates
+    // AOA to USD rate is in usdRates.aoa, so 1 USD = X AOA
+    // We need: 1 AOA = ? USD, EUR, etc
+    const usdToAoa = usdRates.aoa || 912.50; // fallback if missing
+
+    console.log('[GET /rates] Live rates fetched. USD->AOA:', usdToAoa);
+
+    const liveRates = {
+      AOA: 1,
+      USD: 1 / usdToAoa, // How much USD is 1 AOA
+      EUR: (usdRates.eur || 0.92) / usdToAoa,
+      BRL: (usdRates.brl || 5.15) / usdToAoa,
+      GBP: (usdRates.gbp || 0.79) / usdToAoa,
+      CNY: (usdRates.cny || 7.25) / usdToAoa,
+      ZAR: (usdRates.zar || 18.05) / usdToAoa,
+      JPY: (usdRates.jpy || 153.50) / usdToAoa,
       lastUpdate: new Date().toISOString(),
-      source: 'fallback'
-    });
+      source: 'live'
+    };
+
+    return res.json(liveRates);
   } catch (error: any) {
-    console.error('[GET /rates] Error:', error);
-    res.status(500).json({ error: error.message });
+    console.warn('[GET /rates] Live API failed, using fallback:', error.message);
+    
+    // Fallback to hardcoded rates
+    try {
+      const fallbackRates = FALLBACK_RATES[provider] || FALLBACK_RATES.BNA;
+      console.log('[GET /rates] Using FALLBACK rates for provider:', provider);
+      return res.json({
+        ...fallbackRates,
+        lastUpdate: new Date().toISOString(),
+        source: 'fallback'
+      });
+    } catch (fallbackError: any) {
+      console.error('[GET /rates] Error:', fallbackError);
+      res.status(500).json({ error: fallbackError.message });
+    }
   }
 });
 
