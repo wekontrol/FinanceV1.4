@@ -381,5 +381,22 @@
   "transactions.header_date": "LOLA",
   "transactions.header_amount": "MABOKO",
   "transactions.header_actions": "MOTEMA",
-  "transactions.search_placeholder": "Talangela..."
+  "transactions.search_placeholder": "Talangela...",
+  "dashboard.savings_percentage": "40% kosunga",
+  "dashboard.expense_percentage": "30% mokolo",
+  "dashboard.goals_percentage": "30% bilakisi",
+  "dashboard.confidence_label": "Koyebi:",
+  "transactions.recurring_label": "Kozala Nini?",
+  "transactions.frequency_label": "Nini ya Mazemba",
+  "transactions.freq_weekly": "Okala Moko",
+  "transactions.freq_biweekly": "Okala Mibale",
+  "transactions.freq_monthly": "Soki ya Mwezi",
+  "transactions.freq_quarterly": "Soki ya Mitano",
+  "transactions.freq_semiannual": "Soki ya Mosusu",
+  "transactions.freq_yearly": "Soki ya Mobu",
+  "common.cancel": "Bosilikela",
+  "transactions.update_button": "Songa",
+  "common.save": "Okitwa",
+  "transactions.retry": "Zonga Lisusu",
+  "transactions.monthly_recurring_cost": "Mokolo ya Mwezi Oyo Kozala Nini"
 }

@@ -408,7 +408,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                  <p className={`text-[10px] md:text-xs font-bold py-1.5 px-2 rounded-full bg-gradient-to-r transition-all duration-300 ${healthScore > 70 ? 'from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/20 text-emerald-700 dark:text-emerald-300' : healthScore > 40 ? 'from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/20 text-amber-700 dark:text-amber-300' : 'from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-900/20 text-rose-700 dark:text-rose-300'}`}>
                    {healthScore > 80 ? t('dashboard.score_excellent') : healthScore > 50 ? t('dashboard.score_good') : t('dashboard.score_critical')}
                  </p>
-                 <p className="text-[9px] text-slate-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">40% poupança<br/>30% despesa<br/>30% metas</p>
+                 <p className="text-[9px] text-slate-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">{t('dashboard.savings_percentage')}<br/>{t('dashboard.expense_percentage')}<br/>{t('dashboard.goals_percentage')}</p>
               </div>
             </div>
         </div>
@@ -471,7 +471,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   </div>
                 ))}
               </div>
-              <p className="text-slate-300 text-xs pt-2">Confiança: <span className="text-emerald-300 font-bold">{forecast.confidence || 0}%</span> • {forecast.notes}</p>
+              <p className="text-slate-300 text-xs pt-2">{t('dashboard.confidence_label')} <span className="text-emerald-300 font-bold">{forecast.confidence || 0}%</span> • {forecast.notes}</p>
               <button onClick={() => generateAnalysisPDF(waste, forecast, currencyFormatter, currentUser)} className="mt-2 text-xs bg-emerald-500/30 hover:bg-emerald-500/50 px-2 py-1 rounded text-emerald-200 font-bold">📥 Exportar</button>
             </div>
           ) : (

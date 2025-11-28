@@ -381,5 +381,22 @@
   "transactions.header_date": "FECHA",
   "transactions.header_amount": "CANTIDAD",
   "transactions.header_actions": "ACCIONES",
-  "transactions.search_placeholder": "Buscar..."
+  "transactions.search_placeholder": "Buscar...",
+  "dashboard.savings_percentage": "40% ahorros",
+  "dashboard.expense_percentage": "30% gasto",
+  "dashboard.goals_percentage": "30% objetivos",
+  "dashboard.confidence_label": "Confianza:",
+  "transactions.recurring_label": "¿Recurrente?",
+  "transactions.frequency_label": "Frecuencia",
+  "transactions.freq_weekly": "Semanal",
+  "transactions.freq_biweekly": "Quincenal",
+  "transactions.freq_monthly": "Mensual",
+  "transactions.freq_quarterly": "Trimestral",
+  "transactions.freq_semiannual": "Semestral",
+  "transactions.freq_yearly": "Anual",
+  "common.cancel": "Cancelar",
+  "transactions.update_button": "Actualizar",
+  "common.save": "Guardar",
+  "transactions.retry": "Reintentar",
+  "transactions.monthly_recurring_cost": "Costo Mensual Recurrente"
 }

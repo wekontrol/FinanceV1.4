@@ -381,5 +381,22 @@
   "transactions.header_date": "DATE",
   "transactions.header_amount": "MONTANT",
   "transactions.header_actions": "ACTIONS",
-  "transactions.search_placeholder": "Rechercher..."
+  "transactions.search_placeholder": "Rechercher...",
+  "dashboard.savings_percentage": "40% épargne",
+  "dashboard.expense_percentage": "30% dépense",
+  "dashboard.goals_percentage": "30% objectifs",
+  "dashboard.confidence_label": "Confiance:",
+  "transactions.recurring_label": "Récurrent?",
+  "transactions.frequency_label": "Fréquence",
+  "transactions.freq_weekly": "Hebdomadaire",
+  "transactions.freq_biweekly": "Quinzaine",
+  "transactions.freq_monthly": "Mensuel",
+  "transactions.freq_quarterly": "Trimestriel",
+  "transactions.freq_semiannual": "Semestriel",
+  "transactions.freq_yearly": "Annuel",
+  "common.cancel": "Annuler",
+  "transactions.update_button": "Mettre à Jour",
+  "common.save": "Enregistrer",
+  "transactions.retry": "Réessayer",
+  "transactions.monthly_recurring_cost": "Coût Mensuel Récurrent"
 }

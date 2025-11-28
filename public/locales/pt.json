@@ -381,5 +381,22 @@
   "transactions.header_date": "DATA",
   "transactions.header_amount": "VALOR",
   "transactions.header_actions": "AÇÕES",
-  "transactions.search_placeholder": "Buscar..."
+  "transactions.search_placeholder": "Buscar...",
+  "dashboard.savings_percentage": "40% poupança",
+  "dashboard.expense_percentage": "30% despesa",
+  "dashboard.goals_percentage": "30% metas",
+  "dashboard.confidence_label": "Confiança:",
+  "transactions.recurring_label": "Recorrente?",
+  "transactions.frequency_label": "Frequência",
+  "transactions.freq_weekly": "Semanal",
+  "transactions.freq_biweekly": "Quinzenal",
+  "transactions.freq_monthly": "Mensal",
+  "transactions.freq_quarterly": "Trimestral",
+  "transactions.freq_semiannual": "Semestral",
+  "transactions.freq_yearly": "Anual",
+  "common.cancel": "Cancelar",
+  "transactions.update_button": "Atualizar",
+  "common.save": "Salvar",
+  "transactions.retry": "Repetir",
+  "transactions.monthly_recurring_cost": "Custo Mensal Recorrente"
 }

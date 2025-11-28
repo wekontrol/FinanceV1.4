@@ -381,5 +381,22 @@
   "transactions.header_date": "DATE",
   "transactions.header_amount": "AMOUNT",
   "transactions.header_actions": "ACTIONS",
-  "transactions.search_placeholder": "Search..."
+  "transactions.search_placeholder": "Search...",
+  "dashboard.savings_percentage": "40% savings",
+  "dashboard.expense_percentage": "30% expense",
+  "dashboard.goals_percentage": "30% goals",
+  "dashboard.confidence_label": "Confidence:",
+  "transactions.recurring_label": "Recurring?",
+  "transactions.frequency_label": "Frequency",
+  "transactions.freq_weekly": "Weekly",
+  "transactions.freq_biweekly": "Biweekly",
+  "transactions.freq_monthly": "Monthly",
+  "transactions.freq_quarterly": "Quarterly",
+  "transactions.freq_semiannual": "Semiannual",
+  "transactions.freq_yearly": "Yearly",
+  "common.cancel": "Cancel",
+  "transactions.update_button": "Update",
+  "common.save": "Save",
+  "transactions.retry": "Retry",
+  "transactions.monthly_recurring_cost": "Monthly Recurring Cost"
 }

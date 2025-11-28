@@ -687,25 +687,25 @@ const Transactions: React.FC<TransactionsProps> = ({
                       className="w-5 h-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
                     />
                     <span className="text-sm font-bold text-slate-700 dark:text-white flex items-center">
-                      <RefreshCw size={14} className="mr-1"/> Recorrente?
+                      <RefreshCw size={14} className="mr-1"/> {t('transactions.recurring_label')}
                     </span>
                   </label>
                 </div>
                 
                 {formData.isRecurring && (
                   <div className="animate-fade-in mt-3">
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Frequência</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('transactions.frequency_label')}</label>
                     <select 
                       value={formData.frequency} 
                       onChange={e => setFormData({...formData, frequency: e.target.value as any})}
                       className={inputClass}
                     >
-                      <option value="weekly">Semanal</option>
-                      <option value="biweekly">Quinzenal</option>
-                      <option value="monthly">Mensal</option>
-                      <option value="quarterly">Trimestral</option>
-                      <option value="semiannual">Semestral</option>
-                      <option value="yearly">Anual</option>
+                      <option value="weekly">{t('transactions.freq_weekly')}</option>
+                      <option value="biweekly">{t('transactions.freq_biweekly')}</option>
+                      <option value="monthly">{t('transactions.freq_monthly')}</option>
+                      <option value="quarterly">{t('transactions.freq_quarterly')}</option>
+                      <option value="semiannual">{t('transactions.freq_semiannual')}</option>
+                      <option value="yearly">{t('transactions.freq_yearly')}</option>
                     </select>
                   </div>
                 )}
@@ -718,13 +718,13 @@ const Transactions: React.FC<TransactionsProps> = ({
                 onClick={() => { setShowForm(false); setEditingId(null); }}
                 className="px-6 py-3 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition active:scale-95"
               >
-                Cancelar
+                {t('common.cancel')}
               </button>
               <button 
                 type="submit" 
                 className="px-6 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-lg shadow-primary-500/30 transition active:scale-95"
               >
-                {editingId ? 'Atualizar' : 'Salvar'}
+                {editingId ? t('transactions.update_button') : t('common.save')}
               </button>
             </div>
           </form>
@@ -773,7 +773,7 @@ const Transactions: React.FC<TransactionsProps> = ({
                     <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center border border-slate-600">
                        <RotateCcw size={24} />
                     </div>
-                    <span className="text-xs">Repetir</span>
+                    <span className="text-xs">{t('transactions.retry')}</span>
                   </button>
 
                   <button 
@@ -808,7 +808,7 @@ const Transactions: React.FC<TransactionsProps> = ({
            <div className="bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-3xl p-6 md:p-8 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden">
              <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                <div>
-                  <h3 className="text-lg font-bold mb-1 opacity-90">Custo Mensal Recorrente</h3>
+                  <h3 className="text-lg font-bold mb-1 opacity-90">{t('transactions.monthly_recurring_cost')}</h3>
                   <p className="text-lg sm:text-2xl md:text-3xl font-extrabold tracking-tight break-words min-w-0">{currencyFormatter(totalSubscriptions)}</p>
                </div>
                <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-sm self-end sm:self-auto">
@@ -825,7 +825,7 @@ const Transactions: React.FC<TransactionsProps> = ({
                         {t.type === 'RECEITA' ? <ArrowUpCircle size={24} /> : <CreditCard size={24} />}
                      </div>
                      <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs font-bold text-slate-500 dark:text-slate-300 uppercase">
-                       {t.frequency === 'weekly' ? 'Semanal' : t.frequency === 'biweekly' ? 'Quinzenal' : t.frequency === 'monthly' ? 'Mensal' : t.frequency === 'quarterly' ? 'Trimestral' : t.frequency === 'semiannual' ? 'Semestral' : 'Anual'}
+                       {t.frequency === 'weekly' ? t('transactions.freq_weekly') : t.frequency === 'biweekly' ? t('transactions.freq_biweekly') : t.frequency === 'monthly' ? t('transactions.freq_monthly') : t.frequency === 'quarterly' ? t('transactions.freq_quarterly') : t.frequency === 'semiannual' ? t('transactions.freq_semiannual') : t('transactions.freq_yearly')}
                      </span>
                    </div>
                    

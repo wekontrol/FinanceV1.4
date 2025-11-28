@@ -381,5 +381,22 @@
   "transactions.header_date": "OLUNAKU",
   "transactions.header_amount": "OKUBALASISA",
   "transactions.header_actions": "OKUKWATA",
-  "transactions.search_placeholder": "Okusikila..."
+  "transactions.search_placeholder": "Okusikila...",
+  "dashboard.savings_percentage": "40% okusaavu",
+  "dashboard.expense_percentage": "30% okukola",
+  "dashboard.goals_percentage": "30% emikisa",
+  "dashboard.confidence_label": "Okukuuma:",
+  "transactions.recurring_label": "Okwikyanya?",
+  "transactions.frequency_label": "Oluwendo",
+  "transactions.freq_weekly": "Okwa Wiki",
+  "transactions.freq_biweekly": "Okwa Wikakubiri",
+  "transactions.freq_monthly": "Okwa Oku",
+  "transactions.freq_quarterly": "Okwa Okukyusatu",
+  "transactions.freq_semiannual": "Okwa Okunakubiri",
+  "transactions.freq_yearly": "Okwa Omwaka",
+  "common.cancel": "Kyanguyiza",
+  "transactions.update_button": "Okusinza",
+  "common.save": "Okutembeka",
+  "transactions.retry": "Okugenda Nate",
+  "transactions.monthly_recurring_cost": "Okukola Okwa Oku Okwikyanya"
 }
