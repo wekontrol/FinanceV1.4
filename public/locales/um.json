@@ -335,5 +335,13 @@
   "translations.edit": "Okusikila",
   "translations.save": "Okutembeka",
   "translations.cancel": "Okusala",
-  "translations.no_results": "Okusikila okutambika okusitululu"
+  "translations.no_results": "Okusikila okutambika okusitululu",
+  "translations.import_export": "Okuzalulula / Okuzagula",
+  "translations.export_json": "📥 Okuzagula JSONs",
+  "translations.import_json": "📤 Okuzalulula JSONs",
+  "translations.export_success": "✓ JSONs zazagulukibwa nkokwagire!",
+  "translations.export_error": "✗ Okusila okuzagula JSONs",
+  "translations.import_success": "✓ Okusikila okuzalululla nkokwagire",
+  "translations.import_error": "✗ Okusila okuzalulula JSONs. Tegeka engeri.",
+  "translations.import_export_tip": "💡 Okuteeza: Zagula JSONs, sikila n'okwikuluze (ChatGPT/Claude), era zalulula okukoma enkyama!"
 }

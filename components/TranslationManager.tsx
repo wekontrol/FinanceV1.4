@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { User, UserRole } from '../types';
-import { Languages, Plus, Save, Loader2, AlertTriangle, BarChart3, Search, Filter } from 'lucide-react';
+import { Languages, Plus, Save, Loader2, AlertTriangle, BarChart3, Search, Filter, Download, Upload, CheckCircle } from 'lucide-react';
+import JSZip from 'jszip';
 
 interface Translation {
   language: string;
@@ -28,6 +29,8 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
   const [isSaving, setIsSaving] = useState(false);
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editingValues, setEditingValues] = useState<Record<string, string>>({});
+  const [importMessage, setImportMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
 
   // Check access
   const hasAccess = currentUser.role === UserRole.TRANSLATOR || currentUser.role === UserRole.SUPER_ADMIN;
@@ -110,6 +113,90 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
     }
   };
 
+  // Export functionality
+  const handleExport = async () => {
+    try {
+      setIsSaving(true);
+      const zip = new JSZip();
+      const allKeys = [...new Set(translations.map(t => t.key))];
+
+      for (const lang of languages) {
+        const langData: Record<string, string> = {};
+        allKeys.forEach(key => {
+          const trans = translations.find(t => t.language === lang && t.key === key);
+          langData[key] = trans?.value || '';
+        });
+        
+        zip.file(`${lang}.json`, JSON.stringify(langData, null, 2));
+      }
+
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `traducoes-${new Date().toISOString().split('T')[0]}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      setImportMessage({ type: 'success', text: t("translations.export_success") });
+      setTimeout(() => setImportMessage(null), 3000);
+    } catch (error) {
+      console.error('Erro ao exportar:', error);
+      setImportMessage({ type: 'error', text: t("translations.export_error") });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Import functionality
+  const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    try {
+      const zip = new JSZip();
+      const loaded = await zip.loadAsync(file);
+      
+      let importedCount = 0;
+      const allKeys = [...new Set(translations.map(t => t.key))];
+
+      for (const lang of languages) {
+        const jsonFile = loaded.file(`${lang}.json`);
+        if (jsonFile) {
+          const content = await jsonFile.async('text');
+          const data = JSON.parse(content);
+
+          for (const key of allKeys) {
+            if (data[key] && data[key].trim()) {
+              await fetch('/api/translations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ language: lang, key, value: data[key] })
+              });
+              importedCount++;
+            }
+          }
+        }
+      }
+
+      setImportMessage({ 
+        type: 'success', 
+        text: t("translations.import_success") + ` (${importedCount} ${t("translations.keys")})`
+      });
+      loadTranslations();
+      
+      setTimeout(() => setImportMessage(null), 3000);
+    } catch (error) {
+      console.error('Erro ao importar:', error);
+      setImportMessage({ type: 'error', text: t("translations.import_error") });
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   // Get unique keys
   const allKeys = [...new Set(translations.map(t => t.key))];
   
@@ -156,6 +243,18 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{t("translations.manager_title")}</h2>
       </div>
 
+      {/* Import Message */}
+      {importMessage && (
+        <div className={`p-4 rounded-lg flex items-center gap-2 ${
+          importMessage.type === 'success' 
+            ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+            : 'bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+        }`}>
+          <CheckCircle size={20} />
+          <span className="text-sm font-bold">{importMessage.text}</span>
+        </div>
+      )}
+
       {/* Statistics Dashboard */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {stats.map(stat => (
@@ -171,6 +270,34 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Export/Import Buttons */}
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-purple-200 dark:border-purple-800 space-y-4">
+        <h3 className="font-bold text-slate-800 dark:text-white mb-4">{t("translations.import_export")}</h3>
+        <div className="grid md:grid-cols-2 gap-4">
+          <button
+            onClick={handleExport}
+            disabled={isSaving}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2 font-bold transition"
+          >
+            {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
+            {t("translations.export_json")}
+          </button>
+
+          <label className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2 font-bold transition cursor-pointer">
+            {isImporting ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
+            {t("translations.import_json")}
+            <input
+              type="file"
+              accept=".zip"
+              onChange={handleImportFile}
+              disabled={isImporting}
+              className="hidden"
+            />
+          </label>
+        </div>
+        <p className="text-xs text-slate-600 dark:text-slate-400">{t("translations.import_export_tip")}</p>
       </div>
 
       {/* Controls */}

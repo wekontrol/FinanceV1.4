@@ -335,5 +335,13 @@
   "translations.edit": "Songa",
   "translations.save": "Okitwa",
   "translations.cancel": "Bobiya",
-  "translations.no_results": "Lokambo tefonani te"
+  "translations.no_results": "Lokambo tefonani te",
+  "translations.import_export": "Zwa / Sombela",
+  "translations.export_json": "📥 Sombela JSONs",
+  "translations.import_json": "📤 Zwa JSONs",
+  "translations.export_success": "✓ JSONs sombeliamaki na liwa!",
+  "translations.export_error": "✗ Mbeba ya kusombela JSONs",
+  "translations.import_success": "✓ Lokambo zwakomiamaki na liwa",
+  "translations.import_error": "✗ Mbeba ya kuzwa JSONs. Verifika format.",
+  "translations.import_export_tip": "💡 Mombembe: Sombela JSONs, sikila na Boyikoli (ChatGPT/Claude), mpe zwa mokili ya koiza lisusu!"
 }

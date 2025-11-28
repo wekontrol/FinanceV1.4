@@ -335,5 +335,13 @@
   "translations.edit": "Edit",
   "translations.save": "Save",
   "translations.cancel": "Cancel",
-  "translations.no_results": "No translations found"
+  "translations.no_results": "No translations found",
+  "translations.import_export": "Import / Export",
+  "translations.export_json": "📥 Export JSONs",
+  "translations.import_json": "📤 Import JSONs",
+  "translations.export_success": "✓ JSONs exported successfully!",
+  "translations.export_error": "✗ Error exporting JSONs",
+  "translations.import_success": "✓ Translations imported successfully",
+  "translations.import_error": "✗ Error importing JSONs. Check the format.",
+  "translations.import_export_tip": "💡 Tip: Export JSONs, edit with AI (ChatGPT/Claude), and reimport to apply batch improvements!"
 }
