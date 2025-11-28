@@ -456,7 +456,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
         <div className="bg-white/5 backdrop-blur-sm p-4 md:p-6 rounded-[20px]">
           <h3 className="font-bold text-lg mb-3 flex items-center text-white justify-between">
-            <span className="flex items-center"><TrendingUp className="mr-2 text-emerald-300 animate-pulse shrink-0" size={20} /> Previsões Financeiras (3 meses)</span>
+            <span className="flex items-center"><TrendingUp className="mr-2 text-emerald-300 animate-pulse shrink-0" size={20} /> {t('dashboard.financial_forecast')}</span>
             <button onClick={async () => { setIsAnalyzingForecast(true); const f = await predictFutureExpenses(transactions, 3, language); setForecast(f); setIsAnalyzingForecast(false); }} disabled={isAnalyzingForecast} className="text-xs bg-emerald-600 hover:bg-emerald-700 px-2 py-1 rounded disabled:opacity-50">
               {isAnalyzingForecast ? t('dashboard.predicting') : t('dashboard.forecast')}
             </button>
@@ -485,7 +485,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 min-h-[400px]">
           <h3 className="text-lg font-bold mb-6 text-slate-800 dark:text-white flex items-center">
             <div className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3"></div>
-            Fluxo de Caixa
+            {t('dashboard.cash_flow')}
           </h3>
           <div className="h-64 md:h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -544,7 +544,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 min-h-[400px]">
           <h3 className="text-lg font-bold mb-6 text-slate-800 dark:text-white flex items-center">
             <div className="w-1.5 h-6 bg-purple-500 rounded-full mr-3"></div>
-            Por Categoria
+            {t('dashboard.by_category')}
           </h3>
           {categoryData.length > 0 ? (
             <div className="h-64 md:h-72 relative">

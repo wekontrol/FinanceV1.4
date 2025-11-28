@@ -267,7 +267,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 type="text" 
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
-                placeholder="Ex: Alimentação, Transporte, Saúde..."
+                placeholder={t("budget.placeholder")}
                 className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
               />
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
