@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { BackupConfig, User, UserRole, UserStatus } from '../types';
-import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2, FileText, Languages } from 'lucide-react';
+import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2, FileText, Languages, DollarSign } from 'lucide-react';
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
 import { hasPuterEnabled, setPuterAsDefault } from '../services/puterService';
 import { setGroqKey, hasGroqKey } from '../services/groqService';
@@ -11,6 +11,7 @@ import { backupApi } from '../services/backupApi';
 import { systemApi } from '../services/systemApi';
 import NotificationSettings from './NotificationSettings';
 import TranslationManager from './TranslationManager';
+import CurrencyProviderSettings from './CurrencyProviderSettings';
 
 interface AdminPanelProps {
   appName: string;
@@ -56,6 +57,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [activeProvider, setActiveProvider] = useState<'gemini' | 'openrouter' | 'puter' | 'groq'>(() => {
     return (localStorage.getItem('ai_provider') as 'gemini' | 'openrouter' | 'puter' | 'groq') || 'gemini';
   });
+
+  // Currency Provider State
+  const [currencyProvider, setCurrencyProvider] = useState<'BNA' | 'FOREX' | 'PARALLEL'>('BNA');
   
   // Gemini State
   const [apiKeyInput, setApiKeyInput] = useState('');
@@ -1555,6 +1559,31 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                         </div>
                       </div>
                     ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Currency Providers Section */}
+            {isSuperAdmin && (
+              <div className="space-y-3">
+                <button
+                  onClick={() => toggleSection('currency')}
+                  className="w-full text-left px-4 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg font-bold text-slate-800 dark:text-white transition flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2">
+                    <DollarSign size={20} />
+                    {t('common.conversion_providers') || 'Provedores de Conversão Monetária'}
+                  </span>
+                  {expandedSection === 'currency' ? <ChevronUp /> : <ChevronDown />}
+                </button>
+
+                {expandedSection === 'currency' && (
+                  <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <CurrencyProviderSettings 
+                      currentProvider={currencyProvider as any}
+                      onProviderChange={(provider) => setCurrencyProvider(provider as any)}
+                    />
                   </div>
                 )}
               </div>

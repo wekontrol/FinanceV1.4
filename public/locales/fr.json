@@ -572,4 +572,6 @@
   "common.view_admin": "Administration",
   "common.view_family": "Mode Familial",
   "common.view_translations": "Traductions"
+,
+  "common.conversion_providers": "Provedores de Conversão Monetária"
 }

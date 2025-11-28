@@ -67,6 +67,12 @@ export function initializeDatabase() {
     // Column already exists
   }
 
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN currency_provider_preference TEXT DEFAULT 'BNA';`);
+  } catch (e) {
+    // Column already exists
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS translations (
       id TEXT PRIMARY KEY,

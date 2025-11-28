@@ -193,6 +193,46 @@ router.post('/default-ai-provider', (req: Request, res: Response) => {
   }
 });
 
+// Get default currency provider
+router.get('/default-currency-provider', (req: Request, res: Response) => {
+  const userId = req.session?.userId;
+  try {
+    if (userId) {
+      const user = db.prepare(`SELECT currency_provider_preference FROM users WHERE id = ?`).get(userId) as { currency_provider_preference: string } | undefined;
+      res.json({ provider: user?.currency_provider_preference || 'BNA' });
+    } else {
+      res.json({ provider: 'BNA' });
+    }
+  } catch (error: any) {
+    console.error('[GET /default-currency-provider] Error:', error);
+    res.json({ provider: 'BNA' });
+  }
+});
+
+// Set default currency provider
+router.post('/default-currency-provider', (req: Request, res: Response) => {
+  const userId = req.session?.userId;
+  const { provider } = req.body;
+  console.log('[POST /default-currency-provider] Setting:', provider, 'for user:', userId);
+  
+  if (!userId) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+  
+  if (!['BNA', 'FOREX', 'PARALLEL'].includes(provider)) {
+    return res.status(400).json({ error: 'Invalid provider' });
+  }
+
+  try {
+    db.prepare(`UPDATE users SET currency_provider_preference = ? WHERE id = ?`).run(provider, userId);
+    console.log('[POST /default-currency-provider] Set successfully');
+    res.json({ success: true, provider });
+  } catch (error: any) {
+    console.error('[POST /default-currency-provider] Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Fallback rates (used if API fails)
 const FALLBACK_RATES: Record<string, Record<string, number>> = {
   BNA: {

@@ -17,6 +17,7 @@ import { Loader2, Menu, Moon, Sun, Globe, Sparkles } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { getExchangeRates } from './services/marketData';
+import { getDefaultProvider as getDefaultCurrencyProvider, setDefaultProvider as setDefaultCurrencyProvider } from './services/currencyProviderService';
 import { authApi, transactionsApi, goalsApi, usersApi, familyApi, budgetApi } from './services/api';
 import { LanguageProvider } from './contexts/LanguageContext';
 
@@ -165,7 +166,13 @@ const App: React.FC = () => {
   useEffect(() => {
     const loadRates = async () => {
       try {
-        const rates = await getExchangeRates(rateProvider);
+        let provider = rateProvider;
+        // If rateProvider is not set, load user's saved preference
+        if (!rateProvider || rateProvider === 'BNA') {
+          provider = await getDefaultCurrencyProvider();
+          setRateProvider(provider);
+        }
+        const rates = await getExchangeRates(provider);
         setExchangeRates(rates);
       } catch (error) {
         console.error("Erro ao carregar taxas", error);
