@@ -12,6 +12,18 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
   const { t, language, setLanguage } = useLanguage();
   const [view, setView] = useState<'login' | 'recovery' | 'register'>('login');
+  
+  // Get language name in current language
+  const getLangName = (lang: string): string => {
+    const names: { [key: string]: { [key: string]: string } } = {
+      pt: { pt: 'Português', en: 'Portuguese', es: 'Portugués', um: 'Potogo', ln: 'Lopoto' },
+      en: { pt: 'Inglês', en: 'English', es: 'Inglés', um: 'Linglisi', ln: 'Lingleza' },
+      es: { pt: 'Espanhol', en: 'Spanish', es: 'Español', um: 'Sipe', ln: 'Sepaniya' },
+      um: { pt: 'Umbundu', en: 'Umbundu', es: 'Umbundu', um: 'Umbundu', ln: 'Umbundu' },
+      ln: { pt: 'Lingala', en: 'Lingala', es: 'Lingala', um: 'Lingala', ln: 'Lingala' }
+    };
+    return names[lang]?.[language] || lang;
+  };
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -336,15 +348,19 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
         {/* Language Selector */}
         <div className="absolute top-4 right-4">
           <select 
+            key={language}
             value={language}
-            onChange={(e) => setLanguage(e.target.value as any)}
+            onChange={(e) => {
+              const newLang = e.target.value;
+              setLanguage(newLang as any);
+            }}
             className="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
           >
-            <option value="pt">🇵🇹 {t('login.portuguese')}</option>
-            <option value="en">🇬🇧 {t('login.english')}</option>
-            <option value="es">🇪🇸 {t('login.spanish')}</option>
-            <option value="um">🇦🇴 {t('login.umbundu')}</option>
-            <option value="ln">🇨🇩 {t('login.lingala')}</option>
+            <option value="pt">🇵🇹 {getLangName('pt')}</option>
+            <option value="en">🇬🇧 {getLangName('en')}</option>
+            <option value="es">🇪🇸 {getLangName('es')}</option>
+            <option value="um">🇦🇴 {getLangName('um')}</option>
+            <option value="ln">🇨🇩 {getLangName('ln')}</option>
           </select>
         </div>
         
