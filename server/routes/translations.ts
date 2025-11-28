@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import db from '../db/schema';
+import { getCompleteLanguages, getAllLanguagesWithStatus, validateLanguageCompleteness } from '../utils/validateLanguage';
 
 const router = Router();
 
@@ -17,13 +18,23 @@ function requireTranslatorOrAdmin(req: Request, res: Response, next: Function) {
   next();
 }
 
-// Public endpoint - get languages (no auth required)
+// Public endpoint - get ONLY COMPLETE languages (no auth required)
 router.get('/languages', (req: Request, res: Response) => {
-  const languages = db.prepare(`
-    SELECT DISTINCT language FROM translations ORDER BY language
-  `).all();
+  const completeLanguages = getCompleteLanguages();
+  res.json(completeLanguages);
+});
 
-  res.json(languages.map((l: any) => l.language));
+// Admin endpoint - get ALL languages with their completion status
+router.get('/languages/all', requireTranslatorOrAdmin, (req: Request, res: Response) => {
+  const allLanguages = getAllLanguagesWithStatus();
+  res.json(allLanguages);
+});
+
+// Admin endpoint - validate a specific language
+router.get('/validate/:language', requireTranslatorOrAdmin, (req: Request, res: Response) => {
+  const { language } = req.params;
+  const validation = validateLanguageCompleteness(language);
+  res.json(validation);
 });
 
 router.use(requireAuth);
@@ -104,7 +115,13 @@ router.post('/language/add', requireTranslatorOrAdmin, (req: Request, res: Respo
     });
   }
 
-  res.json({ message: `Language ${language} added successfully` });
+  // Validate the new language
+  const validation = validateLanguageCompleteness(language);
+  
+  res.json({ 
+    message: `Language ${language} added successfully`,
+    validation
+  });
 });
 
 // Export translations as JSON
