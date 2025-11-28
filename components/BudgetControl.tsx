@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { Transaction, TransactionType, BudgetLimit } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
-import { PieChart, Save, AlertTriangle, CheckCircle, Edit3, Sparkles, Loader2, Plus, X, History, Calendar } from 'lucide-react';
+import { PieChart, Save, AlertTriangle, CheckCircle, Edit3, Sparkles, Loader2, Plus, X, History, Calendar, Trash2 } from 'lucide-react';
 import Hint from './Hint';
 import { suggestBudgets } from '../services/geminiService';
 import { budgetApi } from '../services/api';
@@ -85,6 +85,35 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
       alert(t("ai.error_generating_suggestions"));
     } finally {
       setIsSuggesting(false);
+    }
+  };
+
+  const handleDeleteBudget = async (category: string) => {
+    const isDefault = budgets.find(b => b.category === category && (b as any).isDefault);
+    
+    if (isDefault) {
+      alert(t("budget.cannot_delete_default"));
+      return;
+    }
+
+    const confirm = window.confirm(`${t("budget.confirm_delete")} "${category}"?\n\n${t("budget.delete_warning")}`);
+    if (!confirm) return;
+
+    try {
+      const response = await fetch(`/api/budget/limits/${encodeURIComponent(category)}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        budgetApi.saveTransaction({ category, limit: 0 });
+        alert(t("budget.delete_success"));
+        window.location.reload();
+      } else {
+        alert(t("budget.delete_error"));
+      }
+    } catch (error) {
+      console.error('Erro ao deletar:', error);
+      alert(t("budget.delete_error"));
     }
   };
 
@@ -375,7 +404,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 </div>
               </div>
 
-              <div className="border-t border-slate-50 dark:border-slate-700 pt-4">
+              <div className="border-t border-slate-50 dark:border-slate-700 pt-4 space-y-2">
                 {editingCategory === cat ? (
                   <div className="flex items-center space-x-2 animate-fade-in">
                     <div className="flex-1 flex flex-col">
@@ -401,13 +430,24 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                     </button>
                   </div>
                 ) : (
-                  <button 
-                    onClick={() => handleEdit(cat, limit)}
-                    className="flex items-center text-sm font-bold text-slate-400 hover:text-primary-600 transition"
-                  >
-                    <Edit3 size={16} className="mr-2" />
-                    {limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}
-                  </button>
+                  <div className="flex justify-between items-center">
+                    <button 
+                      onClick={() => handleEdit(cat, limit)}
+                      className="flex items-center text-sm font-bold text-slate-400 hover:text-primary-600 transition"
+                    >
+                      <Edit3 size={16} className="mr-2" />
+                      {limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}
+                    </button>
+                    {!isDefault && (
+                      <button 
+                        onClick={() => handleDeleteBudget(cat)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 transition hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg"
+                        title={t("budget.delete")}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

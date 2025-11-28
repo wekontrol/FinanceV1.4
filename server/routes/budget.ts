@@ -214,21 +214,28 @@ router.post('/limits', (req: Request, res: Response) => {
 router.delete('/limits/:category', (req: Request, res: Response) => {
   const userId = req.session.userId;
   const { category } = req.params;
+  const decodedCategory = decodeURIComponent(category);
 
   // Verifica se é um orçamento padrão (não pode deletar)
   const budget = db.prepare(`
     SELECT is_default FROM budget_limits WHERE user_id = ? AND category = ?
-  `).get(userId, decodeURIComponent(category)) as any;
+  `).get(userId, decodedCategory) as any;
 
   if (budget?.is_default === 1) {
     return res.status(403).json({ error: 'Não pode deletar orçamentos padrão' });
   }
 
+  // Realoca todas as transações desta categoria para "Geral"
+  db.prepare(`
+    UPDATE transactions SET category = ? WHERE user_id = ? AND category = ?
+  `).run('Geral', userId, decodedCategory);
+
+  // Deleta o orçamento
   db.prepare(`
     DELETE FROM budget_limits WHERE user_id = ? AND category = ?
-  `).run(userId, decodeURIComponent(category));
+  `).run(userId, decodedCategory);
 
-  res.json({ message: 'Budget limit deleted' });
+  res.json({ message: 'Budget deleted and transactions moved to Geral' });
 });
 
 router.get('/summary', (req: Request, res: Response) => {
