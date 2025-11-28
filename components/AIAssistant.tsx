@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, Loader2, Minimize2, X, Maximize2 } from 'lucide-react';
 import { getAiChatResponseStreaming } from '../services/aiProviderService';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Transaction, SavingsGoal } from '../types';
 
 interface AIAssistantProps {
@@ -17,9 +18,10 @@ interface Message {
 }
 
 const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, transactions, goals, currencyFormatter }) => {
+  const { t } = useLanguage();
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'ai', content: 'Olá! Sou seu assistente financeiro. Pergunte-me sobre seus gastos, metas ou peça conselhos.' }
+    { role: 'ai', content: t("ai.assistant_greeting") }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +78,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, transactions
         });
       }
     } catch (e) {
-      setMessages(prev => [...prev, { role: 'ai', content: "Desculpe, não consegui processar sua mensagem agora." }]);
+      setMessages(prev => [...prev, { role: 'ai', content: t("ai.error_processing") }]);
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +115,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, transactions
         >
           <div className="flex items-center text-white">
             <Sparkles size={18} className="mr-2 text-yellow-300" />
-            <h3 className="font-bold">Assistente Gemini</h3>
+            <h3 className="font-bold">{t("ai.assistant_title")}</h3>
           </div>
           <div className="flex items-center gap-2 text-white/80">
             <button 
@@ -164,7 +166,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, transactions
                 type="text" 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Digite sua dúvida..."
+                placeholder={t("ai.placeholder_question")}
                 className="flex-1 p-3 bg-slate-100 dark:bg-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all"
                 autoFocus={window.innerWidth >= 768} // Only autofocus on desktop to prevent keyboard jump on mobile open
               />

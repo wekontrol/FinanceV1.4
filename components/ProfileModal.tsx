@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { User, X, Save, Mail, Lock, Image } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface ProfileModalProps {
   user: any;
@@ -8,6 +9,7 @@ interface ProfileModalProps {
 }
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) => {
+  const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: user.name,
@@ -48,19 +50,19 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
     // Se houver mudança de senha
     if (passwordForm.current || passwordForm.new || passwordForm.confirm) {
       if (!passwordForm.current) {
-        setPasswordError('Senha atual é obrigatória');
+        setPasswordError(t("profile.password_error_required_current"));
         return;
       }
       if (!passwordForm.new || !passwordForm.confirm) {
-        setPasswordError('Nova senha e confirmação são obrigatórias');
+        setPasswordError(t("profile.password_error_required_new"));
         return;
       }
       if (passwordForm.new !== passwordForm.confirm) {
-        setPasswordError('As novas senhas não coincidem');
+        setPasswordError(t("profile.password_error_mismatch"));
         return;
       }
       if (passwordForm.new.length < 4) {
-        setPasswordError('Senha deve ter pelo menos 4 caracteres');
+        setPasswordError(t("profile.password_error_min_length"));
         return;
       }
       updates.password = passwordForm.new;
@@ -82,7 +84,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
             <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
               <User size={24} className="text-purple-600 dark:text-purple-400" />
             </div>
-            Meu Perfil
+            {t("profile.title")}
           </h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X size={24} />
@@ -94,7 +96,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
           <div>
             <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-2">
               <Image size={16} />
-              Foto de Perfil
+              {t("profile.avatar_label")}
             </label>
             <div className="flex items-center gap-4">
               <div className="relative">
@@ -108,7 +110,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
                   onClick={handleAvatarClick}
                   className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 hover:opacity-100 transition text-white text-xs font-bold"
                 >
-                  Trocar
+                  {t("profile.avatar_change")}
                 </button>
                 <input 
                   ref={fileInputRef}
@@ -119,14 +121,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
                 />
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Clique no avatar para escolher uma nova foto
+                {t("profile.avatar_hint")}
               </p>
             </div>
           </div>
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Nome</label>
+            <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">{t("profile.name_label")}</label>
             <input
               type="text"
               value={formData.name}
@@ -139,38 +141,38 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
           <div>
             <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-2">
               <Mail size={16} />
-              Email (Opcional - Para Notificações)
+              {t("profile.email_label")}
             </label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="seu.email@exemplo.com"
+              placeholder={t("profile.email_placeholder")}
               className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
             />
           </div>
 
           {/* Username */}
           <div>
-            <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Usuário (Login)</label>
+            <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">{t("profile.username_label")}</label>
             <input
               type="text"
               value={formData.username}
               disabled
               className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-400 cursor-not-allowed opacity-60"
             />
-            <p className="text-xs text-slate-400 mt-1">Não pode ser alterado</p>
+            <p className="text-xs text-slate-400 mt-1">{t("profile.username_disabled")}</p>
           </div>
 
           {/* Password Section */}
           <div className="border-t border-slate-200 dark:border-slate-700 pt-4 mt-4">
             <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-2">
               <Lock size={16} />
-              Alterar Senha (Opcional)
+              {t("profile.password_section")}
             </h3>
             
             <div>
-              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Senha Atual</label>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">{t("profile.current_password")}</label>
               <input
                 type="password"
                 value={passwordForm.current}
@@ -178,14 +180,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
                   setPasswordForm({ ...passwordForm, current: e.target.value });
                   setPasswordError('');
                 }}
-                placeholder="Digite sua senha atual"
+                placeholder={t("profile.current_password_hint")}
                 className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2 mt-2">
               <div>
-                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Nova Senha</label>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">{t("profile.new_password")}</label>
                 <input
                   type="password"
                   value={passwordForm.new}
@@ -193,12 +195,12 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
                     setPasswordForm({ ...passwordForm, new: e.target.value });
                     setPasswordError('');
                   }}
-                  placeholder="Nova senha"
+                  placeholder={t("profile.new_password")}
                   className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Confirmar</label>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">{t("profile.confirm_password")}</label>
                 <input
                   type="password"
                   value={passwordForm.confirm}
@@ -206,7 +208,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
                     setPasswordForm({ ...passwordForm, confirm: e.target.value });
                     setPasswordError('');
                   }}
-                  placeholder="Confirmar senha"
+                  placeholder={t("profile.confirm_password_hint")}
                   className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                 />
               </div>
@@ -224,19 +226,19 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onSave }) =>
               className="flex-1 p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
             >
               <Save size={18} />
-              Salvar
+              {t("profile.save_button")}
             </button>
             <button
               onClick={onClose}
               className="flex-1 p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 font-bold transition"
             >
-              Fechar
+              {t("common.close")}
             </button>
           </div>
 
           {saved && (
             <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
-              <p className="text-xs text-emerald-700 dark:text-emerald-400 font-bold">✓ Perfil atualizado com sucesso!</p>
+              <p className="text-xs text-emerald-700 dark:text-emerald-400 font-bold">{t("profile.success_message")}</p>
             </div>
           )}
         </div>
