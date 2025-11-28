@@ -455,5 +455,22 @@
     "add_new_task": "Adicionar nova tarefa...",
     "calendar": "Calendário",
     "new_event": "Novo evento..."
+  },
+  "tutorial": {
+    "welcome_badge": "Bem-vindo",
+    "quick_tip_badge": "Dica Rápida",
+    "skip_button": "Pular",
+    "finish_button": "Concluir",
+    "next_button": "Próximo"
+  },
+  "email_notifications": {
+    "loading": "Carregando...",
+    "test_sent_success": "✓ Email de teste enviado! Verifique sua caixa de entrada.",
+    "send_error": "Erro ao enviar email",
+    "email_not_configured": "ℹ️ Email não configurado no seu perfil. As notificações por email estarão em modo demonstração.",
+    "registered_email": "📧 Email registado:",
+    "sending": "Enviando...",
+    "send_test_email": "Enviar Email de Teste",
+    "how_to_use": "💡 Como usar: Configure seu email no perfil para receber notificações automáticas de orçamento, metas e dicas financeiras."
   }
 }

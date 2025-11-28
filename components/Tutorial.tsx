@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '../types';
 import { X, ChevronRight, Check } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface TutorialProps {
   currentUser: User;
@@ -110,6 +111,7 @@ const VIEW_STEPS: Record<string, Step[]> = {
 };
 
 const Tutorial: React.FC<TutorialProps> = ({ currentUser, currentView }) => {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [activeSteps, setActiveSteps] = useState<Step[]>([]);
@@ -209,7 +211,7 @@ const Tutorial: React.FC<TutorialProps> = ({ currentUser, currentView }) => {
         <div className="mb-6">
           <div className="flex justify-between items-center mb-3">
             <span className="inline-block px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300 rounded-full text-xs font-bold uppercase tracking-wider">
-              {tutorialType === 'global' ? 'Bem-vindo' : 'Dica Rápida'}
+              {tutorialType === 'global' ? t('tutorial.welcome_badge') : t('tutorial.quick_tip_badge')}
             </span>
             <span className="text-xs font-bold text-slate-400">
               {currentStepIndex + 1} / {activeSteps.length}
@@ -228,16 +230,16 @@ const Tutorial: React.FC<TutorialProps> = ({ currentUser, currentView }) => {
             onClick={handleClose}
             className="text-sm font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-2"
           >
-            Pular
+            {t('tutorial.skip_button')}
           </button>
           <button 
             onClick={handleNext}
             className="flex items-center px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 transition-all transform active:scale-95"
           >
             {currentStepIndex === activeSteps.length - 1 ? (
-              <>Concluir <Check size={18} className="ml-2" /></>
+              <>{t('tutorial.finish_button')} <Check size={18} className="ml-2" /></>
             ) : (
-              <>Próximo <ChevronRight size={18} className="ml-2" /></>
+              <>{t('tutorial.next_button')} <ChevronRight size={18} className="ml-2" /></>
             )}
           </button>
         </div>

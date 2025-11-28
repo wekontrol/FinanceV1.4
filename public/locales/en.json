@@ -455,5 +455,22 @@
     "add_new_task": "Add new task...",
     "calendar": "Calendar",
     "new_event": "New event..."
+  },
+  "tutorial": {
+    "welcome_badge": "Welcome",
+    "quick_tip_badge": "Quick Tip",
+    "skip_button": "Skip",
+    "finish_button": "Finish",
+    "next_button": "Next"
+  },
+  "email_notifications": {
+    "loading": "Loading...",
+    "test_sent_success": "✓ Test email sent! Check your inbox.",
+    "send_error": "Error sending email",
+    "email_not_configured": "ℹ️ Email not configured in your profile. Email notifications will be in demo mode.",
+    "registered_email": "📧 Registered email:",
+    "sending": "Sending...",
+    "send_test_email": "Send Test Email",
+    "how_to_use": "💡 How to use: Configure your email in the profile to receive automatic notifications about budget, goals and financial tips."
   }
 }

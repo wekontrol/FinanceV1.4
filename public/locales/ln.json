@@ -455,5 +455,22 @@
     "add_new_task": "Lingana misala...",
     "calendar": "Sanza",
     "new_event": "Mambele ya Lisanga..."
+  },
+  "tutorial": {
+    "welcome_badge": "Welele",
+    "quick_tip_badge": "Lisungi ya Nomu",
+    "skip_button": "Bada",
+    "finish_button": "Kufa",
+    "next_button": "Lokela"
+  },
+  "email_notifications": {
+    "loading": "Lokwela...",
+    "test_sent_success": "✓ Email ya lokambu yatumwi! Keba email na yo.",
+    "send_error": "Botikali na kutuma email",
+    "email_not_configured": "ℹ️ Email etali na kozali mu profili na yo. Mambele na email ekozala na mimpasi ya sango.",
+    "registered_email": "📧 Email eye:",
+    "sending": "Kutuma...",
+    "send_test_email": "Tuma Email ya Lokambu",
+    "how_to_use": "💡 Lisungi: Bongola email na yo mu profili mpo na kokufa mambele ya automike na likolo, mimoya mpe maloba ya mbongo."
   }
 }

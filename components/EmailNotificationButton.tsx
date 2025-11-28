@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Loader2, AlertCircle } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface EmailConfig {
   hasEmail: boolean;
@@ -7,6 +8,7 @@ interface EmailConfig {
 }
 
 const EmailNotificationButton: React.FC = () => {
+  const { t } = useLanguage();
   const [config, setConfig] = useState<EmailConfig | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -36,18 +38,18 @@ const EmailNotificationButton: React.FC = () => {
       if (res.ok) {
         setMessage({
           type: 'success',
-          text: '✓ Email de teste enviado! Verifique sua caixa de entrada.'
+          text: t('email_notifications.test_sent_success')
         });
       } else {
         setMessage({
           type: 'error',
-          text: data.error || 'Erro ao enviar email'
+          text: data.error || t('email_notifications.send_error')
         });
       }
     } catch (error: any) {
       setMessage({
         type: 'error',
-        text: error.message || 'Erro ao enviar email'
+        text: error.message || t('email_notifications.send_error')
       });
     } finally {
       setIsSending(false);
@@ -55,7 +57,7 @@ const EmailNotificationButton: React.FC = () => {
   };
 
   if (!config) {
-    return <div className="text-center py-4">Carregando...</div>;
+    return <div className="text-center py-4">{t('email_notifications.loading')}</div>;
   }
 
   return (
@@ -64,7 +66,7 @@ const EmailNotificationButton: React.FC = () => {
         <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg flex items-start gap-2">
           <AlertCircle size={18} className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
           <p className="text-xs text-amber-700 dark:text-amber-400">
-            ℹ️ Email não configurado no seu perfil. As notificações por email estarão em modo demonstração.
+            {t('email_notifications.email_not_configured')}
           </p>
         </div>
       )}
@@ -72,7 +74,7 @@ const EmailNotificationButton: React.FC = () => {
       {config.hasEmail && (
         <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-xs text-blue-700 dark:text-blue-400">
-            📧 Email registado: <strong>{config.email}</strong>
+            {t('email_notifications.registered_email')} <strong>{config.email}</strong>
           </p>
         </div>
       )}
@@ -87,7 +89,7 @@ const EmailNotificationButton: React.FC = () => {
         ) : (
           <Mail size={18} />
         )}
-        {isSending ? 'Enviando...' : 'Enviar Email de Teste'}
+        {isSending ? t('email_notifications.sending') : t('email_notifications.send_test_email')}
       </button>
 
       {message && (
@@ -104,7 +106,7 @@ const EmailNotificationButton: React.FC = () => {
 
       <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
         <p className="text-xs text-slate-600 dark:text-slate-400">
-          💡 <strong>Como usar:</strong> Configure seu email no perfil para receber notificações automáticas de orçamento, metas e dicas financeiras.
+          {t('email_notifications.how_to_use')}
         </p>
       </div>
     </div>

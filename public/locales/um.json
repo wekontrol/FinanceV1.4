@@ -455,5 +455,22 @@
     "add_new_task": "Lingana omweso owite...",
     "calendar": "Omwesi",
     "new_event": "Okutambule owite..."
+  },
+  "tutorial": {
+    "welcome_badge": "Karikila",
+    "quick_tip_badge": "Okumanya Kwa Nomu",
+    "skip_button": "Veta",
+    "finish_button": "Mala",
+    "next_button": "Okukwata"
+  },
+  "email_notifications": {
+    "loading": "Okulongela...",
+    "test_sent_success": "✓ Email ya okukwata yatumwe! Vekela email yako.",
+    "send_error": "Okutakala okukwata email",
+    "email_not_configured": "ℹ️ Email etakwatile mu profile yako. Okutambule okwa email kujja okuweta ku mode ya okumanya.",
+    "registered_email": "📧 Email etambululwe:",
+    "sending": "Okutuma...",
+    "send_test_email": "Tuma Email ya Okukwata",
+    "how_to_use": "💡 Okukwata: Kwata email yako mu profile okusobola okuwona okutambule okwa automatic ku budget, emirefu n'amabara ga mali."
   }
 }
