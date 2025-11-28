@@ -63,6 +63,26 @@ router.post('/register', (req: Request, res: Response) => {
     return res.status(409).json({ error: 'Username already exists' });
   }
 
+  // Default budget categories
+  const defaultBudgets = [
+    { category: 'Alimentação', limit: 500 },
+    { category: 'Transporte', limit: 200 },
+    { category: 'Saúde', limit: 300 },
+    { category: 'Educação', limit: 400 },
+    { category: 'Entretenimento', limit: 150 },
+    { category: 'Utilidades', limit: 350 },
+    { category: 'Vestuário', limit: 250 },
+    { category: 'Comunicação', limit: 100 },
+    { category: 'Seguros', limit: 200 },
+    { category: 'Poupança', limit: 1000 },
+    { category: 'Investimentos', limit: 500 },
+    { category: 'Lazer', limit: 200 },
+    { category: 'Viagens', limit: 300 },
+    { category: 'Casa', limit: 400 },
+    { category: 'Pets', limit: 150 },
+    { category: 'Geral', limit: 500 }
+  ];
+
   const userId = `u${Date.now()}`;
   const hashedPassword = bcrypt.hashSync(password, 10);
   const familyId = `fam_${Date.now()}`;
@@ -90,6 +110,15 @@ router.post('/register', (req: Request, res: Response) => {
     securityQuestion || null,
     securityAnswer ? securityAnswer.toLowerCase() : null
   );
+
+  // Create default budgets for new user
+  defaultBudgets.forEach((budget: any) => {
+    const budgetId = `bl${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+    db.prepare(`
+      INSERT INTO budget_limits (id, user_id, category, limit_amount, is_default)
+      VALUES (?, ?, ?, ?, 1)
+    `).run(budgetId, userId, budget.category, budget.limit);
+  });
 
   const user = db.prepare(`
     SELECT id, username, name, role, avatar, status, family_id as familyId

@@ -105,15 +105,16 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
       });
 
       if (response.ok) {
-        budgetApi.saveTransaction({ category, limit: 0 });
         alert(t("budget.delete_success"));
         window.location.reload();
       } else {
-        alert(t("budget.delete_error"));
+        const errorData = await response.json();
+        console.error('Delete error:', errorData);
+        alert(t("budget.delete_error") + ': ' + (errorData?.error || 'Unknown error'));
       }
     } catch (error) {
       console.error('Erro ao deletar:', error);
-      alert(t("budget.delete_error"));
+      alert(t("budget.delete_error") + ': ' + (error instanceof Error ? error.message : String(error)));
     }
   };
 

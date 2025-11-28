@@ -97,6 +97,11 @@ const App: React.FC = () => {
   const [notifications, setNotifications] = useState<AppNotification[]>(() => safeLoad('notifications', []));
 
   useEffect(() => {
+    // Initialize default budgets for users
+    fetch('/api/budget/create-defaults', { method: 'POST' }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
     const checkSession = async () => {
       try {
         const response = await authApi.me();
