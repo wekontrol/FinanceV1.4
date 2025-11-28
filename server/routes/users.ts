@@ -224,6 +224,7 @@ router.delete('/:id', (req: Request, res: Response) => {
     return res.status(404).json({ error: 'User not found' });
   }
 
+  db.prepare('DELETE FROM budget_limits WHERE user_id = ?').run(id);
   db.prepare('DELETE FROM users WHERE id = ?').run(id);
   res.json({ message: 'User deleted' });
 });
