@@ -152,11 +152,17 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   const summary = useMemo(() => {
     const totalIncome = filteredTransactions
-      .filter(t => t.type === TransactionType.INCOME)
+      .filter(t => {
+        const type = String(t.type).toUpperCase();
+        return type === 'RECEITA' || t.type === TransactionType.INCOME;
+      })
       .reduce((acc, curr) => acc + curr.amount, 0);
     
     const totalExpense = filteredTransactions
-      .filter(t => t.type === TransactionType.EXPENSE)
+      .filter(t => {
+        const type = String(t.type).toUpperCase();
+        return type === 'DESPESA' || t.type === TransactionType.EXPENSE;
+      })
       .reduce((acc, curr) => acc + curr.amount, 0);
 
     const totalSavings = savingsGoals.reduce((acc, curr) => acc + curr.currentAmount, 0);
@@ -165,8 +171,15 @@ const Dashboard: React.FC<DashboardProps> = ({
   }, [filteredTransactions, savingsGoals]);
 
   const healthScore = useMemo(() => {
-    const allIncome = transactions.filter(t => t.type === TransactionType.INCOME).reduce((acc, t) => acc + t.amount, 0);
-    const allExpense = transactions.filter(t => t.type === TransactionType.EXPENSE).reduce((acc, t) => acc + t.amount, 0);
+    const allIncome = transactions.filter(t => {
+    const type = String(t.type).toUpperCase();
+    return type === 'RECEITA' || t.type === TransactionType.INCOME;
+  }).reduce((acc, t) => acc + t.amount, 0);
+  
+  const allExpense = transactions.filter(t => {
+    const type = String(t.type).toUpperCase();
+    return type === 'DESPESA' || t.type === TransactionType.EXPENSE;
+  }).reduce((acc, t) => acc + t.amount, 0);
     const allSavings = savingsGoals.reduce((acc, t) => acc + t.currentAmount, 0);
     
     if (allIncome === 0) return 0;
@@ -202,7 +215,8 @@ const Dashboard: React.FC<DashboardProps> = ({
       }
 
       const entry = dataMap.get(key)!;
-      if (t.type === TransactionType.INCOME) entry.income += t.amount;
+      const type = String(t.type).toUpperCase();
+      if (type === 'RECEITA' || t.type === TransactionType.INCOME) entry.income += t.amount;
       else entry.expense += t.amount;
     });
 
@@ -217,7 +231,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   }, [filteredTransactions, dateRange]);
 
   const categoryData = useMemo(() => {
-    const expenses = filteredTransactions.filter(t => t.type === TransactionType.EXPENSE);
+    const expenses = filteredTransactions.filter(t => {
+      const type = String(t.type).toUpperCase();
+      return type === 'DESPESA' || t.type === TransactionType.EXPENSE;
+    });
     const catMap = new Map<string, number>();
     expenses.forEach(t => {
       catMap.set(t.category, (catMap.get(t.category) || 0) + t.amount);
