@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Moon, Sun, Globe, Sparkles } from 'lucide-react';
+import { Menu, Moon, Sun, Globe, Sparkles, DollarSign } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import NotificationsMenu from './NotificationsMenu';
 import { Notification } from '../types';
@@ -66,12 +66,21 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       
       <div className="flex items-center space-x-2 md:space-x-3">
          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl px-2 md:px-3 py-1.5 border border-slate-200 dark:border-slate-700">
-          <Globe size={16} className="text-primary-500 mr-1 md:mr-2" />
+          <DollarSign size={16} className="md:hidden text-primary-500 mr-1" />
+          <Globe size={16} className="hidden md:block text-primary-500 mr-1 md:mr-2" />
           <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="bg-transparent border-none text-xs md:text-sm font-bold text-slate-700 dark:text-slate-200 outline-none cursor-pointer">
             <option value="AOA">AOA (Kz)</option>
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
             <option value="BRL">BRL (R$)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="JPY">JPY (¥)</option>
+            <option value="CNY">CNY (¥)</option>
+            <option value="INR">INR (₹)</option>
+            <option value="ZAR">ZAR (R)</option>
+            <option value="MZN">MZN (MT)</option>
+            <option value="AUD">AUD (A$)</option>
+            <option value="CAD">CAD (C$)</option>
           </select>
         </div>
         
