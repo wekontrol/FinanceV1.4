@@ -65,10 +65,21 @@ router.post('/', (req: Request, res: Response) => {
 
   const id = `t${Date.now()}`;
   
+  let nextDueDate = null;
+  if (isRecurring) {
+    const d = new Date(date);
+    if (frequency === 'MONTHLY') {
+      d.setMonth(d.getMonth() + 1);
+    } else if (frequency === 'YEARLY') {
+      d.setFullYear(d.getFullYear() + 1);
+    }
+    nextDueDate = d.toISOString().split('T')[0];
+  }
+
   db.prepare(`
-    INSERT INTO transactions (id, user_id, description, amount, date, category, type, is_recurring, frequency)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, userId, description, amount, date, category, type, isRecurring ? 1 : 0, frequency || null);
+    INSERT INTO transactions (id, user_id, description, amount, date, category, type, is_recurring, frequency, next_due_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, userId, description, amount, date, category, type, isRecurring ? 1 : 0, frequency || null, nextDueDate);
 
   const transaction = db.prepare('SELECT * FROM transactions WHERE id = ?').get(id) as any;
   
