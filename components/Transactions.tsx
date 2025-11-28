@@ -433,7 +433,7 @@ const Transactions: React.FC<TransactionsProps> = ({
                 type="text" 
                 value={smartInput}
                 onChange={e => setSmartInput(e.target.value)}
-                placeholder="Ex: Paguei 15000 na internet..."
+                placeholder={t("transactions.smart_input_example")}
                 className="w-full pl-5 pr-14 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/60 focus:ring-2 focus:ring-white/50 outline-none"
                 disabled={isProcessingSmart || isRecording}
               />
@@ -455,7 +455,7 @@ const Transactions: React.FC<TransactionsProps> = ({
                   ? 'bg-rose-500 text-white animate-pulse shadow-rose-500/50' 
                   : 'bg-white/10 hover:bg-white/20 text-white'}
               `}
-              title={isRecording ? "Parar Gravação" : "Gravar Áudio"}
+              title={isRecording ? t("transactions.stop_recording") : t("transactions.start_recording")}
             >
               {isRecording ? <Square size={24} fill="currentColor" /> : <Mic size={24} />}
             </button>
@@ -507,7 +507,7 @@ const Transactions: React.FC<TransactionsProps> = ({
             <Search className="absolute left-3 top-3 text-slate-400" size={18} />
             <input 
               type="text" 
-              placeholder="Buscar..."
+              placeholder={t("transactions.search_placeholder")}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none transition text-slate-800 dark:text-white"
@@ -519,7 +519,7 @@ const Transactions: React.FC<TransactionsProps> = ({
             className="flex items-center justify-center px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition shadow-lg shadow-primary-500/20 font-bold whitespace-nowrap active:scale-95"
           >
             <Plus size={20} className="mr-2" />
-            Nova
+            {t("transactions.new_transaction")}
           </button>
         </div>
       </div>
@@ -529,7 +529,7 @@ const Transactions: React.FC<TransactionsProps> = ({
           <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-2xl border border-slate-100 dark:border-slate-700 animate-scale-in max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 dark:text-white truncate">
-                {editingId ? 'Editar Transação' : 'Nova Transação'}
+                {editingId ? t('transactions.edit_transaction') : t('transactions.new_transaction')}
               </h3>
               <button type="button" onClick={() => setShowForm(false)} className="text-slate-400 hover:text-slate-600 active:scale-95 transition-transform">
                 <X size={24} />
@@ -542,18 +542,18 @@ const Transactions: React.FC<TransactionsProps> = ({
                   onClick={() => setFormData({...formData, type: TransactionType.EXPENSE})}
                   className={`cursor-pointer p-4 rounded-2xl border-2 text-center transition-all active:scale-95 ${formData.type === TransactionType.EXPENSE ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20 text-rose-600' : 'border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
                 >
-                  <p className="font-bold">Despesa</p>
+                  <p className="font-bold">{t("transactions.expense_type")}</p>
                 </div>
                 <div 
                   onClick={() => setFormData({...formData, type: TransactionType.INCOME})}
                   className={`cursor-pointer p-4 rounded-2xl border-2 text-center transition-all active:scale-95 ${formData.type === TransactionType.INCOME ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600' : 'border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
                 >
-                  <p className="font-bold">Receita</p>
+                  <p className="font-bold">{t("transactions.income_type")}</p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Valor</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t("transactions.amount_label")}</label>
                 <input 
                   type="number" 
                   required
@@ -570,7 +570,7 @@ const Transactions: React.FC<TransactionsProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Descrição</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t("transactions.description_label")}</label>
                 <div className="relative">
                   <input 
                     type="text" 
@@ -856,11 +856,11 @@ const Transactions: React.FC<TransactionsProps> = ({
               <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/30">
-                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Transação</th>
-                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Categoria</th>
-                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Data</th>
-                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Valor</th>
-                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Ações</th>
+                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">{t("transactions.transaction_header")}</th>
+                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">{t("transactions.category_header")}</th>
+                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">{t("common.date")}</th>
+                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">{t("common.value")}</th>
+                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">{t("transactions.actions_header")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50 dark:divide-slate-700/50">
@@ -881,15 +881,15 @@ const Transactions: React.FC<TransactionsProps> = ({
                                        key={att.id}
                                        onClick={() => downloadAttachment(att)}
                                        className="flex items-center text-xs text-primary-500 hover:text-primary-600 font-medium bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded-md transition active:scale-95"
-                                       title={`Baixar ${att.name}`}
+                                       title={`${t("common.download")} ${att.name}`}
                                      >
-                                       <FileIcon size={10} className="mr-1" /> {t.attachments && t.attachments.length > 1 ? `${t.attachments.length} Anexos` : 'Anexo'}
+                                       <FileIcon size={10} className="mr-1" /> {t.attachments && t.attachments.length > 1 ? `${t.attachments.length} ${t("transactions.attachments")}` : t("common.attachment")}
                                      </button>
                                    ))}
                                  </div>
                                ) : t.attachmentName ? (
                                  <span className="flex items-center text-xs text-slate-400 font-medium">
-                                   <Paperclip size={10} className="mr-1" /> Anexo (Antigo)
+                                   <Paperclip size={10} className="mr-1" /> {t("transactions.old_attachment")}
                                  </span>
                                ) : null}
                             </div>
@@ -918,7 +918,7 @@ const Transactions: React.FC<TransactionsProps> = ({
                                 <Edit2 size={16} />
                               </button>
                               <button 
-                                onClick={() => { if(confirm('Excluir?')) deleteTransaction(t.id); }}
+                                onClick={() => { if(confirm(t("transactions.delete_confirm"))) deleteTransaction(t.id); }}
                                 className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition active:scale-90"
                               >
                                 <Trash2 size={16} />
@@ -958,11 +958,11 @@ const Transactions: React.FC<TransactionsProps> = ({
                        {/* Details Grid */}
                        <div className="grid grid-cols-2 gap-2 text-sm">
                           <div>
-                             <p className="text-xs text-slate-400 uppercase font-bold mb-1">Data</p>
+                             <p className="text-xs text-slate-400 uppercase font-bold mb-1">{t("common.date")}</p>
                              <p className="text-slate-700 dark:text-slate-200 font-medium">{new Date(t.date).toLocaleDateString('pt-BR')}</p>
                           </div>
                           <div>
-                             <p className="text-xs text-slate-400 uppercase font-bold mb-1">Categoria</p>
+                             <p className="text-xs text-slate-400 uppercase font-bold mb-1">{t("transactions.category_header")}</p>
                              <span className="inline-block px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold">{t.category}</span>
                           </div>
                        </div>
