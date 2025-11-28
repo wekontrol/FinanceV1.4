@@ -36,11 +36,13 @@ const translations = {
     'sidebar.inflation': 'Inflação',
     'sidebar.simulations': 'Simulações',
     'sidebar.family': 'Família',
+    'sidebar.translations': 'Traduções',
     'sidebar.settings': 'Configurações',
     'sidebar.logout': 'Sair',
     'sidebar.role.superadmin': 'Super Admin',
     'sidebar.role.admin': 'Administrador',
     'sidebar.role.manager': 'Gestor Familiar',
+    'sidebar.role.translator': 'Tradutor',
     'sidebar.role.member': 'Membro',
 
     // Dashboard
@@ -583,23 +585,55 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, initialLanguage = 'pt' }) => {
-  const [language, setLanguageState] = useState<Language>(() => {
-    return initialLanguage;
-  });
+  const [language, setLanguageState] = useState<Language>(initialLanguage);
+  const [apiTranslations, setApiTranslations] = useState<Record<string, string>>({});
 
-  // Actualiza a linguagem quando initialLanguage muda (ex: quando user faz login)
+  // Load translations from API when language changes
+  useEffect(() => {
+    const loadTranslations = async () => {
+      try {
+        const response = await fetch(`/api/translations/language/${language}`, {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          // Convert array of translations to key-value object
+          const translationMap: Record<string, string> = {};
+          if (Array.isArray(data)) {
+            data.forEach((t: any) => {
+              translationMap[t.key] = t.value;
+            });
+          }
+          setApiTranslations(translationMap);
+        }
+      } catch (error) {
+        console.log(`Translation loading fallback for ${language}`);
+      }
+    };
+    
+    loadTranslations();
+  }, [language]);
+
+  // Update language when initialLanguage prop changes
   useEffect(() => {
     if (initialLanguage && initialLanguage !== language) {
       setLanguageState(initialLanguage);
     }
-  }, [initialLanguage]);
+  }, [initialLanguage, language]);
 
+  // Save language preference
   useEffect(() => {
     localStorage.setItem('app_language', language);
     document.documentElement.lang = language === 'um' ? 'pt' : language;
   }, [language]);
 
+  // Translation function: API first, then fallback to hardcoded
   const t = (key: string): string => {
+    // Try API translations first
+    if (apiTranslations[key]) {
+      return apiTranslations[key];
+    }
+    // Fallback to hardcoded translations
     return (translations[language] as Record<string, string>)[key] || key;
   };
 
