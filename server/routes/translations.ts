@@ -185,9 +185,9 @@ router.get('/stats', requireTranslatorOrAdmin, (req: Request, res: Response) => 
       SELECT DISTINCT language FROM translations WHERE status = 'active'
     `).all() as any[];
 
-    // Get total distinct keys
+    // Get total distinct keys from the 'en' language as the reference
     const totalResult = db.prepare(`
-      SELECT COUNT(DISTINCT key) as count FROM translations WHERE status = 'active'
+      SELECT COUNT(DISTINCT key) as count FROM translations WHERE status = 'active' AND language = 'en'
     `).get() as any;
     const totalKeys = totalResult?.count || 0;
 
