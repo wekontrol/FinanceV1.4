@@ -1,0 +1,107 @@
+Convert the entire project to a clean and fully functional internationalization (i18n) architecture.
+
+Ensure that when the user selects a language on the login screen, the whole system loads in that language after login and keeps that preference stored.
+
+Guarantee that every text in the UI is translated using keys, without any hard-coded strings.
+
+Fix broken or missing translations so that no raw keys like “dashboard.behavioral_analysis” appear on the interface.
+
+Allow “translator” users to edit language files safely, without breaking the system.
+
+Maintain functional compatibility with Linux Ubuntu, where the app will run server-side.
+
+Follow these steps and rules carefully:
+
+1. Restructure the i18n system
+
+Create a clean folder structure like:
+
+/locales
+    /pt
+        translation.json
+    /en
+        translation.json
+    /es
+        translation.json
+    /fr
+        translation.json
+    /it
+        translation.json
+    ...
+
+
+Each translation file must contain the same keys across all languages.
+
+Remove any text hard-coded in Vue/React/HTML/JS files and replace them with i18n keys.
+
+Standardize all keys in this format:
+
+dashboard.behavioral_analysis
+dashboard.total_expenses
+navbar.settings
+auth.login
+auth.password
+errors.invalid_credentials
+
+
+Fix every broken key reference.
+
+2. Correct the language selection behavior
+
+When the user selects a language on the login screen, store it in:
+
+localStorage
+
+session
+
+or user profile database field (choose best practice based on current architecture)
+
+After login, load the chosen language BEFORE rendering the main layout.
+
+Ensure that navigation between pages never resets the active language.
+
+3. Implement update system for translators
+
+Create a protected route/page where users with the “translator” role can:
+
+View all existing keys
+
+Edit translations
+
+Insert missing translations
+
+Save into JSON files or database (choose safest method)
+
+Add validation so translators cannot delete keys, only update text values.
+
+4. Clean and reorganize the codebase
+
+Remove unused files.
+
+Remove duplicated translation keys.
+
+Replace any Portuguese-only UI text with i18n keys.
+
+Verify that backend messages also use i18n where appropriate.
+
+Ensure all components call the translation library correctly.
+
+5. Maintain server-side operation
+
+All changes must remain compatible with deployment on Linux Ubuntu.
+
+Confirm that dependencies, build scripts, and start scripts remain functional.
+
+Prepare new commit structure for GitHub.
+
+6. Final verification
+
+After restructuring:
+
+Test switching languages across all pages.
+
+Confirm that no untranslated text or raw key appears.
+
+Confirm that the translator panel works without breaking JSON structure.
+
+Ensure consistency across all languages.
