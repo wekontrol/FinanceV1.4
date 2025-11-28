@@ -173,8 +173,8 @@
   "app.logout": "Okupumbula",
   "app.settings": "Okusungula",
   "common.delete": "Okukatula",
-  "common.save": "Okutembeka",
-  "common.cancel": "Kyanguyiza",
+  "common.save": "Guardar",
+  "common.cancel": "Cancelar",
   "common.search": "Okukundeka",
   "common.export": "Okusaka",
   "budget.new_limit": "Okupimila Okiliki",
@@ -257,7 +257,7 @@
   "login.must_accept_terms": "Okukuteekako Okutamba kwa Okutambika okukuba Okulungungo",
   "login.family_registered_success": "Fomilia toketeekako! Okukubula.",
   "login.error_registering": "Okusila okutandikila",
-  "common.back": "Okutekela",
+  "common.back": "Voltar",
   "common.description": "Okusungula",
   "common.options": "Okuteekawo",
   "common.loading": "Okutamba",
@@ -539,5 +539,9 @@
   "email_notifications.registered_email": "📧 Email registado:",
   "email_notifications.sending": "Enviando...",
   "email_notifications.send_test_email": "Enviar Email de Teste",
-  "email_notifications.how_to_use": "💡 Como usar: Configure seu email no perfil para receber notificações automáticas de orçamento, metas e dicas financeiras."
+  "email_notifications.how_to_use": "💡 Como usar: Configure seu email no perfil para receber notificações automáticas de orçamento, metas e dicas financeiras.",
+  "common.name": "Nome",
+  "common.value": "Valor",
+  "common.date": "Data",
+  "common.note": "Nota"
 }

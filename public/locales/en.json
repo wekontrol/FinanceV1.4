@@ -539,5 +539,9 @@
   "email_notifications.registered_email": "📧 Registered email:",
   "email_notifications.sending": "Sending...",
   "email_notifications.send_test_email": "Send Test Email",
-  "email_notifications.how_to_use": "💡 How to use: Configure your email in the profile to receive automatic notifications about budget, goals and financial tips."
+  "email_notifications.how_to_use": "💡 How to use: Configure your email in the profile to receive automatic notifications about budget, goals and financial tips.",
+  "common.name": "Name",
+  "common.value": "Value",
+  "common.date": "Date",
+  "common.note": "Note"
 }

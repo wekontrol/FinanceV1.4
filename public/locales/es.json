@@ -539,5 +539,9 @@
   "email_notifications.registered_email": "📧 Email registrado:",
   "email_notifications.sending": "Enviando...",
   "email_notifications.send_test_email": "Enviar Email de Prueba",
-  "email_notifications.how_to_use": "💡 Cómo usar: Configura tu email en el perfil para recibir notificaciones automáticas sobre presupuesto, metas y consejos financieros."
+  "email_notifications.how_to_use": "💡 Cómo usar: Configura tu email en el perfil para recibir notificaciones automáticas sobre presupuesto, metas y consejos financieros.",
+  "common.name": "Nombre",
+  "common.value": "Valor",
+  "common.date": "Fecha",
+  "common.note": "Nota"
 }
