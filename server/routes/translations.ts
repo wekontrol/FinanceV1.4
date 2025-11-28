@@ -17,6 +17,15 @@ function requireTranslatorOrAdmin(req: Request, res: Response, next: Function) {
   next();
 }
 
+// Public endpoint - get languages (no auth required)
+router.get('/languages', (req: Request, res: Response) => {
+  const languages = db.prepare(`
+    SELECT DISTINCT language FROM translations ORDER BY language
+  `).all();
+
+  res.json(languages.map((l: any) => l.language));
+});
+
 router.use(requireAuth);
 
 // Get all translations for a language
@@ -46,15 +55,6 @@ router.get('/editor/all', requireTranslatorOrAdmin, (req: Request, res: Response
   `).all();
 
   res.json(translations);
-});
-
-// Get languages list
-router.get('/languages', requireTranslatorOrAdmin, (req: Request, res: Response) => {
-  const languages = db.prepare(`
-    SELECT DISTINCT language FROM translations ORDER BY language
-  `).all();
-
-  res.json(languages.map((l: any) => l.language));
 });
 
 // Save translation

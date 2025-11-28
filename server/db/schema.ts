@@ -258,13 +258,18 @@ export function initializeDatabase() {
     );
   }
 
-  // Initialize translations from JSON files
+  // Initialize translations from JSON files - auto-detect all languages
   const translationsCount = db.prepare('SELECT COUNT(*) as count FROM translations').get() as any;
   if (translationsCount.count === 0) {
     const localesDir = path.join(process.cwd(), 'public', 'locales');
-    const languages = ['pt', 'en', 'es', 'um', 'ln'];
     
     try {
+      // Auto-detect all JSON files in locales directory
+      const files = fs.readdirSync(localesDir).filter(f => f.endsWith('.json'));
+      const languages = files.map(f => f.replace('.json', ''));
+      
+      console.log(`📚 Found languages: ${languages.join(', ')}`);
+      
       languages.forEach(lang => {
         const filePath = path.join(localesDir, `${lang}.json`);
         if (fs.existsSync(filePath)) {
