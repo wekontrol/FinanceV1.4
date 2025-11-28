@@ -20,7 +20,6 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
   const { t } = useLanguage();
   const [translations, setTranslations] = useState<Translation[]>([]);
   const [languages, setLanguages] = useState<string[]>(['pt', 'en', 'es', 'um', 'ln']);
-  const [languageNames] = useState({ pt: 'Português', en: 'English', es: 'Español', um: 'Umbundu', ln: 'Lingala' });
   const [newLanguage, setNewLanguage] = useState('');
   const [searchKey, setSearchKey] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
@@ -31,6 +30,26 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
   const [editingValues, setEditingValues] = useState<Record<string, string>>({});
   const [importMessage, setImportMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+
+  // Language names mapping - dynamic to support new languages
+  const languageNames: Record<string, string> = {
+    pt: 'Português',
+    en: 'English',
+    es: 'Español',
+    um: 'Umbundu',
+    ln: 'Lingala',
+    fr: 'Français',
+    de: 'Deutsch',
+    it: 'Italiano',
+    ja: '日本語',
+    zh: '中文',
+    ar: 'العربية',
+    ru: 'Русский'
+  };
+  
+  const getLanguageName = (code: string) => {
+    return languageNames[code] || code.toUpperCase();
+  };
 
   // Check access - with safety check
   const hasAccess = currentUser?.role === UserRole.TRANSLATOR || currentUser?.role === UserRole.SUPER_ADMIN;
@@ -434,7 +453,7 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
                 </th>
                 {languages.map(lang => (
                   <th key={lang} className="px-4 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-400 whitespace-nowrap">
-                    {languageNames[lang as keyof typeof languageNames] || lang.toUpperCase()}
+                    {getLanguageName(lang)}
                   </th>
                 ))}
                 <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-400">{t("translations.actions")}</th>
