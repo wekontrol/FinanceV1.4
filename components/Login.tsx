@@ -205,7 +205,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="text" 
                 value={registerName}
                 onChange={e => setRegisterName(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                 placeholder="Seu nome"
                 required
               />
@@ -216,7 +216,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="text" 
                 value={registerUsername}
                 onChange={e => setRegisterUsername(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                 placeholder="Nome de usuário"
                 required
               />
@@ -227,7 +227,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="password" 
                 value={registerPassword}
                 onChange={e => setRegisterPassword(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                 placeholder="••••••"
                 required
               />
@@ -238,7 +238,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="text" 
                 value={familyName}
                 onChange={e => setFamilyName(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                 placeholder="Ex: Família Silva"
                 required
               />
@@ -249,7 +249,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="text" 
                 value={securityQuestion}
                 onChange={e => setSecurityQuestion(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                 placeholder="Ex: Nome do primeiro animal"
               />
             </div>
@@ -259,7 +259,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="text" 
                 value={securityAnswer}
                 onChange={e => setSecurityAnswer(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                 placeholder="Sua resposta"
               />
             </div>
@@ -349,7 +349,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="text" 
                 value={recoveryUsername}
                 onChange={e => setRecoveryUsername(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                 placeholder="Seu usuário"
               />
             </div>
@@ -359,7 +359,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="text" 
                 value={recoveryAnswer}
                 onChange={e => setRecoveryAnswer(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                 placeholder="Sua resposta"
               />
             </div>
@@ -369,7 +369,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="password" 
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                 placeholder="••••••"
               />
             </div>
@@ -435,7 +435,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="text" 
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder={t('login.username')}
               />
             </div>
@@ -448,7 +448,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
                 type="password" 
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="••••••"
               />
             </div>
