@@ -97,11 +97,6 @@ const App: React.FC = () => {
   const [savedSimulations, setSavedSimulations] = useState<SavedSimulation[]>(() => safeLoad('savedSimulations', []));
   const [notifications, setNotifications] = useState<AppNotification[]>(() => safeLoad('notifications', []));
 
-  useEffect(() => {
-    // Initialize default budgets for users
-    fetch('/api/budget/create-defaults', { method: 'POST' }).catch(() => {});
-  }, []);
-
   // Listen for system theme preference changes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -145,6 +140,9 @@ const App: React.FC = () => {
 
   const loadAllData = async () => {
     try {
+      // Create default budgets for the user if they don't exist
+      await fetch('/api/budget/create-defaults', { method: 'POST' }).catch(() => {});
+      
       const [transactionsData, goalsData, usersData, tasksData, eventsData, budgetsData] = await Promise.all([
         transactionsApi.getAll(),
         goalsApi.getAll(),
