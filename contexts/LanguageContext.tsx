@@ -658,7 +658,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, in
   // Save language preference to localStorage
   useEffect(() => {
     localStorage.setItem('app_language', language);
-    document.documentElement.lang = language === 'um' ? 'pt' : language;
+    document.documentElement.lang = language === 'um' ? 'umb' : language;
   }, [language]);
 
   // Translation function: JSON first, then fallback to hardcoded
