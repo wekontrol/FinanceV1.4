@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { LayoutDashboard, Wallet, PiggyBank, Users, Settings, LogOut, X, Activity, Camera, TrendingUp, Calculator, PieChart } from 'lucide-react';
+import { LayoutDashboard, Wallet, PiggyBank, Users, Settings, LogOut, X, Activity, Camera, TrendingUp, Calculator, PieChart, Languages } from 'lucide-react';
 import { User, UserRole } from '../types';
 import ProfileModal from './ProfileModal';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -39,6 +39,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: 'family', label: t('sidebar.family'), icon: Users },
   ];
 
+  if (currentUser.role === UserRole.TRANSLATOR || currentUser.role === UserRole.SUPER_ADMIN) {
+    menuItems.push({ id: 'translations', label: t('sidebar.translations') || 'Traduções', icon: Languages });
+  }
+
   if (currentUser.role === UserRole.ADMIN || currentUser.role === UserRole.SUPER_ADMIN || currentUser.role === UserRole.MANAGER) {
     menuItems.push({ id: 'admin', label: t('sidebar.settings'), icon: Settings });
   }
@@ -73,6 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (currentUser.role === UserRole.SUPER_ADMIN) return t('sidebar.role.superadmin');
     if (currentUser.role === UserRole.ADMIN) return t('sidebar.role.admin');
     if (currentUser.role === UserRole.MANAGER) return t('sidebar.role.manager');
+    if (currentUser.role === UserRole.TRANSLATOR) return t('sidebar.role.translator') || 'Tradutor';
     return t('sidebar.role.member');
   };
 

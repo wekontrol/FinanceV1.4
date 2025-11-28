@@ -10,7 +10,8 @@ import BudgetControl from './components/BudgetControl';
 import InflationControl from './components/InflationControl';
 import Simulations from './components/Simulations';
 import Login from './components/Login';
-import AIAssistant from './components/AIAssistant'; 
+import AIAssistant from './components/AIAssistant';
+import TranslationManager from './components/TranslationManager'; 
 import NotificationsMenu from './components/NotificationsMenu';
 import { Menu, Moon, Sun, Globe, Sparkles, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -697,6 +698,7 @@ const App: React.FC = () => {
             {currentView === 'simulations' && <Simulations currencyFormatter={formatCurrency} savedSimulations={savedSimulations} onSaveSimulation={saveSimulation} onDeleteSimulation={deleteSimulation} />}
             {currentView === 'family' && <FamilyMode transactions={transactions} currencyFormatter={formatCurrency} currentUser={currentUser} allUsers={allUsers} tasks={familyTasks} events={familyEvents} addTask={addFamilyTask} toggleTask={toggleFamilyTask} deleteTask={deleteFamilyTask} addEvent={addFamilyEvent} deleteEvent={deleteFamilyEvent} canViewData={canViewData} />}
             {currentView === 'admin' && <AdminPanel appName={appName} setAppName={setAppName} backupConfig={backupConfig} updateBackupConfig={updateBackupConfig} triggerManualBackup={triggerManualBackup} users={allUsers} currentUser={currentUser} onAddUser={handleAddUser} onUpdateUser={handleUpdateUser} onDeleteUser={handleDeleteUser} onRestoreBackup={handleRestoreBackup} />}
+            {currentView === 'translations' && <TranslationManager />}
           </div>
         </main>
       </div>

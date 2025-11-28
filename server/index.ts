@@ -18,6 +18,7 @@ import systemRoutes from './routes/system';
 import notificationRoutes from './routes/notifications';
 import pushRoutes from './routes/push';
 import emailRoutes from './routes/email';
+import translationsRoutes from './routes/translations';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
@@ -90,6 +91,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/system', systemRoutes);
+app.use('/api/translations', translationsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

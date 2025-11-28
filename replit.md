@@ -1,7 +1,7 @@
-# Gestor Financeiro Familiar - Multi-Language Per-User WITH MULTI-PROVIDER AI SYSTEM ✅
+# Gestor Financeiro Familiar - Multi-Language Per-User WITH MULTI-PROVIDER AI + TRANSLATOR SYSTEM ✅
 
 ## Overview
-A comprehensive family financial management platform built with React, TypeScript, and Express.js. This application provides intelligent financial tracking, AI-powered insights using **3 interchangeable AI providers** (Google Gemini, OpenRouter, Puter), and family-friendly features for household budget management. Complete multi-language support (Portuguese, English, Spanish, Umbundu, Lingala) with per-user language preferences and per-provider AI routing.
+A comprehensive family financial management platform built with React, TypeScript, and Express.js. This application provides intelligent financial tracking, AI-powered insights using **3 interchangeable AI providers** (Google Gemini, OpenRouter, Puter), and family-friendly features for household budget management. Complete multi-language support (Portuguese, English, Spanish, Umbundu, Lingala) with per-user language preferences, per-provider AI routing, and **dedicated TRANSLATOR role** for managing translations and adding new languages.
 
 ## ✅ EXPANDED DEFAULT BUDGETS SYSTEM - 16 CATEGORIES! ✨
 
@@ -62,6 +62,23 @@ All services implemented for Gemini, OpenRouter, AND Puter:
 13. **parseTransactionFromAudio** - Audio speech-to-text
 14. **parseTransactionFromReceipt** - Receipt image OCR
 
+## ✅ TRANSLATOR ROLE - NEW! 🌍
+
+**New User Category: TRANSLATOR**
+- Dedicated role for managing translations across the app
+- Can edit translation values directly in UI
+- Can add new languages to the system (with base language copy)
+- Interface only visible to TRANSLATOR and SUPER_ADMIN roles
+- Access via sidebar menu: "Traduções" (Languages icon)
+
+**How It Works:**
+- Backend table: `translations(id, language, key, value, created_by, updated_at, status)`
+- API endpoints: `/api/translations/*` (protected by role check)
+- UI Component: `TranslationManager.tsx` with language selector + search + editor
+- Real-time translation updates with status management (draft/active)
+- Users of each language can be trained to contribute translations
+- Perfect for Angola's multiple national languages (Umbundu, Lingala, etc)
+
 ## ✅ MULTI-LANGUAGE SYSTEM - COMPLETE & FULLY FUNCTIONAL
 
 ### Major Features:
@@ -72,6 +89,7 @@ All services implemented for Gemini, OpenRouter, AND Puter:
 ✅ **AI Services Return Localized Responses** - All 14 services return results in selected language
 ✅ **Dashboard FULLY Translated** - Overview, Financial Health, Analysis, Waste Analysis
 ✅ **Dynamic API Key Management** - Admin panel with UI to manage API keys for multiple providers
+✅ **TRANSLATOR Role** - Dedicated interface for managing translations (NEW!)
 
 ## ARCHITECTURE
 
@@ -109,9 +127,19 @@ server/
 - ✅ Dashboard: Receitas and Despesas appearing correctly
 - ✅ Gráfico de Fluxo de Caixa: Receitas and Despesas rendering properly
 - ✅ All Components: Updated and working
+- ✅ TRANSLATOR Role: Fully Implemented with UI & API
 - ✅ Zero build errors
 
-## FIXES APPLIED (This Session)
+## NEW FEATURES ADDED (This Session - TRANSLATOR System)
+
+### ✅ TRANSLATOR Role Implementation
+- **Database:** `translations` table created with auto-migrations
+- **Backend:** API endpoints at `/api/translations/*` with role-based access control
+- **Frontend:** TranslationManager component with language editor interface
+- **Sidebar Integration:** "Traduções" menu item visible only for TRANSLATOR and SUPER_ADMIN
+- **Architecture:** Modular design allows community translators to contribute
+
+## FIXES APPLIED (Previous Session)
 
 ### ✅ Fix 1: Missing Database Columns
 - **Problem:** `is_default` columns didn't exist in api_configurations and budget_limits tables
@@ -170,8 +198,12 @@ server/
 - ✅ Provider switching fully operational
 - ✅ Multi-language support working with all providers
 - ✅ Budget delete protection working
+- ✅ TRANSLATOR role fully functional
+- ✅ Translation management interface (TranslationManager.tsx)
+- ✅ Translation API with proper role-based access control
 - ✅ Frontend UI with clear visual indicators
 - ✅ Zero build errors
 - ✅ Optimized performance
 
 🚀 **READY FOR PRODUCTION** - All features implemented, tested, and working perfectly
+✨ **NEW:** Translator system allows community-driven language support for Angola's national languages
