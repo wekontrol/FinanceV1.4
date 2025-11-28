@@ -340,11 +340,11 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
             onChange={(e) => setLanguage(e.target.value as any)}
             className="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
           >
-            <option value="pt">🇵🇹 Português</option>
-            <option value="en">🇬🇧 English</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="um">🇦🇴 Umbundu</option>
-            <option value="ln">🇨🇩 Lingala</option>
+            <option value="pt">🇵🇹 {t('login.portuguese')}</option>
+            <option value="en">🇬🇧 {t('login.english')}</option>
+            <option value="es">🇪🇸 {t('login.spanish')}</option>
+            <option value="um">🇦🇴 {t('login.umbundu')}</option>
+            <option value="ln">🇨🇩 {t('login.lingala')}</option>
           </select>
         </div>
         
