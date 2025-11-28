@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
 
 const dbPath = path.join(process.cwd(), 'data.db');
 const db = new Database(dbPath);
@@ -255,7 +256,38 @@ export function initializeDatabase() {
       'APPROVED',
       'fam_admin'
     );
+  }
 
+  // Initialize translations from JSON files
+  const translationsCount = db.prepare('SELECT COUNT(*) as count FROM translations').get() as any;
+  if (translationsCount.count === 0) {
+    const localesDir = path.join(process.cwd(), 'public', 'locales');
+    const languages = ['pt', 'en', 'es', 'um', 'ln'];
+    
+    try {
+      languages.forEach(lang => {
+        const filePath = path.join(localesDir, `${lang}.json`);
+        if (fs.existsSync(filePath)) {
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const translations = JSON.parse(content);
+          
+          for (const [key, value] of Object.entries(translations)) {
+            const id = `tr${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+            try {
+              db.prepare(`
+                INSERT OR IGNORE INTO translations (id, language, key, value, created_by, status)
+                VALUES (?, ?, ?, ?, ?, 'active')
+              `).run(id, lang, key, String(value), 'u0');
+            } catch (e) {
+              // Skip duplicates
+            }
+          }
+        }
+      });
+      console.log('✅ Translations loaded from JSON files');
+    } catch (error) {
+      console.error('Failed to load translations:', error);
+    }
   }
 
   console.log('Database initialized successfully');
