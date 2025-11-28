@@ -216,7 +216,7 @@ const App: React.FC = () => {
     if (exchangeRates && currencyCode !== 'AOA') {
       const rate = exchangeRates[currencyCode] as number;
       if (rate && rate > 0) {
-        convertedValue = value / rate;
+        convertedValue = value * rate;
       }
     }
     

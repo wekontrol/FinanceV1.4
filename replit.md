@@ -54,7 +54,7 @@ Fast Mode development - small focused edits preferred.
   - Responsive icon spacing: `mr-1 md:mr-2`
   - Responsive text size: `text-xs md:text-sm`
 
-### Phase 6: SYSTEM DARK/LIGHT MODE + LIVE API EXCHANGE RATES + MOBILE SCROLLING FIX ✅
+### Phase 6: SYSTEM DARK/LIGHT MODE + LIVE API EXCHANGE RATES + MOBILE SCROLLING FIX + BUG FIXES ✅
 - **Auto System Theme Detection:** App now detects device dark/light mode preference and auto-switches
   - Watches for system preference changes using `matchMedia('prefers-color-scheme: dark')`
   - Respects manual toggle preference (doesn't auto-switch if user manually selected)
@@ -73,6 +73,13 @@ Fast Mode development - small focused edits preferred.
   - Removed `h-full` constraint from content container to allow natural flow
   - Main container uses `overflow-y-auto` for proper scrolling behavior
   - Content now scrolls properly to the end on mobile devices
+- **Bug Fixes:**
+  - **Currency Conversion Formula:** Fixed multiplication (was using division causing massive values)
+    - Before: `5000 AOA ÷ 0.00109 USD = 4,587,155` (wrong)
+    - After: `5000 AOA × 0.00109 USD = 5.45` (correct)
+  - **Budget Persistence:** Added cache-control headers to prevent browser caching of dynamic API data
+    - Headers: `Cache-Control: no-cache, no-store, must-revalidate`
+    - Prevents budgets from disappearing due to stale cache
 
 ### FINAL STATISTICS:
 - **Total Translation Keys: 500** (all 6 languages synced from JSON)
