@@ -562,5 +562,13 @@
   "transactions.old_attachment": "Pièce jointe (Ancienne)",
   "common.download": "Télécharger",
   "common.attachment": "Pièce jointe",
-  "common.no_data_period": "Aucune donnée pour la période"
+  "common.no_data_period": "Aucune donnée pour la période",
+  "common.view_dashboard": "Tableau de Bord",
+  "common.view_simulations": "Simulations",
+  "common.view_transactions": "Transactions",
+  "common.view_budget": "Budgets",
+  "common.view_goals": "Objectifs",
+  "common.view_inflation": "Inflation",
+  "common.view_admin": "Administration",
+  "common.view_family": "Mode Familial"
 }

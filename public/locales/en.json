@@ -562,5 +562,13 @@
   "transactions.old_attachment": "Attachment (Old)",
   "common.download": "Download",
   "common.attachment": "Attachment",
-  "common.no_data_period": "No data in the period"
+  "common.no_data_period": "No data in the period",
+  "common.view_dashboard": "Dashboard",
+  "common.view_simulations": "Simulations",
+  "common.view_transactions": "Transactions",
+  "common.view_budget": "Budgets",
+  "common.view_goals": "Goals",
+  "common.view_inflation": "Inflation",
+  "common.view_admin": "Administration",
+  "common.view_family": "Family Mode"
 }

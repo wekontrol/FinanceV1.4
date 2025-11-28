@@ -562,5 +562,13 @@
   "transactions.old_attachment": "Anexo (Antigo)",
   "common.download": "Baixar",
   "common.attachment": "Anexo",
-  "common.no_data_period": "Sem dados no período"
+  "common.no_data_period": "Sem dados no período",
+  "common.view_dashboard": "Painel Geral",
+  "common.view_simulations": "Simulação",
+  "common.view_transactions": "Transações",
+  "common.view_budget": "Orçamentos",
+  "common.view_goals": "Metas",
+  "common.view_inflation": "Inflação",
+  "common.view_admin": "Administração",
+  "common.view_family": "Modo Família"
 }

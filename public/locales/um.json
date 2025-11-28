@@ -562,5 +562,13 @@
   "transactions.old_attachment": "Ifayili (Olukala)",
   "common.download": "Okukoleka",
   "common.attachment": "Ifayili",
-  "common.no_data_period": "Kuvala vya data okwiondo"
+  "common.no_data_period": "Kuvala vya data okwiondo",
+  "common.view_dashboard": "Ibodu Lyoswangi",
+  "common.view_simulations": "Okukosa",
+  "common.view_transactions": "Oyipila",
+  "common.view_budget": "Okucinga Omali",
+  "common.view_goals": "Ovigelo",
+  "common.view_inflation": "Okukuza Komali",
+  "common.view_admin": "Okulaganya",
+  "common.view_family": "Okutatanisa Omutwe"
 }
