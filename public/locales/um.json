@@ -4,6 +4,7 @@
   "login.username": "Olusungu",
   "login.password": "Okusipi",
   "login.enter": "Okuyingila",
+  "login.invalid_credentials": "Okusipi okutali kweli",
   "login.forgotPassword": "Nayiseka okusipi",
   "login.createFamily": "Okwambula Elamba",
   "login.language": "Oluvali",

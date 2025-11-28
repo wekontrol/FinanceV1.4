@@ -4,6 +4,7 @@
   "login.username": "Usuário",
   "login.password": "Senha",
   "login.enter": "Entrar",
+  "login.invalid_credentials": "Credenciais inválidas",
   "login.forgotPassword": "Esqueci minha senha",
   "login.createFamily": "Criar Família",
   "login.language": "Idioma",

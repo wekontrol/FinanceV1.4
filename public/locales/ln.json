@@ -4,6 +4,7 @@
   "login.username": "Nkombo ya Mosepe",
   "login.password": "Motele",
   "login.enter": "Kota",
+  "login.invalid_credentials": "Motele ya mabe",
   "login.forgotPassword": "Nabosani motele",
   "login.createFamily": "Wumela Libota",
   "login.language": "Lokota",

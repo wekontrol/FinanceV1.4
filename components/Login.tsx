@@ -104,7 +104,12 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
       }).catch(() => {}); // Silent fail if endpoint not ready yet
       onLogin(userWithLang);
     } catch (err: any) {
-      setError(err.message || t("login.error_logging_in"));
+      // Map backend error messages to translation keys
+      let errorKey = "login.error_logging_in";
+      if (err.message === "Invalid credentials") {
+        errorKey = "login.invalid_credentials";
+      }
+      setError(t(errorKey));
     } finally {
       setLoading(false);
     }
