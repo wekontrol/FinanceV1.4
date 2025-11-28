@@ -312,6 +312,11 @@
   "admin.api_settings": "🔑 Configuración de API",
   "admin.edit_config": "Editar Configuración",
   "admin.add_new_config": "Agregar Nueva Configuración",
+  "admin.role_member": "Miembro",
+  "admin.role_family_manager": "Gestor de Familia",
+  "admin.role_admin": "Administrador",
+  "admin.role_translator": "Traductor",
+  "admin.role_super_admin": "Super Admin",
   "translations.manager_title": "Gestor de Traducciones",
   "translations.current_language": "Idioma Actual"
 }

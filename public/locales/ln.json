@@ -312,6 +312,11 @@
   "admin.api_settings": "🔑 Tosala API",
   "admin.edit_config": "Songa Tosala",
   "admin.add_new_config": "Zwa Tosala ya Sika",
+  "admin.role_member": "Molongo",
+  "admin.role_family_manager": "Talangela Libota",
+  "admin.role_admin": "Boyikoli",
+  "admin.role_translator": "Talangela Lokambo",
+  "admin.role_super_admin": "Boyikoli ya Molongo",
   "translations.manager_title": "Talangela Lokambo",
   "translations.current_language": "Lokambo Oyo"
 }

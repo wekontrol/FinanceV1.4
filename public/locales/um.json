@@ -312,6 +312,11 @@
   "admin.api_settings": "🔑 Okusungula API",
   "admin.edit_config": "Okusikila Okusungula",
   "admin.add_new_config": "Okutambika Okusungula Okwikiki",
+  "admin.role_member": "Okuma",
+  "admin.role_family_manager": "Okusungula Fomilia",
+  "admin.role_admin": "Okwikuluze",
+  "admin.role_translator": "Okusikila Okuyezi",
+  "admin.role_super_admin": "Okwikuluze Okwa Okuma",
   "translations.manager_title": "Okusungula Okusikila Okuyezi",
   "translations.current_language": "Okuyezi Okwa Okukuba"
 }

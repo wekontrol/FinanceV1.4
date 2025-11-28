@@ -1040,10 +1040,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                       <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Permissão</label>
                         <select value={userFormData.role} onChange={e => setUserFormData({...userFormData, role: e.target.value as UserRole})} className={inputClass}>
-                          <option value={UserRole.MEMBER}>Membro</option>
-                          <option value={UserRole.MANAGER}>Gestor de Família</option>
-                          <option value={UserRole.ADMIN}>Administrador</option>
-                          {isSuperAdmin && <option value={UserRole.SUPER_ADMIN}>Super Admin</option>}
+                          <option value={UserRole.MEMBER}>{t("admin.role_member")}</option>
+                          <option value={UserRole.MANAGER}>{t("admin.role_family_manager")}</option>
+                          <option value={UserRole.ADMIN}>{t("admin.role_admin")}</option>
+                          <option value={UserRole.TRANSLATOR}>{t("admin.role_translator")}</option>
+                          {isSuperAdmin && <option value={UserRole.SUPER_ADMIN}>{t("admin.role_super_admin")}</option>}
                         </select>
                       </div>
                     )}
