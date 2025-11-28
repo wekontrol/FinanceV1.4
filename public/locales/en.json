@@ -280,5 +280,19 @@
   "profile.password_error_mismatch": "New passwords do not match",
   "profile.password_error_min_length": "Password must be at least 4 characters",
   "profile.save_button": "Save",
-  "profile.success_message": "✓ Profile updated successfully!"
+  "profile.success_message": "✓ Profile updated successfully!",
+  "dashboard.last_7_days": "Last 7 days",
+  "dashboard.this_month": "This month",
+  "dashboard.this_year": "This year",
+  "dashboard.all_time": "All time",
+  "dashboard.notification_preferences": "Notification Preferences",
+  "dashboard.myNotifications": "My Notifications",
+  "dashboard.error_analyzing_behavior": "Error analyzing behavior.",
+  "dashboard.hint_analyze_behavior": "AI analyzes your history to identify patterns.",
+  "dashboard.discover_spending_profile": "Discover your spending profile and get predictions.",
+  "dashboard.your_persona": "Your Persona",
+  "dashboard.detected_pattern": "Detected Pattern",
+  "dashboard.tip": "Tip",
+  "dashboard.next_month_projection": "Next Month Projection",
+  "dashboard.estimated_by_ai": "Estimated by AI"
 }

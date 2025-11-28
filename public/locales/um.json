@@ -280,5 +280,19 @@
   "profile.password_error_mismatch": "Okwikuluze okwikiki tekikufaanana",
   "profile.password_error_min_length": "Okwikuluze kiyitika okuba na minakana 4",
   "profile.save_button": "Okutembeka",
-  "profile.success_message": "✓ Okuma okutembeka Okwikuluze!"
+  "profile.success_message": "✓ Okuma okutembeka Okwikuluze!",
+  "dashboard.last_7_days": "Okusila 7 matuku",
+  "dashboard.this_month": "Okunyezi kunu",
+  "dashboard.this_year": "Omwaka kunu",
+  "dashboard.all_time": "Okubulukuza",
+  "dashboard.notification_preferences": "Okuteekawo okwa Okutambika",
+  "dashboard.myNotifications": "Okutambika Kyange",
+  "dashboard.error_analyzing_behavior": "Okusila okusungula okwa okutambika.",
+  "dashboard.hint_analyze_behavior": "Okwikuluze okusungula okuyezi okwa okuma okuwikika okutambika.",
+  "dashboard.discover_spending_profile": "Tulangiza okuma kyanu okwa okukuma kwa okuteeza.",
+  "dashboard.your_persona": "Okuma Kyanu",
+  "dashboard.detected_pattern": "Okutambika Okulanguka",
+  "dashboard.tip": "Okuteeza",
+  "dashboard.next_month_projection": "Okuyezi Okiliki Okukwata",
+  "dashboard.estimated_by_ai": "Okusungula Okwikuluze"
 }

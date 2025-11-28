@@ -109,7 +109,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       const result = await analyzeUserBehavior(transactions, language);
       setBehavior(result);
     } catch (e) {
-      alert("Erro ao analisar comportamento.");
+      alert(t("dashboard.error_analyzing_behavior"));
     } finally {
       setIsAnalyzingBehavior(false);
     }
@@ -251,7 +251,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           <button 
             onClick={() => setShowNotificationSettings(!showNotificationSettings)}
             className="p-2.5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition text-slate-600 dark:text-slate-300"
-            title="Preferências de Notificações"
+            title={t("dashboard.notification_preferences")}
           >
             <Bell size={20} />
           </button>
@@ -262,10 +262,10 @@ const Dashboard: React.FC<DashboardProps> = ({
             onChange={(e) => setDateRange(e.target.value as DateRange)}
             className="bg-transparent border-none text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer outline-none py-1 w-full"
           >
-            <option value="7days">{t('dashboard.7days')}</option>
-            <option value="month">{t('dashboard.current_month')}</option>
-            <option value="year">{t('dashboard.current_year')}</option>
-            <option value="all">{t('dashboard.allTime')}</option>
+            <option value="7days">{t('dashboard.last_7_days')}</option>
+            <option value="month">{t('dashboard.this_month')}</option>
+            <option value="year">{t('dashboard.this_year')}</option>
+            <option value="all">{t('dashboard.all_time')}</option>
           </select>
           </div>
         </div>
@@ -296,9 +296,9 @@ const Dashboard: React.FC<DashboardProps> = ({
               <div className="max-w-full min-w-0">
                 <h3 className="text-lg font-bold flex items-center flex-wrap">
                   <BrainCircuit className="mr-2 text-cyan-400 shrink-0" /> {t('dashboard.behavioral_analysis')}
-                  <Hint text="A IA analisa seu histórico para identificar padrões." className="text-white ml-2 hidden sm:inline-block" />
+                  <Hint text={t("dashboard.hint_analyze_behavior")} className="text-white ml-2 hidden sm:inline-block" />
                 </h3>
-                <p className="text-blue-200 text-sm mt-1 truncate max-w-full">Descubra seu perfil de gastos e receba previsões.</p>
+                <p className="text-blue-200 text-sm mt-1 truncate max-w-full">{t("dashboard.discover_spending_profile")}</p>
               </div>
               {!behavior && (
                 <button 
@@ -318,20 +318,20 @@ const Dashboard: React.FC<DashboardProps> = ({
                     <div className="w-12 h-12 bg-cyan-500/20 rounded-full flex items-center justify-center mb-2 text-cyan-300">
                        <User size={24} />
                     </div>
-                    <p className="text-xs uppercase font-bold text-cyan-300">Sua Persona</p>
+                    <p className="text-xs uppercase font-bold text-cyan-300">{t("dashboard.your_persona")}</p>
                     <p className="text-lg md:text-xl font-bold break-words">{behavior.persona}</p>
                  </div>
                  
                  <div className="flex flex-col justify-center md:border-r border-white/10 px-2 md:px-4 py-2 md:py-0 border-t border-b md:border-t-0 md:border-b-0 border-white/10 my-2 md:my-0">
-                    <p className="text-xs uppercase font-bold text-yellow-300 mb-1 flex items-center"><Lightbulb size={12} className="mr-1"/> Padrão Detectado</p>
+                    <p className="text-xs uppercase font-bold text-yellow-300 mb-1 flex items-center"><Lightbulb size={12} className="mr-1"/> {t("dashboard.detected_pattern")}</p>
                     <p className="text-sm font-medium leading-relaxed break-words">"{behavior.patternDescription}"</p>
-                    <p className="text-xs text-blue-200 mt-2 break-words">Dica: {behavior.tip}</p>
+                    <p className="text-xs text-blue-200 mt-2 break-words">{t("dashboard.tip")}: {behavior.tip}</p>
                  </div>
 
                  <div className="flex flex-col justify-center items-center px-4">
-                    <p className="text-xs uppercase font-bold text-emerald-300 mb-1 text-center">Projeção Próximo Mês</p>
+                    <p className="text-xs uppercase font-bold text-emerald-300 mb-1 text-center">{t("dashboard.next_month_projection")}</p>
                     <p className="text-xl md:text-2xl font-bold tracking-tight break-all text-center">{currencyFormatter(behavior.nextMonthProjection)}</p>
-                    <p className="text-[10px] text-blue-200">Estimado pela IA</p>
+                    <p className="text-[10px] text-blue-200">{t("dashboard.estimated_by_ai")}</p>
                  </div>
               </div>
             )}

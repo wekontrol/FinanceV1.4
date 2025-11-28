@@ -280,5 +280,19 @@
   "profile.password_error_mismatch": "Myinda ya sika te e-identique",
   "profile.password_error_min_length": "Myinda esengeli kozala na bambazi 4 minimalolo",
   "profile.save_button": "Okitwa",
-  "profile.success_message": "✓ Molongo eyongisami na malamu!"
+  "profile.success_message": "✓ Molongo eyongisami na malamu!",
+  "dashboard.last_7_days": "Mikolo 7 ya Liboso",
+  "dashboard.this_month": "Sanza Oyo",
+  "dashboard.this_year": "Mobutu Oyo",
+  "dashboard.all_time": "Bisika Nyonso",
+  "dashboard.notification_preferences": "Toyaka ya Mikanda",
+  "dashboard.myNotifications": "Mikanda Naya",
+  "dashboard.error_analyzing_behavior": "Mbeba ya kosala olangelo.",
+  "dashboard.hint_analyze_behavior": "Boyikoli yana kosala olangelo ya mikolo yoyo okosala ndoto.",
+  "dashboard.discover_spending_profile": "Tamonisani toyaka na moninga na lokambo.",
+  "dashboard.your_persona": "Molongo Naya",
+  "dashboard.detected_pattern": "Ndoto Eyakamaki",
+  "dashboard.tip": "Mombembe",
+  "dashboard.next_month_projection": "Sanza Oyo Sekunde",
+  "dashboard.estimated_by_ai": "Etala ya Boyikoli"
 }

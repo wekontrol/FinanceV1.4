@@ -280,5 +280,19 @@
   "profile.password_error_mismatch": "As novas senhas não coincidem",
   "profile.password_error_min_length": "Senha deve ter pelo menos 4 caracteres",
   "profile.save_button": "Salvar",
-  "profile.success_message": "✓ Perfil atualizado com sucesso!"
+  "profile.success_message": "✓ Perfil atualizado com sucesso!",
+  "dashboard.last_7_days": "Últimos 7 dias",
+  "dashboard.this_month": "Este mês",
+  "dashboard.this_year": "Este ano",
+  "dashboard.all_time": "Todo o tempo",
+  "dashboard.notification_preferences": "Preferências de Notificações",
+  "dashboard.myNotifications": "Minhas Notificações",
+  "dashboard.error_analyzing_behavior": "Erro ao analisar comportamento.",
+  "dashboard.hint_analyze_behavior": "A IA analisa seu histórico para identificar padrões.",
+  "dashboard.discover_spending_profile": "Descubra seu perfil de gastos e receba previsões.",
+  "dashboard.your_persona": "Sua Persona",
+  "dashboard.detected_pattern": "Padrão Detectado",
+  "dashboard.tip": "Dica",
+  "dashboard.next_month_projection": "Projeção Próximo Mês",
+  "dashboard.estimated_by_ai": "Estimado pela IA"
 }

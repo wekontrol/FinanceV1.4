@@ -280,5 +280,19 @@
   "profile.password_error_mismatch": "Las nuevas contraseñas no coinciden",
   "profile.password_error_min_length": "La contraseña debe tener al menos 4 caracteres",
   "profile.save_button": "Guardar",
-  "profile.success_message": "✓ ¡Perfil actualizado exitosamente!"
+  "profile.success_message": "✓ ¡Perfil actualizado exitosamente!",
+  "dashboard.last_7_days": "Últimos 7 días",
+  "dashboard.this_month": "Este mes",
+  "dashboard.this_year": "Este año",
+  "dashboard.all_time": "Todo el tiempo",
+  "dashboard.notification_preferences": "Preferencias de Notificaciones",
+  "dashboard.myNotifications": "Mis Notificaciones",
+  "dashboard.error_analyzing_behavior": "Error al analizar comportamiento.",
+  "dashboard.hint_analyze_behavior": "La IA analiza tu historial para identificar patrones.",
+  "dashboard.discover_spending_profile": "Descubre tu perfil de gastos y recibe predicciones.",
+  "dashboard.your_persona": "Tu Persona",
+  "dashboard.detected_pattern": "Patrón Detectado",
+  "dashboard.tip": "Consejo",
+  "dashboard.next_month_projection": "Proyección Próximo Mes",
+  "dashboard.estimated_by_ai": "Estimado por IA"
 }
