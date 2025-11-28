@@ -210,12 +210,22 @@ const App: React.FC = () => {
   };
 
   const formatCurrency = (value: number, currencyCode: string = currency): string => {
+    let convertedValue = value;
+    
+    // Convert from AOA to target currency if rates are available
+    if (exchangeRates && currencyCode !== 'AOA') {
+      const rate = exchangeRates[currencyCode] as number;
+      if (rate && rate > 0) {
+        convertedValue = value / rate;
+      }
+    }
+    
     const formatter = new Intl.NumberFormat(userLanguage || 'pt-BR', {
       style: 'currency',
       currency: currencyCode,
       minimumFractionDigits: 2,
     });
-    return formatter.format(value);
+    return formatter.format(convertedValue);
   };
 
   const handleThemeToggle = () => {
