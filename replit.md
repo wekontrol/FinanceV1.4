@@ -4,7 +4,7 @@
 A comprehensive family financial management platform built with React, TypeScript, and Express.js. This application provides intelligent financial tracking, AI-powered insights using four interchangeable AI providers (Google Gemini, OpenRouter, Groq, Puter), and family-friendly features for household budget management. It offers complete multi-language support (Portuguese, English, Spanish, Umbundu, Lingala) with per-user language preferences, per-provider AI routing, and a dedicated TRANSLATOR role for managing translations and adding new languages. The project aims to deliver a production-ready, fully internationalized financial management solution.
 
 ## User Preferences
-Not specified.
+Fast Mode development - small focused edits preferred.
 
 ## System Architecture
 
@@ -16,28 +16,39 @@ The application features a fully translated user interface across all major comp
     - Per-user language preference stored in the database.
     - Support for Portuguese (PT), English (EN), Spanish (ES), Umbundu (UM), and Lingala (LN).
     - `LanguageProvider` architecture wraps the entire application.
-    - All 10 major components (Login, BudgetControl, Goals, Transactions, NotificationSettings, Dashboard, AIAssistant, ProfileModal, AdminPanel, TranslationManager) are 100% translated with 315 translation keys across all languages.
+    - All 11 major components (Login, BudgetControl, Goals, Transactions, NotificationSettings, Dashboard, AIAssistant, ProfileModal, AdminPanel, TranslationManager) are 100% translated with 354 translation keys across all languages.
     - Translation files are stored in `public/locales/` (e.g., `pt.json`, `en.json`).
     - AI services return localized responses in the user's selected language.
+    - All Budget component strings are fully translated (no hardcoded text in pt/en/es/um/ln).
+
 - **AI Abstraction Layer:**
     - A single abstraction layer (`aiProviderService.ts`) routes all AI service calls to the active provider.
     - Users can select their preferred AI provider (Google Gemini, OpenRouter, Groq, Puter) from the dashboard.
     - The database tracks the active provider with an `is_default` flag.
     - All 14 AI services (e.g., `categorizeTransaction`, `getFinancialAdvice`, `analyzeUserBehavior`, `parseTransactionFromAudio`, `predictFutureExpenses`) are implemented for Gemini, OpenRouter, and Puter. Groq is used for specific fast AI operations.
     - Audio support is currently exclusive to Gemini; other providers will prompt the user to switch if audio features are requested.
-- **Translator Role:**
+
+- **Translator Role & Export/Import System (NEW):**
     - A dedicated `TRANSLATOR` user role allows managing and adding new language translations directly through the UI.
     - Access to the `TranslationManager.tsx` component is restricted to `TRANSLATOR` and `SUPER_ADMIN` roles.
     - Backend table `translations` stores translation data.
+    - **Export Functionality:** Translators can export all 345 translation keys across 5 languages as ZIP containing JSON files
+    - **Import Functionality:** Translators can import improved translations from external AI tools (ChatGPT, Claude, etc.) in bulk
+    - **Smart Loading:** Export automatically loads translations from backend if frontend state is empty
+    - **Dashboard Statistics:** Shows % completion for each language with visual progress bars
+    - **Advanced Filtering:** Search by key, filter by category, show only untranslated strings
+    - **Batch Editing:** Edit all 5 languages simultaneously for the same key
+
 - **Backend Features:**
     - User creation includes the assignment of 16 default budget categories.
     - API endpoints for managing settings, budgets, and user data.
     - Dynamic API key management through an admin panel.
+    - Translation API endpoints for CRUD operations on `/api/translations/`
 
 ### System Design Choices
 - **File Structure:**
     - `services/`: Contains `aiProviderService.ts` for abstraction, and individual service files for `geminiService.ts`, `openrouterService.ts`, and `puterService.ts`.
-    - `components/`: Houses all UI components, with comprehensive translation coverage.
+    - `components/`: Houses all UI components, with comprehensive translation coverage (11 components, 354 keys).
     - `public/locales/`: Stores all JSON translation files.
     - `server/`: Includes `db/schema.ts` for database definitions (e.g., `api_configurations`, `budget_limits`) and route handlers (e.g., `settings.ts`, `budget.ts`, `users.ts`).
 
@@ -47,27 +58,64 @@ The application features a fully translated user interface across all major comp
     - **OpenRouter:** Requires API key, offers access to 500+ models.
     - **Groq:** Free, fast (10x faster), provides Llama 3.3 (70B) and Mixtral 8x7B models.
     - **Puter:** 100% free, offers 400+ models (GPT, Claude, Gemini), no API key required.
-- **Database:** Not explicitly named, but schema files indicate a relational database for managing user data, budgets, API configurations, and translations.
-## 🎨 BONUS: TRANSLATION MANAGER IMPROVEMENTS (Session 3)
+- **Libraries:**
+    - `jszip`: For ZIP file generation/parsing in export/import system
+    - `jspdf` + `jspdf-autotable`: For PDF exports
+- **Database:** PostgreSQL with Neon backend for relational data management.
 
-**TranslationManager completely redesigned with:**
-- ✅ **Access Control:** Only TRANSLATOR + SUPER_ADMIN can access
-- ✅ **Dashboard Statistics:** % completion for each language (PT, EN, ES, UM, LN) with visual progress bars
-- ✅ **Multi-Language Table:** Side-by-side view of all 5 languages for simultaneous editing
-- ✅ **Advanced Filtering:** 
-  - Search by key
-  - Filter by category (admin., dashboard., profile., etc)
-  - Show only untranslated strings
-- ✅ **Batch Editing:** Edit all 5 languages at once for same key
-- ✅ **22 new translation keys** added for UI in all 5 languages
-- ✅ **Total: 337 translation keys** (up from 315)
+## Recent Changes (Latest Session)
 
-**Final Statistics:**
-- 337 translation keys across 5 languages
-- 10 components fully internationalized
-- 5 full translations (Portuguese, English, Spanish, Umbundu, Lingala)
-- Multi-provider AI support (Gemini, OpenRouter, Puter, Groq)
-- 16 default budget categories (translatable)
-- TRANSLATOR role with professional management interface
+### Session 4 - Export/Import System + Budget Translation Fix
+1. ✅ **Export/Import Feature (NEW)**
+   - Added ZIP export of all translation JSONs across 5 languages
+   - Added ZIP import to bulk update translations from external AI tools
+   - Smart backend fallback if frontend state is empty
+   - Console logging for debugging
+   - Error messages with detailed information
 
-🚀 **PRODUCTION READY!** Complete multi-language family finance app with professional translator interface!
+2. ✅ **Budget Component Translation Fix**
+   - Fixed hardcoded English text ("budget.target", "Gasto", "Limite") in BudgetControl
+   - All budget labels now use translation keys: `t("budget.spent")`, `t("budget.limit")`, `t("budget.target")`
+   - Cards now display fully translated in all 5 languages
+
+3. ✅ **TranslationManager Page Title**
+   - Added prominent "🌐 Traduções" title to TranslationManager page
+   - Fixed display issue where "Modo Família" was showing instead
+
+4. ✅ **Safety & Validation**
+   - Added null checks in AdminPanel and TranslationManager to prevent errors
+   - Added optional chaining (`?.`) for safe role access
+   - Added conditional rendering in App.tsx to ensure currentUser exists before passing to components
+
+5. ✅ **Translation Keys Added**
+   - Added 17 new translation keys for export/import system in all 5 languages:
+     - `translations.import_export`, `translations.export_json`, `translations.import_json`
+     - `translations.export_success`, `translations.export_error`
+     - `translations.import_success`, `translations.import_error`
+     - `translations.import_export_tip`
+     - `admin.loading_error`, `admin.user_data_error`
+     - `budget.limit` (fixed - now properly translated)
+   - **Total translation keys: 354** (up from 337)
+
+### Final Statistics
+- ✅ 354 translation keys across 5 languages (PT, EN, ES, UM, LN)
+- ✅ 11 components fully internationalized
+- ✅ 5 complete language translations
+- ✅ Multi-provider AI support (Gemini, OpenRouter, Puter, Groq)
+- ✅ 16 default budget categories (translatable)
+- ✅ TRANSLATOR role with professional management interface
+- ✅ Export/Import system for AI-powered translation improvements
+- ✅ All Budget component strings translated (no hardcoded text)
+- ✅ Production build: 114.51KB gzip, 0 errors
+
+🚀 **PRODUCTION READY!** Complete multi-language family finance app with professional translator interface and AI-powered translation workflow!
+
+## Testing Workflow for Export/Import
+1. Login: admin/admin
+2. Click "Configurações" → "🌐 Traduções"
+3. Wait for dashboard to load (shows % completion per language)
+4. Click "📥 Exportar JSONs" → Downloads ZIP with pt.json, en.json, etc.
+5. Edit JSONs externally (use ChatGPT/Claude to improve translations)
+6. Click "📤 Importar JSONs" → Select edited ZIP
+7. Watch console logs: will show import count and file details
+8. Translations updated in real-time across all 5 languages

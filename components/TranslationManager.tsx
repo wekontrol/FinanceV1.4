@@ -117,20 +117,43 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
   const handleExport = async () => {
     try {
       setIsSaving(true);
+      
+      // Se translations estiver vazio, carregar do backend
+      let transData = translations;
+      if (transData.length === 0) {
+        console.log('Translations vazio no state, carregando do backend...');
+        const response = await fetch('/api/translations/editor/all');
+        if (response.ok) {
+          transData = await response.json();
+          console.log('Dados carregados do backend:', transData.length, 'chaves');
+        } else {
+          throw new Error('Falha ao carregar traduções');
+        }
+      }
+
       const zip = new JSZip();
-      const allKeys = [...new Set(translations.map(t => t.key))];
+      const allKeys = [...new Set(transData.map(t => t.key))];
+      console.log('Total de chaves:', allKeys.length);
 
       for (const lang of languages) {
         const langData: Record<string, string> = {};
         allKeys.forEach(key => {
-          const trans = translations.find(t => t.language === lang && t.key === key);
+          const trans = transData.find(t => t.language === lang && t.key === key);
           langData[key] = trans?.value || '';
         });
         
+        console.log(`JSON para ${lang}:`, Object.keys(langData).length, 'chaves');
         zip.file(`${lang}.json`, JSON.stringify(langData, null, 2));
       }
 
       const blob = await zip.generateAsync({ type: 'blob' });
+      console.log('ZIP size:', blob.size, 'bytes');
+      
+      if (blob.size === 0) {
+        setImportMessage({ type: 'error', text: "ZIP vazio! Dados não foram carregados." });
+        return;
+      }
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -140,11 +163,11 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      setImportMessage({ type: 'success', text: t("translations.export_success") });
+      setImportMessage({ type: 'success', text: t("translations.export_success") + ` (${allKeys.length} chaves)` });
       setTimeout(() => setImportMessage(null), 3000);
     } catch (error) {
       console.error('Erro ao exportar:', error);
-      setImportMessage({ type: 'error', text: t("translations.export_error") });
+      setImportMessage({ type: 'error', text: t("translations.export_error") + ': ' + (error as any).message });
     } finally {
       setIsSaving(false);
     }
@@ -157,31 +180,41 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
 
     setIsImporting(true);
     try {
+      console.log('Import iniciado com arquivo:', file.name);
+      
       const zip = new JSZip();
       const loaded = await zip.loadAsync(file);
+      console.log('ZIP carregado com', Object.keys(loaded.files).length, 'ficheiros');
       
       let importedCount = 0;
       const allKeys = [...new Set(translations.map(t => t.key))];
+      console.log('Total de chaves esperadas:', allKeys.length);
 
       for (const lang of languages) {
         const jsonFile = loaded.file(`${lang}.json`);
         if (jsonFile) {
           const content = await jsonFile.async('text');
           const data = JSON.parse(content);
+          console.log(`Importando ${lang}:`, Object.keys(data).length, 'chaves no arquivo');
 
           for (const key of allKeys) {
             if (data[key] && data[key].trim()) {
-              await fetch('/api/translations', {
+              const response = await fetch('/api/translations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ language: lang, key, value: data[key] })
               });
-              importedCount++;
+              if (response.ok) {
+                importedCount++;
+              }
             }
           }
+        } else {
+          console.warn(`Ficheiro ${lang}.json não encontrado no ZIP`);
         }
       }
 
+      console.log('Total importado:', importedCount);
       setImportMessage({ 
         type: 'success', 
         text: t("translations.import_success") + ` (${importedCount} ${t("translations.keys")})`
@@ -191,7 +224,7 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
       setTimeout(() => setImportMessage(null), 3000);
     } catch (error) {
       console.error('Erro ao importar:', error);
-      setImportMessage({ type: 'error', text: t("translations.import_error") });
+      setImportMessage({ type: 'error', text: t("translations.import_error") + ': ' + (error as any).message });
     } finally {
       setIsImporting(false);
     }
