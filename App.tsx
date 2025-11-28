@@ -453,25 +453,24 @@ const App: React.FC = () => {
     setNotifications(notifications.filter(n => n.id !== notification.id));
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-primary-500 to-primary-600">
-        <Loader2 size={48} className="animate-spin text-white" />
-      </div>
-    );
-  }
-
-  if (!isLoggedIn) {
-    return <Login appName={appName} onLogin={(user) => {
-      setCurrentUser(user);
-      setIsLoggedIn(true);
-      setUserLanguage(user.languagePreference || 'pt');
-    }} />;
-  }
-
   return (
     <LanguageProvider initialLanguage={userLanguage}>
       <div className={`${darkMode ? 'dark' : ''}`}>
+        {isLoading && (
+          <div className="flex items-center justify-center h-screen bg-gradient-to-br from-primary-500 to-primary-600">
+            <Loader2 size={48} className="animate-spin text-white" />
+          </div>
+        )}
+
+        {!isLoggedIn && !isLoading && (
+          <Login appName={appName} onLogin={(user) => {
+            setCurrentUser(user);
+            setIsLoggedIn(true);
+            setUserLanguage(user.languagePreference || 'pt');
+          }} />
+        )}
+
+        {isLoggedIn && !isLoading && (
         <div className="flex h-screen bg-slate-50 dark:bg-[#09090b] overflow-hidden font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
           <Sidebar 
             appName={appName}
@@ -580,6 +579,7 @@ const App: React.FC = () => {
             </div>
           )}
         </div>
+        )}
       </div>
     </LanguageProvider>
   );
