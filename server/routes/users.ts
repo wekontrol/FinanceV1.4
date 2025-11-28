@@ -138,7 +138,7 @@ router.post('/', (req: Request, res: Response) => {
 router.put('/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const currentUser = req.session.user;
-  const { name, role, status, birthDate, allowParentView, password } = req.body;
+  const { name, role, status, birthDate, allowParentView, password, currentPassword } = req.body;
 
   const isOwnProfile = id === req.session.userId;
   const canEdit = currentUser.role === 'SUPER_ADMIN' || 
@@ -178,7 +178,13 @@ router.put('/:id', (req: Request, res: Response) => {
     params.push(allowParentView ? 1 : 0);
   }
 
+
   if (password) {
+    if (isOwnProfile) {
+      if (!currentPassword || !bcrypt.compareSync(currentPassword, existing.password)) {
+        return res.status(401).json({ error: 'Incorrect current password' });
+      }
+    }
     updateQuery += ', password = ?';
     params.push(bcrypt.hashSync(password, 10));
   }
