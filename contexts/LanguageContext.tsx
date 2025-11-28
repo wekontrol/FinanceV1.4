@@ -10,7 +10,8 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const translations = {
+// Fallback hardcoded translations (for login screen before JSON loads)
+const fallbackTranslations = {
   pt: {
     // Login
     'login.title': 'Gestão Financeira',
@@ -586,28 +587,27 @@ interface LanguageProviderProps {
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, initialLanguage = 'pt' }) => {
   const [language, setLanguageState] = useState<Language>(initialLanguage);
-  const [apiTranslations, setApiTranslations] = useState<Record<string, string>>({});
+  const [jsonTranslations, setJsonTranslations] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
 
-  // Load translations from API when language changes
+  // Load translations from JSON files when language changes
   useEffect(() => {
     const loadTranslations = async () => {
       try {
-        const response = await fetch(`/api/translations/language/${language}`, {
-          credentials: 'include'
-        });
+        setLoading(true);
+        const response = await fetch(`/locales/${language}.json`);
         if (response.ok) {
           const data = await response.json();
-          // Convert array of translations to key-value object
-          const translationMap: Record<string, string> = {};
-          if (Array.isArray(data)) {
-            data.forEach((t: any) => {
-              translationMap[t.key] = t.value;
-            });
-          }
-          setApiTranslations(translationMap);
+          setJsonTranslations(data);
+        } else {
+          console.warn(`Failed to load ${language}.json`);
+          setJsonTranslations({});
         }
       } catch (error) {
-        console.log(`Translation loading fallback for ${language}`);
+        console.warn(`Error loading translations for ${language}:`, error);
+        setJsonTranslations({});
+      } finally {
+        setLoading(false);
       }
     };
     
@@ -621,20 +621,20 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, in
     }
   }, [initialLanguage, language]);
 
-  // Save language preference
+  // Save language preference to localStorage
   useEffect(() => {
     localStorage.setItem('app_language', language);
     document.documentElement.lang = language === 'um' ? 'pt' : language;
   }, [language]);
 
-  // Translation function: API first, then fallback to hardcoded
+  // Translation function: JSON first, then fallback to hardcoded
   const t = (key: string): string => {
-    // Try API translations first
-    if (apiTranslations[key]) {
-      return apiTranslations[key];
+    // Try JSON translations first (from /public/locales)
+    if (jsonTranslations[key]) {
+      return jsonTranslations[key];
     }
     // Fallback to hardcoded translations
-    return (translations[language] as Record<string, string>)[key] || key;
+    return (fallbackTranslations[language] as Record<string, string>)[key] || key;
   };
 
   const setLanguage = (lang: Language) => {
