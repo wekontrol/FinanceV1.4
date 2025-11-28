@@ -614,12 +614,12 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, in
     loadTranslations();
   }, [language]);
 
-  // Update language when initialLanguage prop changes
+  // Update language when initialLanguage prop changes (only on first mount)
   useEffect(() => {
-    if (initialLanguage && initialLanguage !== language) {
+    if (initialLanguage && initialLanguage !== language && !localStorage.getItem('app_language')) {
       setLanguageState(initialLanguage);
     }
-  }, [initialLanguage, language]);
+  }, []);
 
   // Save language preference to localStorage
   useEffect(() => {

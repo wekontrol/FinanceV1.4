@@ -609,7 +609,7 @@ const App: React.FC = () => {
 
   if (!isLoggedIn || !currentUser) {
     return (
-      <LanguageProvider initialLanguage="pt">
+      <LanguageProvider>
         <Login appName={appName} onLogin={handleLogin} />
       </LanguageProvider>
     );
