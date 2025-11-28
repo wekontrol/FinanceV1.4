@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Languages, Plus, Save, Loader2 } from 'lucide-react';
+import { User, UserRole } from '../types';
+import { Languages, Plus, Save, Loader2, AlertTriangle, BarChart3, Search, Filter } from 'lucide-react';
 
 interface Translation {
   language: string;
@@ -10,21 +11,32 @@ interface Translation {
   updated_at: string;
 }
 
-const TranslationManager: React.FC = () => {
+interface TranslationManagerProps {
+  currentUser: User;
+}
+
+const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) => {
   const { t } = useLanguage();
   const [translations, setTranslations] = useState<Translation[]>([]);
   const [languages, setLanguages] = useState<string[]>(['pt', 'en', 'es', 'um', 'ln']);
-  const [selectedLanguage, setSelectedLanguage] = useState('pt');
+  const [languageNames] = useState({ pt: 'Português', en: 'English', es: 'Español', um: 'Umbundu', ln: 'Lingala' });
   const [newLanguage, setNewLanguage] = useState('');
   const [searchKey, setSearchKey] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [showUntranslated, setShowUntranslated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editingKey, setEditingKey] = useState<string | null>(null);
-  const [editingValue, setEditingValue] = useState('');
+  const [editingValues, setEditingValues] = useState<Record<string, string>>({});
+
+  // Check access
+  const hasAccess = currentUser.role === UserRole.TRANSLATOR || currentUser.role === UserRole.SUPER_ADMIN;
 
   useEffect(() => {
-    loadTranslations();
-    loadLanguages();
+    if (hasAccess) {
+      loadTranslations();
+      loadLanguages();
+    }
   }, []);
 
   const loadTranslations = async () => {
@@ -54,18 +66,22 @@ const TranslationManager: React.FC = () => {
     }
   };
 
-  const handleSaveTranslation = async (language: string, key: string, value: string) => {
+  const handleSaveTranslation = async (key: string) => {
     setIsSaving(true);
     try {
-      const response = await fetch('/api/translations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ language, key, value })
-      });
-      if (response.ok) {
-        setEditingKey(null);
-        loadTranslations();
+      for (const lang of languages) {
+        const value = editingValues[`${lang}-${key}`];
+        if (value !== undefined) {
+          await fetch('/api/translations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ language: lang, key, value })
+          });
+        }
       }
+      setEditingKey(null);
+      setEditingValues({});
+      loadTranslations();
     } catch (error) {
       console.error('Erro ao salvar tradução:', error);
     } finally {
@@ -75,7 +91,6 @@ const TranslationManager: React.FC = () => {
 
   const handleAddLanguage = async () => {
     if (!newLanguage.trim()) return;
-    
     setIsSaving(true);
     try {
       const response = await fetch('/api/translations/language/add', {
@@ -95,46 +110,83 @@ const TranslationManager: React.FC = () => {
     }
   };
 
-  const filteredTranslations = translations.filter(t => 
-    t.language === selectedLanguage && 
-    (searchKey === '' || t.key.toLowerCase().includes(searchKey.toLowerCase()))
+  // Get unique keys
+  const allKeys = [...new Set(translations.map(t => t.key))];
+  
+  // Calculate statistics
+  const stats = languages.map(lang => ({
+    lang,
+    total: allKeys.length,
+    translated: translations.filter(t => t.language === lang && t.value.trim()).length,
+    percentage: Math.round((translations.filter(t => t.language === lang && t.value.trim()).length / allKeys.length) * 100)
+  }));
+
+  // Get categories
+  const categories = [...new Set(allKeys.map(k => k.split('.')[0]))];
+
+  // Filter keys
+  let filteredKeys = allKeys.filter(k => 
+    (searchKey === '' || k.toLowerCase().includes(searchKey.toLowerCase())) &&
+    (filterCategory === '' || k.startsWith(filterCategory + '.'))
   );
+
+  if (showUntranslated) {
+    filteredKeys = filteredKeys.filter(key => 
+      languages.some(lang => 
+        !translations.find(t => t.language === lang && t.key === key && t.value.trim())
+      )
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-2xl p-8 text-center">
+        <AlertTriangle className="mx-auto text-rose-600 mb-4" size={32} />
+        <h3 className="text-lg font-bold text-rose-700 dark:text-rose-300 mb-2">{t("translations.access_denied")}</h3>
+        <p className="text-sm text-rose-600 dark:text-rose-400">{t("translations.translator_only")}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <Languages className="text-primary-600" size={24} />
         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{t("translations.manager_title")}</h2>
       </div>
 
-      {/* Seletor de Idioma + Adicionar Idioma */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
-        <div className="flex flex-col sm:flex-row gap-4 items-end">
-          <div className="flex-1">
-            <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
-              {t("translations.current_language")}
-            </label>
-            <select
-              value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
-            >
-              {languages.map(lang => (
-                <option key={lang} value={lang}>{lang.toUpperCase()}</option>
-              ))}
-            </select>
+      {/* Statistics Dashboard */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        {stats.map(stat => (
+          <div key={stat.lang} className="bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/30 dark:to-primary-800/20 rounded-2xl p-4 border border-primary-200 dark:border-primary-800">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold text-primary-700 dark:text-primary-300 uppercase">{stat.lang}</span>
+              <BarChart3 size={14} className="text-primary-600" />
+            </div>
+            <div className="text-2xl font-bold text-primary-900 dark:text-primary-100">{stat.percentage}%</div>
+            <p className="text-xs text-primary-600 dark:text-primary-400">{stat.translated}/{stat.total} {t("translations.keys")}</p>
+            <div className="mt-2 bg-primary-200 dark:bg-primary-900/50 rounded-full h-1">
+              <div className="bg-primary-600 h-1 rounded-full transition-all" style={{ width: `${stat.percentage}%` }} />
+            </div>
           </div>
+        ))}
+      </div>
 
-          <div className="flex-1">
+      {/* Controls */}
+      <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 space-y-4">
+        {/* Language Selector + Add Language */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
             <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
-              Adicionar Novo Idioma
+              {t("translations.add_language")}
             </label>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={newLanguage}
                 onChange={(e) => setNewLanguage(e.target.value.toLowerCase())}
-                placeholder="Código (ex: fr, de)"
+                placeholder={t("translations.language_code_placeholder")}
                 className="flex-1 p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
               />
               <button
@@ -146,95 +198,152 @@ const TranslationManager: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {/* Search */}
+          <div>
+            <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
+              {t("translations.search_keys")}
+            </label>
+            <div className="relative">
+              <Search size={18} className="absolute left-3 top-3 text-slate-400" />
+              <input
+                type="text"
+                value={searchKey}
+                onChange={(e) => setSearchKey(e.target.value)}
+                placeholder={t("translations.search_placeholder")}
+                className="w-full pl-10 p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div>
+            <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
+              {t("translations.filter_category")}
+            </label>
+            <select
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+            >
+              <option value="">{t("translations.all_categories")}</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-end">
+            <label className="flex items-center gap-3 cursor-pointer flex-1 p-3 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+              <input
+                type="checkbox"
+                checked={showUntranslated}
+                onChange={(e) => setShowUntranslated(e.target.checked)}
+                className="w-4 h-4 rounded"
+              />
+              <span className="text-sm font-bold text-slate-600 dark:text-slate-400">{t("translations.show_untranslated")}</span>
+            </label>
+          </div>
         </div>
       </div>
 
-      {/* Pesquisa */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
-        <input
-          type="text"
-          value={searchKey}
-          onChange={(e) => setSearchKey(e.target.value)}
-          placeholder="Procurar por chave..."
-          className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
-        />
-      </div>
-
-      {/* Lista de Traduções */}
-      <div className="space-y-3">
+      {/* Multi-Language Table */}
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-x-auto">
         {isLoading ? (
           <div className="text-center py-8">
             <Loader2 className="animate-spin mx-auto text-primary-600" size={32} />
           </div>
-        ) : filteredTranslations.length === 0 ? (
+        ) : filteredKeys.length === 0 ? (
           <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-            Nenhuma tradução encontrada
+            {t("translations.no_results")}
           </div>
         ) : (
-          filteredTranslations.map(translation => (
-            <div
-              key={`${translation.language}-${translation.key}`}
-              className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-100 dark:border-slate-700 hover:shadow-md transition"
-            >
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
-                    Chave
-                  </label>
-                  <p className="text-sm font-mono text-slate-700 dark:text-slate-300">
-                    {translation.key}
-                  </p>
-                </div>
+          <table className="w-full">
+            <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-400 sticky left-0 bg-slate-50 dark:bg-slate-900/50 z-10">
+                  {t("translations.key")}
+                </th>
+                {languages.map(lang => (
+                  <th key={lang} className="px-4 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                    {languageNames[lang as keyof typeof languageNames] || lang.toUpperCase()}
+                  </th>
+                ))}
+                <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-400">{t("translations.actions")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+              {filteredKeys.map(key => (
+                <tr key={key} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                  <td className="px-6 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 sticky left-0 bg-white dark:bg-slate-800 z-10">
+                    {key}
+                  </td>
+                  {languages.map(lang => {
+                    const translation = translations.find(t => t.language === lang && t.key === key);
+                    const isEditing = editingKey === key;
+                    const value = editingValues[`${lang}-${key}`] !== undefined 
+                      ? editingValues[`${lang}-${key}`]
+                      : (translation?.value || '');
+                    const isEmpty = !translation?.value?.trim();
 
-                {editingKey === `${translation.language}-${translation.key}` ? (
-                  <div className="space-y-2">
-                    <textarea
-                      value={editingValue}
-                      onChange={(e) => setEditingValue(e.target.value)}
-                      className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm resize-none"
-                      rows={3}
-                    />
-                    <div className="flex gap-2">
+                    return (
+                      <td key={`${lang}-${key}`} className="px-4 py-3 text-sm">
+                        {isEditing ? (
+                          <textarea
+                            value={value}
+                            onChange={(e) => setEditingValues({ ...editingValues, [`${lang}-${key}`]: e.target.value })}
+                            className="w-full p-2 rounded border border-primary-300 dark:border-primary-700 dark:bg-slate-700 dark:text-white text-sm resize-none"
+                            rows={2}
+                          />
+                        ) : (
+                          <div className={`p-2 rounded ${isEmpty ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-300' : 'bg-slate-50 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300'}`}>
+                            {value || <span className="italic">{t("translations.missing")}</span>}
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
+                  <td className="px-4 py-3">
+                    {editingKey === key ? (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleSaveTranslation(key)}
+                          disabled={isSaving}
+                          className="px-3 py-1 bg-emerald-600 text-white rounded text-xs font-bold hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-1"
+                        >
+                          {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                          {t("translations.save")}
+                        </button>
+                        <button
+                          onClick={() => setEditingKey(null)}
+                          className="px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs font-bold hover:bg-slate-300 dark:hover:bg-slate-600"
+                        >
+                          {t("translations.cancel")}
+                        </button>
+                      </div>
+                    ) : (
                       <button
-                        onClick={() => handleSaveTranslation(translation.language, translation.key, editingValue)}
-                        disabled={isSaving}
-                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2 text-sm font-bold"
+                        onClick={() => {
+                          setEditingKey(key);
+                          const newValues: Record<string, string> = {};
+                          languages.forEach(lang => {
+                            const trans = translations.find(t => t.language === lang && t.key === key);
+                            newValues[`${lang}-${key}`] = trans?.value || '';
+                          });
+                          setEditingValues(newValues);
+                        }}
+                        className="px-3 py-1 bg-primary-600 text-white rounded text-xs font-bold hover:bg-primary-700"
                       >
-                        {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                        Salvar
+                        {t("translations.edit")}
                       </button>
-                      <button
-                        onClick={() => setEditingKey(null)}
-                        className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 text-sm font-bold"
-                      >
-                        Cancelar
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div>
-                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
-                        Valor
-                      </label>
-                      <p className="text-sm text-slate-700 dark:text-slate-300 p-3 bg-slate-50 dark:bg-slate-900/30 rounded-lg">
-                        {translation.value}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setEditingKey(`${translation.language}-${translation.key}`);
-                        setEditingValue(translation.value);
-                      }}
-                      className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm font-bold"
-                    >
-                      Editar
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          ))
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

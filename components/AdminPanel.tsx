@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { BackupConfig, User, UserRole, UserStatus } from '../types';
-import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2, FileText } from 'lucide-react';
+import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2, FileText, Languages } from 'lucide-react';
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
 import { hasPuterEnabled, setPuterAsDefault } from '../services/puterService';
 import { setGroqKey, hasGroqKey } from '../services/groqService';
@@ -10,6 +10,7 @@ import { settingsApi, familiesApi } from '../services/api';
 import { backupApi } from '../services/backupApi';
 import { systemApi } from '../services/systemApi';
 import NotificationSettings from './NotificationSettings';
+import TranslationManager from './TranslationManager';
 
 interface AdminPanelProps {
   appName: string;
@@ -1417,7 +1418,25 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
-        {/* 8. API Configurations (Only Super Admin) */}
+        {/* 8. Translations Manager (Only Translator + Super Admin) */}
+        {(isSuperAdmin || currentUser.role === UserRole.TRANSLATOR) && (
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div onClick={() => toggleSection('translations')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+              <div className="flex items-center">
+                <div className="p-2 bg-purple-100 text-purple-600 rounded-lg mr-4 shrink-0"><Languages size={20} /></div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">{t("translations.manager_title")}</h3>
+              </div>
+              {expandedSection === 'translations' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </div>
+            {expandedSection === 'translations' && (
+              <div className="p-8 border-t border-slate-100 dark:border-slate-700 animate-slide-down">
+                <TranslationManager currentUser={currentUser} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 9. API Configurations (Only Super Admin) */}
         {isSuperAdmin && (
           <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
             <div onClick={() => toggleSection('api-configs')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">

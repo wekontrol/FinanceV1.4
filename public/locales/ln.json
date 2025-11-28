@@ -318,5 +318,22 @@
   "admin.role_translator": "Talangela Lokambo",
   "admin.role_super_admin": "Boyikoli ya Molongo",
   "translations.manager_title": "Talangela Lokambo",
-  "translations.current_language": "Lokambo Oyo"
+  "translations.current_language": "Lokambo Oyo",
+  "translations.access_denied": "Lisusu te",
+  "translations.translator_only": "Bazalaki ba lokambo na super admin seulement bazali na access na fonctionnalité oyo.",
+  "translations.keys": "bampata",
+  "translations.add_language": "Zwa Lokambo ya Sika",
+  "translations.language_code_placeholder": "Code (ex: fr, de)",
+  "translations.search_keys": "Talangela Bampata",
+  "translations.search_placeholder": "Talangela bampata...",
+  "translations.filter_category": "Kabini na Ekamelo",
+  "translations.all_categories": "Ekamelo Nyonso",
+  "translations.show_untranslated": "Monisa seulement oyo tatanslini te",
+  "translations.key": "Bampata",
+  "translations.actions": "Ekamelo",
+  "translations.missing": "[tatanslini te]",
+  "translations.edit": "Songa",
+  "translations.save": "Okitwa",
+  "translations.cancel": "Bobiya",
+  "translations.no_results": "Lokambo tefonani te"
 }

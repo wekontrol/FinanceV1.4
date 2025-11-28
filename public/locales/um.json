@@ -318,5 +318,22 @@
   "admin.role_translator": "Okusikila Okuyezi",
   "admin.role_super_admin": "Okwikuluze Okwa Okuma",
   "translations.manager_title": "Okusungula Okusikila Okuyezi",
-  "translations.current_language": "Okuyezi Okwa Okukuba"
+  "translations.current_language": "Okuyezi Okwa Okukuba",
+  "translations.access_denied": "Okuwikika Okwa Okuwikika",
+  "translations.translator_only": "Okusikila okuyezi okwa okuma okukuba okufuna okukyanya okubilungirivu.",
+  "translations.keys": "okulembeka",
+  "translations.add_language": "Okutambika Okuyezi Okwikiki",
+  "translations.language_code_placeholder": "Koodi (okwa: fr, de)",
+  "translations.search_keys": "Okusikila Okulembeka",
+  "translations.search_placeholder": "Okusikila okwa okulembeka...",
+  "translations.filter_category": "Okusikila okwa Okukwata",
+  "translations.all_categories": "Okukwata Kyonna",
+  "translations.show_untranslated": "Okukwata okutambika okusitululu",
+  "translations.key": "Okulembeka",
+  "translations.actions": "Okukwata",
+  "translations.missing": "[okusitululu]",
+  "translations.edit": "Okusikila",
+  "translations.save": "Okutembeka",
+  "translations.cancel": "Okusala",
+  "translations.no_results": "Okusikila okutambika okusitululu"
 }

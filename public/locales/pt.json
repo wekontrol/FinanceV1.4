@@ -318,5 +318,22 @@
   "admin.role_translator": "Tradutor",
   "admin.role_super_admin": "Super Admin",
   "translations.manager_title": "Gerenciador de Traduções",
-  "translations.current_language": "Idioma Atual"
+  "translations.current_language": "Idioma Atual",
+  "translations.access_denied": "Acesso Negado",
+  "translations.translator_only": "Apenas tradutores e super admin têm acesso a este recurso.",
+  "translations.keys": "chaves",
+  "translations.add_language": "Adicionar Novo Idioma",
+  "translations.language_code_placeholder": "Código (ex: fr, de)",
+  "translations.search_keys": "Pesquisar Chaves",
+  "translations.search_placeholder": "Procurar por chave...",
+  "translations.filter_category": "Filtrar por Categoria",
+  "translations.all_categories": "Todas as Categorias",
+  "translations.show_untranslated": "Mostrar apenas não traduzidas",
+  "translations.key": "Chave",
+  "translations.actions": "Ações",
+  "translations.missing": "[não traduzida]",
+  "translations.edit": "Editar",
+  "translations.save": "Salvar",
+  "translations.cancel": "Cancelar",
+  "translations.no_results": "Nenhuma tradução encontrada"
 }
