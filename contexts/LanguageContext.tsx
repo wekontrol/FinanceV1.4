@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type Language = 'pt' | 'en' | 'es' | 'um' | 'ln';
+export type Language = 'pt' | 'en' | 'es' | 'um' | 'ln' | 'fr';
 
 interface LanguageContextType {
   language: Language;
@@ -577,6 +577,40 @@ const fallbackTranslations = {
     'goals.new': 'Kanisi ya Sika',
     'family.title': 'Libota',
     'admin.title': 'Mosepe Monene',
+  },
+  fr: {
+    // French translations - complete translations loaded from fr.json at runtime
+    'login.title': 'Gestion Financière',
+    'login.subtitle': 'Gestion Financière Familiale',
+    'login.username': 'Utilisateur',
+    'login.password': 'Mot de passe',
+    'login.enter': 'Connexion',
+    'login.forgotPassword': 'Mot de passe oublié',
+    'login.createFamily': 'Créer une Famille',
+    'login.language': 'Langue',
+    'sidebar.dashboard': 'Tableau de Bord',
+    'sidebar.transactions': 'Transactions',
+    'sidebar.budget': 'Budgets',
+    'sidebar.goals': 'Objectifs',
+    'sidebar.inflation': 'Inflation',
+    'sidebar.family': 'Famille',
+    'sidebar.translations': 'Traductions',
+    'sidebar.settings': 'Paramètres',
+    'sidebar.logout': 'Déconnexion',
+    'dashboard.title': 'Tableau de Bord',
+    'dashboard.income': 'Revenus',
+    'dashboard.expenses': 'Dépenses',
+    'dashboard.balance': 'Solde',
+    'dashboard.analyzing': 'Analyse de vos finances avec l\'IA...',
+    'dashboard.alerts': 'Alertes',
+    'transactions.title': 'Transactions',
+    'transactions.new': 'Nouvelle Transaction',
+    'transactions.search': 'Rechercher',
+    'budget.title': 'Budgets',
+    'goals.title': 'Objectifs',
+    'goals.new': 'Nouvel Objectif',
+    'family.title': 'Famille',
+    'admin.title': 'Administration',
   },
 };
 

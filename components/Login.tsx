@@ -12,7 +12,7 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
   const { t, language, setLanguage } = useLanguage();
   const [view, setView] = useState<'login' | 'recovery' | 'register'>('login');
-  const [availableLanguages, setAvailableLanguages] = useState<string[]>(['pt', 'en', 'es', 'um', 'ln']);
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>(['pt', 'en', 'es', 'um', 'ln', 'fr']);
   
   // Load available languages from backend
   React.useEffect(() => {
