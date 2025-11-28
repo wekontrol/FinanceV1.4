@@ -189,33 +189,14 @@ export const parseTransactionFromTextWithPuter = async (text: string): Promise<P
 
 // 6. Parse Transaction from Audio
 export const parseTransactionFromAudioWithPuter = async (base64Audio: string): Promise<Partial<Transaction>> => {
-  const puter = getPuter();
-  if (typeof puter === 'undefined') {
-    return { description: '', category: 'Geral' };
-  }
-
-  try {
-    // Convert base64 to File object
-    const binaryString = atob(base64Audio);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    const audioFile = new File([bytes], 'audio.mp3', { type: 'audio/mp3' });
-
-    // Transcribe
-    const transcription = await puter.ai.speech2txt(audioFile);
-    const text = transcription?.text || transcription || '';
-
-    // Parse as transaction
-    if (text) {
-      return parseTransactionFromTextWithPuter(text);
-    }
-    return { description: '', category: 'Geral' };
-  } catch (error) {
-    console.error('Error parsing audio with Puter:', error);
-    return { description: '', category: 'Geral' };
-  }
+  // Puter does not support audio transcription reliably
+  // Use Gemini for audio processing
+  console.warn('Puter does not support audio transcription. Please use Gemini provider for audio features.');
+  return { 
+    description: '', 
+    category: 'Geral',
+    error: 'Puter não suporta processamento de áudio. Use Gemini para esta funcionalidade.'
+  };
 };
 
 // 7. Suggest Budgets
