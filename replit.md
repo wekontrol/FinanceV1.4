@@ -44,6 +44,16 @@ Fast Mode development - small focused edits preferred.
   - ✅ Loading States (spinners and disabled buttons)
   - ✅ Multi-language Table (6-column view with color-coding)
 
+### Phase 5: LANGUAGE SUPPORT FIXES ✅
+- **Fixed French (FR) Language Type:** Added 'fr' to Language type union
+- **Fixed French in Login:** Added 'fr' to default available languages
+- **Added French Fallback Translations:** 30+ French translations for fallback
+- **Fixed Currency Selector Mobile:** Now visible on all screen sizes with responsive sizing
+  - Changed from `hidden md:flex` to `flex` (visible on mobile)
+  - Responsive padding: `px-2 md:px-3`
+  - Responsive icon spacing: `mr-1 md:mr-2`
+  - Responsive text size: `text-xs md:text-sm`
+
 ### FINAL STATISTICS:
 - **Total Translation Keys: 500** (all 6 languages synced from JSON)
 - **All Components 100% Translated:**
