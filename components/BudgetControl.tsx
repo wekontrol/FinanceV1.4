@@ -219,9 +219,9 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                       </div>
                       
                       <div className="flex justify-between text-sm mb-2">
-                        <span className="text-slate-600 dark:text-slate-400">Limite: <span className="font-bold">{item.limit.toFixed(2)} Kz</span></span>
+                        <span className="text-slate-600 dark:text-slate-400">{t("budget.limit")}: <span className="font-bold">{item.limit.toFixed(2)} Kz</span></span>
                         <span className={`font-bold ${isOverBudget ? 'text-rose-600' : 'text-slate-800 dark:text-white'}`}>
-                          Gasto: {item.spent.toFixed(2)} Kz
+                          {t("budget.spent")}: {item.spent.toFixed(2)} Kz
                         </span>
                       </div>
 
@@ -351,12 +351,18 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 </div>
 
                 <div className="flex justify-between items-end mb-2 text-sm">
-                  <span className={`text-xl md:text-2xl font-bold ${isOverBudget ? 'text-rose-600' : 'text-slate-800 dark:text-white'}`}>
-                    {currencyFormatter(spent)}
-                  </span>
-                  <span className="text-slate-400 font-medium text-xs uppercase">
-                    {t("budget.target")}: {currencyFormatter(limit)}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-slate-600 dark:text-slate-400 text-xs uppercase">{t("budget.spent")}</span>
+                    <span className={`text-xl md:text-2xl font-bold ${isOverBudget ? 'text-rose-600' : 'text-slate-800 dark:text-white'}`}>
+                      {currencyFormatter(spent)}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-slate-600 dark:text-slate-400 text-xs uppercase">{t("budget.target")}</span>
+                    <span className="block text-slate-400 font-medium text-sm">
+                      {currencyFormatter(limit)}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-4 mb-6 overflow-hidden">
