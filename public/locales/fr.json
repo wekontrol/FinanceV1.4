@@ -354,5 +354,11 @@
   "translations.error_loading": "Erreur lors du chargement",
   "translations.error_user_data": "Impossible de charger les données de l'utilisateur. Réessayez.",
   "admin.loading_error": "Erreur lors du chargement du panneau",
-  "admin.user_data_error": "Impossible de charger les données de l'utilisateur. Réessayez."
+  "admin.user_data_error": "Impossible de charger les données de l'utilisateur",
+  "budget.default": "Par Défaut",
+  "budget.unique_category_hint": "Créez une catégorie unique pour ce budget",
+  "budget.new_limit_placeholder": "Nouvelle Limite",
+  "transactions.general": "Général",
+  "admin.select_default_ai": "Sélectionnez l'IA par défaut",
+  "admin.default_ai_hint": "Par Défaut"
 }

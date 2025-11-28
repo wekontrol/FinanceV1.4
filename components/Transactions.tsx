@@ -377,7 +377,7 @@ const Transactions: React.FC<TransactionsProps> = ({
       description: formData.description,
       amount: Number(formData.amount),
       type: formData.type,
-      category: formData.category || 'Geral',
+      category: formData.category || t("transactions.general"),
       date: formData.date,
       attachments: formData.attachments,
       isRecurring: formData.isRecurring,
@@ -595,7 +595,7 @@ const Transactions: React.FC<TransactionsProps> = ({
                     type="text" 
                     value={formData.category}
                     onChange={e => setFormData({...formData, category: e.target.value})}
-                    placeholder="Geral"
+                    placeholder={t("transactions.general")}
                     className={inputClass}
                   />
                 </div>

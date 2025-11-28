@@ -354,5 +354,11 @@
   "translations.error_loading": "Erro ao carregar",
   "translations.error_user_data": "Não foi possível carregar dados do utilizador. Tente novamente.",
   "admin.loading_error": "Erro ao carregar painel",
-  "admin.user_data_error": "Não foi possível carregar dados do utilizador. Tente novamente."
+  "admin.user_data_error": "Não foi possível carregar dados do utilizador. Tente novamente.",
+  "budget.default": "Padrão",
+  "budget.unique_category_hint": "Crie uma categoria única para este orçamento",
+  "budget.new_limit_placeholder": "Novo Limite",
+  "transactions.general": "Geral",
+  "admin.select_default_ai": "Selecione a IA Padrão",
+  "admin.default_ai_hint": "Padrão"
 }

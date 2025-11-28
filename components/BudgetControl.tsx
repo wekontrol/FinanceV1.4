@@ -301,7 +301,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
               />
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Crie uma categoria única para este orçamento
+                {t("budget.unique_category_hint")}
               </p>
             </div>
 
@@ -374,7 +374,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 <div className="flex justify-between items-start mb-4 gap-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <h3 className="font-bold text-slate-800 dark:text-white text-sm sm:text-base md:text-lg line-clamp-2 break-words">{cat}</h3>
-                    {isDefault && <span className="text-xs font-bold px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full whitespace-nowrap flex-shrink-0">Padrão</span>}
+                    {isDefault && <span className="text-xs font-bold px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full whitespace-nowrap flex-shrink-0">{t("budget.default")}</span>}
                   </div>
                   {isOverBudget && <AlertTriangle className="text-rose-500 animate-pulse" size={22} />}
                   {!isOverBudget && limit > 0 && <CheckCircle className="text-emerald-500" size={22} />}
@@ -415,7 +415,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                         onChange={(e) => setEditAmount(e.target.value)}
                         className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-xs sm:text-sm focus:ring-2 focus:ring-primary-500 outline-none"
                         autoFocus
-                        placeholder="Novo Limite"
+                        placeholder={t("budget.new_limit_placeholder")}
                       />
                       {editAmount && (
                         <p className="text-right text-xs font-bold text-primary-600 dark:text-primary-400 mt-1 truncate">
