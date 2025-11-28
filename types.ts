@@ -108,7 +108,7 @@ export interface BackupConfig {
   lastBackup: string | null;
 }
 
-export type RateProvider = 'BNA' | 'FOREX' | 'PARALLEL';
+export type RateProvider = 'BNA' | 'FOREX' | 'PARALLEL' | 'EXCHANGERATE_API' | 'FAWAZ_AHMED';
 
 export interface ExchangeRates {
   [key: string]: number | string; // Index signature for dynamic access

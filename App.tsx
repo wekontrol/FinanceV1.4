@@ -71,7 +71,7 @@ const App: React.FC = () => {
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [userLanguage, setUserLanguage] = useState<any>('pt');
   const [currency, setCurrency] = useState('AOA'); 
-  const [rateProvider, setRateProvider] = useState<RateProvider>('BNA');
+  const [rateProvider, setRateProvider] = useState<RateProvider>('EXCHANGERATE_API');
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null);
   
   const [showExportModal, setShowExportModal] = useState(false);

@@ -14,7 +14,7 @@ interface InflationControlProps {
 }
 
 const InflationControl: React.FC<InflationControlProps> = ({ 
-  rateProvider, 
+  rateProvider = 'EXCHANGERATE_API', 
   setRateProvider, 
   currencyFormatter = (val) => `${val.toFixed(2)}` 
 }) => {

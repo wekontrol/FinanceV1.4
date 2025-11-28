@@ -34,7 +34,7 @@ const RATES_PARALLEL: Record<string, number> = {
   JPY: 8.00
 };
 
-export const getExchangeRates = async (provider: RateProvider = 'BNA'): Promise<ExchangeRates> => {
+export const getExchangeRates = async (provider: RateProvider = 'EXCHANGERATE_API'): Promise<ExchangeRates> => {
   try {
     // Buscar do backend que cacheia e atualiza diariamente
     const response = await fetch(`/api/settings/rates/${provider}`);
@@ -61,6 +61,8 @@ export const getExchangeRates = async (provider: RateProvider = 'BNA'): Promise<
   let selectedRates = RATES_BNA;
   if (provider === 'FOREX') selectedRates = RATES_FOREX;
   if (provider === 'PARALLEL') selectedRates = RATES_PARALLEL;
+  if (provider === 'EXCHANGERATE_API') selectedRates = RATES_BNA;
+  if (provider === 'FAWAZ_AHMED') selectedRates = RATES_BNA;
 
   return {
     AOA: 1,

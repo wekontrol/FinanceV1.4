@@ -219,7 +219,7 @@ router.post('/default-currency-provider', (req: Request, res: Response) => {
     return res.status(401).json({ error: 'Not authenticated' });
   }
   
-  if (!['BNA', 'FOREX', 'PARALLEL'].includes(provider)) {
+  if (!['BNA', 'FOREX', 'PARALLEL', 'EXCHANGERATE_API', 'FAWAZ_AHMED'].includes(provider)) {
     return res.status(400).json({ error: 'Invalid provider' });
   }
 

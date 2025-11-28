@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { RateProvider } from '../types';
-import { DollarSign, Check, Loader2 } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 
 interface CurrencyProviderSettingsProps {
   currentProvider: RateProvider;
@@ -17,12 +17,34 @@ const CurrencyProviderSettings: React.FC<CurrencyProviderSettingsProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const providers: RateProvider[] = ['BNA', 'FOREX', 'PARALLEL'];
+  const providers: RateProvider[] = ['EXCHANGERATE_API', 'FAWAZ_AHMED', 'BNA', 'FOREX', 'PARALLEL'];
 
-  const providerDescriptions: Record<RateProvider, string> = {
-    BNA: 'Banco Nacional de Angola - Taxas oficiais',
-    FOREX: 'Mercado Forex - Taxa comercial',
-    PARALLEL: 'Mercado Paralelo - Taxa de mercado negro'
+  const providerInfo: Record<RateProvider, { name: string; description: string; icon: string }> = {
+    EXCHANGERATE_API: { 
+      name: 'ExchangeRate-API', 
+      description: 'Open Access - Sem limites',
+      icon: '🌐'
+    },
+    FAWAZ_AHMED: { 
+      name: 'Fawaz Ahmed', 
+      description: 'Open Source - Sem limites',
+      icon: '⚡'
+    },
+    BNA: { 
+      name: 'BNA', 
+      description: 'Banco Nacional de Angola',
+      icon: '🏦'
+    },
+    FOREX: { 
+      name: 'FOREX', 
+      description: 'Mercado Forex',
+      icon: '💱'
+    },
+    PARALLEL: { 
+      name: 'Mercado Paralelo', 
+      description: 'Taxa de mercado negro',
+      icon: '📊'
+    }
   };
 
   const handleSave = async () => {
@@ -49,40 +71,29 @@ const CurrencyProviderSettings: React.FC<CurrencyProviderSettingsProps> = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-        <DollarSign size={20} />
-        {t('common.conversion_providers') || 'Provedores de Conversão'}
-      </h3>
-
-      <div className="space-y-3">
+      <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Seleccione o Provedor</label>
+      
+      <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
         {providers.map((provider) => (
-          <label
+          <button
             key={provider}
-            className={`flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer transition ${
+            onClick={() => setSelectedProvider(provider)}
+            className={`flex items-center justify-center px-4 py-3 rounded-xl border-2 font-bold transition active:scale-95 flex-1 min-w-max ${
               selectedProvider === provider
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/30 hover:border-slate-300 dark:hover:border-slate-600'
+                ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
+                : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50'
             }`}
           >
-            <input
-              type="radio"
-              name="currency-provider"
-              value={provider}
-              checked={selectedProvider === provider}
-              onChange={(e) => setSelectedProvider(e.target.value as RateProvider)}
-              className="mt-1 w-5 h-5 cursor-pointer accent-blue-500"
-            />
-            <div className="flex-1">
-              <p className="font-bold text-slate-800 dark:text-white">{provider}</p>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                {providerDescriptions[provider]}
-              </p>
-            </div>
-            {currentProvider === provider && (
-              <Check size={20} className="text-green-500 mt-1" />
-            )}
-          </label>
+            <span className="mr-2">{providerInfo[provider].icon}</span>
+            {providerInfo[provider].name}
+          </button>
         ))}
+      </div>
+
+      <div className="bg-slate-50 dark:bg-slate-900/30 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+        <p className="text-sm text-slate-700 dark:text-slate-300">
+          <strong>{providerInfo[selectedProvider].name}:</strong> {providerInfo[selectedProvider].description}
+        </p>
       </div>
 
       <button
@@ -91,16 +102,16 @@ const CurrencyProviderSettings: React.FC<CurrencyProviderSettingsProps> = ({
         className={`w-full py-3 rounded-lg font-bold text-white transition flex items-center justify-center gap-2 ${
           isSaving || selectedProvider === currentProvider
             ? 'bg-slate-400 cursor-not-allowed'
-            : 'bg-blue-600 hover:bg-blue-700'
+            : 'bg-emerald-600 hover:bg-emerald-700'
         }`}
       >
         {isSaving && <Loader2 size={18} className="animate-spin" />}
-        {isSaving ? 'Salvando...' : 'Salvar Provedor'}
+        ✓ {isSaving ? 'Salvando...' : 'Confirmar Seleção'}
       </button>
 
       {saved && (
         <div className="bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-2 rounded-lg flex items-center gap-2">
-          <Check size={16} /> Provedor atualizado com sucesso!
+          <Check size={16} /> Provedor actualizado com sucesso!
         </div>
       )}
     </div>
