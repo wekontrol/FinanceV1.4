@@ -52,7 +52,7 @@ router.get('/', (req: Request, res: Response) => {
 
 router.post('/', (req: Request, res: Response) => {
   const currentUser = req.session.user;
-  const { username, password, name, role, birthDate, allowParentView } = req.body;
+  const { username, password, name, role, birthDate, allowParentView, familyId } = req.body;
 
   if (currentUser.role !== 'SUPER_ADMIN' && currentUser.role !== 'MANAGER') {
     return res.status(403).json({ error: 'Not authorized to create users' });
@@ -90,6 +90,11 @@ router.post('/', (req: Request, res: Response) => {
     { category: 'Viagens', limit: 300 }
   ];
 
+  let newFamilyId = currentUser.familyId;
+  if (currentUser.role === 'SUPER_ADMIN' && familyId) {
+    newFamilyId = familyId;
+  }
+
   db.prepare(`
     INSERT INTO users (id, username, password, name, role, avatar, status, created_by, family_id, birth_date, allow_parent_view)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -102,7 +107,7 @@ router.post('/', (req: Request, res: Response) => {
     '/default-avatar.svg',
     'APPROVED',
     req.session.userId,
-    currentUser.familyId,
+    newFamilyId,
     birthDate || null,
     allowParentView ? 1 : 0
   );
