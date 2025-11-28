@@ -441,7 +441,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               <div className="space-y-2 text-sm">
                 <p className="text-rose-200 font-semibold">{t('dashboard.waste_indicators')}:</p>
                 <ul className="text-slate-300 text-xs space-y-1 list-disc list-inside">{waste.wasteIndicators?.slice(0, 3).map((w: string, i: number) => <li key={i}>{w}</li>)}</ul>
-                <p className="text-rose-300 font-bold pt-2">{t('dashboard.waste_estimate', { amount: currencyFormatter(waste.totalWaste || 0) })}</p>
+                <p className="text-rose-300 font-bold pt-2">{t('dashboard.waste_estimate')} {currencyFormatter(waste.totalWaste || 0)}</p>
                 <button onClick={() => generateAnalysisPDF(waste, forecast, currencyFormatter, currentUser)} className="mt-2 text-xs bg-rose-500/30 hover:bg-rose-500/50 px-2 py-1 rounded text-rose-200 font-bold">📥 Exportar</button>
               </div>
             ) : (

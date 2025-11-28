@@ -367,7 +367,7 @@
   "dashboard.intelligent_insight": "Insight Inteligente",
   "dashboard.waste_analysis": "Waste Analysis",
   "dashboard.analyze_waste": "Analyze Waste",
-  "dashboard.waste_estimate": "Estimativa: {amount} em desperdício",
+  "dashboard.waste_estimate": "Estimativa em desperdício: ",
   "dashboard.income_label": "Receitas",
   "dashboard.expenses_label": "Despesas",
   "transactions.tab_history": "History",

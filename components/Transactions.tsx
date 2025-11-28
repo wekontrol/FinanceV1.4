@@ -818,28 +818,28 @@ const Transactions: React.FC<TransactionsProps> = ({
            </div>
 
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {paginatedTransactions.map(t => (
-                <div key={t.id} className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 flex flex-col justify-between group hover:-translate-y-1 transition duration-300 min-w-0">
+              {paginatedTransactions.map(transaction => (
+                <div key={transaction.id} className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 flex flex-col justify-between group hover:-translate-y-1 transition duration-300 min-w-0">
                    <div className="flex justify-between items-start mb-4">
-                     <div className={`p-3 rounded-2xl ${t.type === 'RECEITA' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20' : 'bg-rose-50 text-rose-600 dark:bg-rose-900/20'}`}>
-                        {t.type === 'RECEITA' ? <ArrowUpCircle size={24} /> : <CreditCard size={24} />}
+                     <div className={`p-3 rounded-2xl ${transaction.type === 'RECEITA' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20' : 'bg-rose-50 text-rose-600 dark:bg-rose-900/20'}`}>
+                        {transaction.type === 'RECEITA' ? <ArrowUpCircle size={24} /> : <CreditCard size={24} />}
                      </div>
                      <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs font-bold text-slate-500 dark:text-slate-300 uppercase">
-                       {t.frequency === 'weekly' ? t('transactions.freq_weekly') : t.frequency === 'biweekly' ? t('transactions.freq_biweekly') : t.frequency === 'monthly' ? t('transactions.freq_monthly') : t.frequency === 'quarterly' ? t('transactions.freq_quarterly') : t.frequency === 'semiannual' ? t('transactions.freq_semiannual') : t('transactions.freq_yearly')}
+                       {transaction.frequency === 'weekly' ? t('transactions.freq_weekly') : transaction.frequency === 'biweekly' ? t('transactions.freq_biweekly') : transaction.frequency === 'monthly' ? t('transactions.freq_monthly') : transaction.frequency === 'quarterly' ? t('transactions.freq_quarterly') : transaction.frequency === 'semiannual' ? t('transactions.freq_semiannual') : t('transactions.freq_yearly')}
                      </span>
                    </div>
                    
                    <div className="min-w-0">
-                     <h4 className="text-xs sm:text-sm md:text-base font-bold text-slate-800 dark:text-white mb-1 truncate line-clamp-2">{t.description}</h4>
-                     <p className="text-slate-400 text-xs sm:text-sm mb-4 font-medium truncate">{t.category}</p>
-                     <p className={`text-sm sm:text-lg md:text-xl font-bold break-words min-w-0 ${t.type === 'RECEITA' ? 'text-emerald-600' : 'text-slate-700 dark:text-white'}`}>
-                       {currencyFormatter(t.amount)}
+                     <h4 className="text-xs sm:text-sm md:text-base font-bold text-slate-800 dark:text-white mb-1 truncate line-clamp-2">{transaction.description}</h4>
+                     <p className="text-slate-400 text-xs sm:text-sm mb-4 font-medium truncate">{transaction.category}</p>
+                     <p className={`text-sm sm:text-lg md:text-xl font-bold break-words min-w-0 ${transaction.type === 'RECEITA' ? 'text-emerald-600' : 'text-slate-700 dark:text-white'}`}>
+                       {currencyFormatter(transaction.amount)}
                      </p>
                    </div>
 
                    <div className="mt-6 pt-4 border-t border-slate-50 dark:border-slate-700 flex justify-end gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => handleEdit(t)} className="p-2 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg active:scale-95 transition-transform"><Edit2 size={18}/></button>
-                      <button onClick={() => deleteTransaction(t.id)} className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg active:scale-95 transition-transform"><Trash2 size={18}/></button>
+                      <button onClick={() => handleEdit(transaction)} className="p-2 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg active:scale-95 transition-transform"><Edit2 size={18}/></button>
+                      <button onClick={() => deleteTransaction(transaction.id)} className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg active:scale-95 transition-transform"><Trash2 size={18}/></button>
                    </div>
                 </div>
               ))}
