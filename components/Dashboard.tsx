@@ -353,7 +353,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               </span>
             </div>
             <p className="text-indigo-100 text-sm font-medium mb-1">{t('dashboard.balance_liquid')}</p>
-            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight break-words min-w-0" title={currencyFormatter(summary.balance)}>
+            <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-tight break-words min-w-0" title={currencyFormatter(summary.balance)}>
               {currencyFormatter(summary.balance)}
             </h3>
           </div>
