@@ -330,7 +330,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                  <div className="flex flex-col justify-center items-center px-4">
                     <p className="text-xs uppercase font-bold text-emerald-300 mb-1 text-center">{t("dashboard.next_month_projection")}</p>
-                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight break-all text-center truncate">{currencyFormatter(behavior.nextMonthProjection)}</p>
+                    <p className="text-xs sm:text-sm md:text-base lg:text-lg font-bold tracking-tight break-words text-center min-w-0">{currencyFormatter(behavior.nextMonthProjection)}</p>
                     <p className="text-[10px] text-blue-200">{t("dashboard.estimated_by_ai")}</p>
                  </div>
               </div>
@@ -353,7 +353,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               </span>
             </div>
             <p className="text-indigo-100 text-sm font-medium mb-1">{t('dashboard.balance_liquid')}</p>
-            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-tight truncate" title={currencyFormatter(summary.balance)}>
+            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight break-words min-w-0" title={currencyFormatter(summary.balance)}>
               {currencyFormatter(summary.balance)}
             </h3>
           </div>
@@ -367,7 +367,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               <ArrowUpRight className="text-emerald-500" size={20} />
             </div>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('dashboard.income')}</p>
-            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 dark:text-white truncate" title={currencyFormatter(summary.totalIncome)}>
+            <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-slate-800 dark:text-white break-words min-w-0" title={currencyFormatter(summary.totalIncome)}>
               {currencyFormatter(summary.totalIncome)}
             </h3>
           </div>
@@ -381,7 +381,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               <ArrowDownRight className="text-rose-500" size={20} />
             </div>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('dashboard.expenses')}</p>
-            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 dark:text-white truncate" title={currencyFormatter(summary.totalExpense)}>
+            <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-slate-800 dark:text-white break-words min-w-0" title={currencyFormatter(summary.totalExpense)}>
               {currencyFormatter(summary.totalExpense)}
             </h3>
           </div>
@@ -397,7 +397,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   💰 Score
                 </h3>
                 <div className="animate-bounce-in">
-                   <span className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold transition-colors duration-300 truncate ${healthScore > 70 ? 'text-emerald-500' : healthScore > 40 ? 'text-amber-500' : 'text-rose-500'}`}>
+                   <span className={`text-base sm:text-lg md:text-2xl lg:text-3xl font-extrabold transition-colors duration-300 break-words min-w-0 ${healthScore > 70 ? 'text-emerald-500' : healthScore > 40 ? 'text-amber-500' : 'text-rose-500'}`}>
                      {healthScore}
                    </span>
                    <span className="text-[10px] text-slate-400 block font-bold">/ 100</span>

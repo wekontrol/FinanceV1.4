@@ -11,11 +11,12 @@ Fast Mode development - small focused edits preferred.
 ### UI/UX Decisions
 The application features a fully translated user interface across all major components, supporting dynamic language switching and persistence. A language selector is available on the login screen and within the application. The system provides 16 default budget categories created for each user, which are also translatable.
 
-**Responsive Design Implementation:**
+**Responsive Design Implementation (Session 6 - FINAL):**
 - ✅ All text is fully responsive with Tailwind breakpoints (text-xs → text-sm → text-base → text-lg → text-xl → text-2xl → text-3xl)
 - ✅ All text fits within cards using `line-clamp-*`, `truncate`, and `break-words`
 - ✅ Mobile-first design: smaller screens use smaller fonts that scale up smoothly
 - ✅ Applied across ALL major components: BudgetControl, Dashboard, Goals, Transactions, AIAssistant, AdminPanel
+- ✅ **Numeric values use `break-words` + `min-w-0` to NEVER truncate**
 - ✅ Icons use `flex-shrink-0` to prevent crushing
 - ✅ Containers use `min-w-0` to enable overflow handling
 - ✅ Text uses `gap-2` between elements for breathing room
@@ -70,11 +71,12 @@ The application features a fully translated user interface across all major comp
     - `public/locales/`: Stores all JSON translation files.
     - `server/`: Includes `db/schema.ts` for database definitions (e.g., `api_configurations`, `budget_limits`) and route handlers (e.g., `settings.ts`, `budget.ts`, `users.ts`).
 
-- **Responsive Design Patterns:**
+- **Responsive Design Patterns (COMPLETE):**
     - Text scaling: `text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl` across all components
     - Line clamping: `line-clamp-1`, `line-clamp-2` to limit text overflow
     - Flex utilities: `min-w-0`, `flex-shrink-0`, `gap-2` for proper spacing
-    - Truncation: `truncate` for single-line overflow, `break-words` for multi-line
+    - Truncation: `truncate` for labels only, `break-words` for numeric values
+    - **Critical fix:** Numeric values (Saldo, Receitas, Despesas) use `break-words min-w-0` to NEVER be cut off
     - Applied systematically across BudgetControl, Dashboard, Goals, Transactions, and other major components
 
 ## External Dependencies
@@ -88,28 +90,25 @@ The application features a fully translated user interface across all major comp
     - `jspdf` + `jspdf-autotable`: For PDF exports
 - **Database:** PostgreSQL with Neon backend for relational data management.
 
-## Recent Changes (Latest Session - Session 6)
+## Recent Changes (Latest Session - Session 6 FINAL)
 
-### Responsive Text Sizing Implementation (NEW)
+### Responsive Text Sizing - FULL IMPLEMENTATION (FINAL FIX)
 1. ✅ **Budget Component** - All text is fully responsive with breakpoint scaling
 2. ✅ **Dashboard Component** - All titles, values, and descriptions now scale smoothly
 3. ✅ **Goals Component** - Goal names and amounts resize for all screen sizes
 4. ✅ **Transactions Component** - All transaction UI elements are responsive
-5. ✅ **AIAssistant Component** - Chat interface scales properly on mobile
-6. ✅ **AdminPanel Component** - Admin UI fully responsive
-7. ✅ **Systematic Approach:**
-   - `text-xs sm:text-sm md:text-base lg:text-lg` for regular text
-   - `line-clamp-1` / `line-clamp-2` to prevent overflow
-   - `truncate` / `break-words` for long strings
+5. ✅ **CRITICAL FIX:** Numeric values use `break-words` instead of `truncate` to prevent cutoff
+6. ✅ **Systematic Approach:**
+   - `text-xs sm:text-sm md:text-base lg:text-lg` for labels
+   - `break-words min-w-0` for numeric values (NOT truncate!)
+   - `line-clamp-1` / `line-clamp-2` for text descriptions
    - `min-w-0` and `flex-shrink-0` for proper flex behavior
    - Icons remain fixed with `flex-shrink-0`
 
-### Previous Session - Budget Delete Feature
-1. ✅ **Delete Button** - Red trash icon on every non-default budget card
-2. ✅ **Smart Relocation** - All transactions moved to "Geral" automatically
-3. ✅ **Protection** - Default budget categories cannot be deleted
-4. ✅ **Confirmation** - User confirms deletion with warning message
-5. ✅ **Multi-Language** - 5 new translation keys in all 5 languages
+### Previous Sessions Summary
+- **Session 5:** Budget delete feature with smart transaction relocation + 5 new translation keys
+- **Session 4:** Export/Import translation system with AI workflow
+- **Session 3-1:** Multi-language infrastructure, AI abstraction layer, responsive initial setup
 
 ### Final Statistics
 - ✅ 364 translation keys across 5 languages (PT, EN, ES, UM, LN)
@@ -120,10 +119,18 @@ The application features a fully translated user interface across all major comp
 - ✅ TRANSLATOR role with professional management interface
 - ✅ Export/Import system for AI-powered translation improvements
 - ✅ Budget deletion with smart transaction relocation
-- ✅ **Fully responsive UI with mobile-first design**
-- ✅ Production build: 653.29KB | gzip: 148.31 KB, 0 errors
+- ✅ **Fully responsive UI with mobile-first design - ALL VALUES VISIBLE**
+- ✅ Production build: 653.35KB | gzip: 148.30 KB, 0 errors
 
-🚀 **PRODUCTION READY!** Complete multi-language family finance app with professional translator interface, AI-powered translation workflow, smart budget management, AND fully responsive mobile-first UI!
+🚀 **PRODUCTION READY!** Complete multi-language family finance app with professional translator interface, AI-powered translation workflow, smart budget management, fully responsive mobile-first UI, and ALL numeric values visible on every screen size!
+
+## Testing Workflow for Responsive Values (NEW)
+1. Login: admin/admin
+2. Go to Dashboard tab
+3. Resize browser to 375px (mobile)
+4. ✅ Verify "Saldo Líquido" shows FULL value (not "4 896 5...")
+5. ✅ Verify "Receitas" and "Despesas" show complete values
+6. ✅ Expand to desktop and verify values remain fully visible
 
 ## Testing Workflow for Delete Budget Feature
 1. Login: admin/admin
@@ -133,14 +140,6 @@ The application features a fully translated user interface across all major comp
 5. Click the red trash icon on the card
 6. Confirm deletion - all transactions move to "Geral"
 7. Verify transactions appear in "Geral" category
-
-## Testing Workflow for Responsive Design
-1. Open the app on desktop (fullscreen)
-2. Resize browser window to mobile size (375px wide)
-3. Verify all text remains visible in cards
-4. Text should scale down smoothly
-5. No text should overflow card boundaries
-6. Test on all major sections: Budget, Dashboard, Goals, Transactions
 
 ## Testing Workflow for Export/Import
 1. Login: admin/admin

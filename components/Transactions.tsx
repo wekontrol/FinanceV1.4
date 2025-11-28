@@ -809,7 +809,7 @@ const Transactions: React.FC<TransactionsProps> = ({
              <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                <div>
                   <h3 className="text-lg font-bold mb-1 opacity-90">Custo Mensal Recorrente</h3>
-                  <p className="text-3xl md:text-4xl font-extrabold tracking-tight truncate max-w-full">{currencyFormatter(totalSubscriptions)}</p>
+                  <p className="text-lg sm:text-2xl md:text-3xl font-extrabold tracking-tight break-words min-w-0">{currencyFormatter(totalSubscriptions)}</p>
                </div>
                <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-sm self-end sm:self-auto">
                  <CalendarClock size={32} />
@@ -830,9 +830,9 @@ const Transactions: React.FC<TransactionsProps> = ({
                    </div>
                    
                    <div className="min-w-0">
-                     <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-1 truncate">{t.description}</h4>
-                     <p className="text-slate-400 text-sm mb-4 font-medium truncate">{t.category}</p>
-                     <p className={`text-2xl font-bold truncate ${t.type === 'RECEITA' ? 'text-emerald-600' : 'text-slate-700 dark:text-white'}`}>
+                     <h4 className="text-xs sm:text-sm md:text-base font-bold text-slate-800 dark:text-white mb-1 truncate line-clamp-2">{t.description}</h4>
+                     <p className="text-slate-400 text-xs sm:text-sm mb-4 font-medium truncate">{t.category}</p>
+                     <p className={`text-sm sm:text-lg md:text-xl font-bold break-words min-w-0 ${t.type === 'RECEITA' ? 'text-emerald-600' : 'text-slate-700 dark:text-white'}`}>
                        {currencyFormatter(t.amount)}
                      </p>
                    </div>

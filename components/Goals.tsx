@@ -175,7 +175,7 @@ const Goals: React.FC<GoalsProps> = ({
                <p className="text-white/70 mb-8 text-sm font-medium">{t("goals.target")}: {new Date(selectedGoal.deadline).toLocaleDateString('pt-BR')}</p>
                
                <div className="mb-2 flex justify-between items-end">
-                 <span className="text-base sm:text-lg md:text-2xl lg:text-4xl font-bold tracking-tight truncate">{currencyFormatter(selectedGoal.currentAmount)}</span>
+                 <span className="text-sm sm:text-base md:text-lg lg:text-2xl font-bold tracking-tight break-words min-w-0">{currencyFormatter(selectedGoal.currentAmount)}</span>
                </div>
                <div className="w-full bg-black/20 rounded-full h-2 mb-2">
                  <div style={{ width: `${percentage}%` }} className="bg-white h-2 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
@@ -380,7 +380,7 @@ const Goals: React.FC<GoalsProps> = ({
 
               <div className="pl-4">
                 <div className="flex justify-between items-end mb-2">
-                  <span className="text-sm sm:text-base md:text-lg lg:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate max-w-[180px]">{currencyFormatter(goal.currentAmount)}</span>
+                  <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-800 dark:text-white tracking-tight break-words min-w-0">{currencyFormatter(goal.currentAmount)}</span>
                   <span className="text-xs font-bold text-slate-500 uppercase truncate ml-2">{t("goals.of")} {currencyFormatter(goal.targetAmount)}</span>
                 </div>
                 <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
