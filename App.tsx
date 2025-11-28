@@ -102,6 +102,30 @@ const App: React.FC = () => {
     fetch('/api/budget/create-defaults', { method: 'POST' }).catch(() => {});
   }, []);
 
+  // Listen for system theme preference changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleThemeChange = (e: MediaQueryListEvent) => {
+      // Only auto-switch if user hasn't manually set a preference
+      const hasManualPreference = localStorage.getItem('theme');
+      if (!hasManualPreference) {
+        setDarkMode(e.matches);
+      }
+    };
+
+    // Modern browsers use addEventListener
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleThemeChange);
+      return () => mediaQuery.removeEventListener('change', handleThemeChange);
+    }
+    // Fallback for older browsers
+    else if ((mediaQuery as any).addListener) {
+      (mediaQuery as any).addListener(handleThemeChange);
+      return () => (mediaQuery as any).removeListener(handleThemeChange);
+    }
+  }, []);
+
   useEffect(() => {
     const checkSession = async () => {
       try {
