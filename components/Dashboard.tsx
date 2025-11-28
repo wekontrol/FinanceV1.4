@@ -342,10 +342,10 @@ const Dashboard: React.FC<DashboardProps> = ({
         {/* Premium Stats Cards */}
         <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-tour="dashboard-cards">
           {/* Saldo */}
-          <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-3xl p-6 text-white shadow-lg shadow-indigo-500/20 relative overflow-hidden min-w-0 transition-all duration-300 border border-indigo-400/30 hover:border-indigo-300/60">
+          <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-3xl p-6 text-white shadow-lg shadow-indigo-500/20 relative overflow-hidden min-w-0 transition-all duration-300 border border-indigo-400/30 hover:border-indigo-300/60 group">
             <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full blur-2xl pointer-events-none"></div>
             <div className="flex justify-between items-start mb-4">
-              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm group-hover:scale-110 transition-transform">
                 <Wallet className="text-white" size={24} />
               </div>
               <span className="text-xs font-medium bg-white/20 px-2 py-1 rounded-lg text-white">
