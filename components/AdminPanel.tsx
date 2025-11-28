@@ -5,6 +5,7 @@ import { BackupConfig, User, UserRole, UserStatus } from '../types';
 import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2, FileText } from 'lucide-react';
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
 import { hasPuterEnabled, setPuterAsDefault } from '../services/puterService';
+import { setGroqKey, hasGroqKey } from '../services/groqService';
 import { settingsApi, familiesApi } from '../services/api';
 import { backupApi } from '../services/backupApi';
 import { systemApi } from '../services/systemApi';
@@ -51,8 +52,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [forceResetPassword, setForceResetPassword] = useState('');
 
   // AI Integration State
-  const [activeProvider, setActiveProvider] = useState<'gemini' | 'openrouter' | 'puter'>(() => {
-    return (localStorage.getItem('ai_provider') as 'gemini' | 'openrouter' | 'puter') || 'gemini';
+  const [activeProvider, setActiveProvider] = useState<'gemini' | 'openrouter' | 'puter' | 'groq'>(() => {
+    return (localStorage.getItem('ai_provider') as 'gemini' | 'openrouter' | 'puter' | 'groq') || 'gemini';
   });
   
   // Gemini State
@@ -63,6 +64,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [openRouterModel, setOpenRouterModel] = useState(() => 
     localStorage.getItem('openrouter_model') || 'openai/gpt-3.5-turbo'
   );
+
+  // Groq State
+  const [groqKey, setGroqKey] = useState('');
 
   const [keySaved, setKeySaved] = useState(false);
 
@@ -678,6 +682,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                       >
                         <Network size={18} className="mr-2" /> Puter (Gratuito)
                       </button>
+                      <button
+                        onClick={() => setActiveProvider('groq')}
+                        className={`flex items-center justify-center px-4 py-3 rounded-xl border-2 font-bold transition active:scale-95 ${activeProvider === 'groq' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50'}`}
+                      >
+                        <Cpu size={18} className="mr-2" /> Groq ⚡
+                      </button>
                     </div>
                     <button
                       onClick={async () => {
@@ -690,7 +700,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                           });
                           setKeySaved(true);
                           setTimeout(() => setKeySaved(false), 2000);
-                          alert(`✅ ${activeProvider === 'gemini' ? 'Gemini' : activeProvider === 'openrouter' ? 'OpenRouter' : 'Puter'} definido como IA padrão!`);
+                          alert(`✅ ${activeProvider === 'gemini' ? 'Gemini' : activeProvider === 'openrouter' ? 'OpenRouter' : activeProvider === 'groq' ? 'Groq' : 'Puter'} definido como IA padrão!`);
                         } catch (error) {
                           alert('Erro ao confirmar seleção');
                         }
@@ -845,6 +855,76 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
                       <p className="mt-4 text-xs text-slate-400">
                         📚 Saiba mais em <a href="https://puter.com/" target="_blank" rel="noreferrer" className="text-emerald-500 hover:underline">puter.com</a> ou <a href="https://docs.puter.com/" target="_blank" rel="noreferrer" className="text-emerald-500 hover:underline">documentação</a>.
+                      </p>
+                    </div>
+                  )}
+
+                  {activeProvider === 'groq' && (
+                    <div className="animate-fade-in">
+                      <h4 className="font-bold mb-2 text-slate-700 dark:text-white flex items-center">
+                        <Cpu className="mr-2 text-blue-500" size={18} /> Configuração Groq ⚡
+                      </h4>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                        IA ultra-rápida e gratuita. Llama 3.3 (70B), Mixtral 8x7B e mais. Requisitos: API key do Groq (grátis em groq.com).
+                      </p>
+                      
+                      <div className="flex gap-3 flex-col">
+                        <input 
+                          type="password" 
+                          placeholder="Cole sua API Key do Groq aqui" 
+                          value={groqKey} 
+                          onChange={(e) => setGroqKey(e.target.value)} 
+                          className={inputClass} 
+                        />
+                        <button 
+                          onClick={async () => {
+                            if (groqKey.trim().length > 10) {
+                              try {
+                                await setGroqKey(groqKey.trim());
+                                setKeySaved(true);
+                                setTimeout(() => setKeySaved(false), 2000);
+                                alert('Chave Groq salva e será usada por todos os usuários!');
+                              } catch (error) {
+                                alert('Erro ao salvar chave: ' + error);
+                              }
+                            } else {
+                              alert("Chave Groq inválida ou muito curta.");
+                            }
+                          }} 
+                          className={`w-full bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg flex items-center justify-center ${keySaved ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
+                        >
+                          {keySaved ? <Check size={20} className="mr-2" /> : null}
+                          {keySaved ? 'Chave Salva!' : 'Salvar Chave Groq'}
+                        </button>
+                        <button 
+                          onClick={async () => {
+                            try {
+                              await settingsApi.deleteApiConfig('groq');
+                              setGroqKey('');
+                              alert('Chave Groq deletada com sucesso!');
+                            } catch (error) {
+                              alert('Erro ao deletar chave: ' + error);
+                            }
+                          }} 
+                          className="w-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-6 py-3 rounded-xl font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition"
+                        >
+                          Deletar Chave
+                        </button>
+                      </div>
+
+                      <div className="mt-4 bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-200 dark:border-blue-800">
+                        <p className="text-xs font-bold text-blue-900 dark:text-blue-100 mb-2">⚡ Vantagens Groq:</p>
+                        <ul className="text-xs text-blue-800 dark:text-blue-300 space-y-1">
+                          <li>🚀 10x mais rápido que Gemini</li>
+                          <li>🆓 Gratuito com limite generoso</li>
+                          <li>🧠 Llama 3.3 (70B) - melhor custo-benefício</li>
+                          <li>⚙️ Sem limite de requisições</li>
+                          <li>❌ NÃO suporta: Áudio, Imagens (use Gemini para isso)</li>
+                        </ul>
+                      </div>
+
+                      <p className="mt-4 text-xs text-slate-400">
+                        📚 Obter chave em <a href="https://console.groq.com/" target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">console.groq.com</a> (criar conta grátis).
                       </p>
                     </div>
                   )}
