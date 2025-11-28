@@ -65,7 +65,7 @@ const Goals: React.FC<GoalsProps> = ({
     if (selectedGoalId && transactionAmount) {
       const value = Number(transactionAmount);
       if (transactionType === 'withdraw' && selectedGoal && value > selectedGoal.currentAmount) {
-        alert("Saldo insuficiente.");
+        alert(t("goals.insufficient_balance"));
         return;
       }
       const finalAmount = transactionType === 'withdraw' ? -value : value;
@@ -121,32 +121,32 @@ const Goals: React.FC<GoalsProps> = ({
           className="flex items-center text-slate-500 hover:text-primary-600 transition font-semibold bg-white dark:bg-slate-800 px-4 py-2 rounded-xl shadow-sm active:scale-95"
         >
           <ArrowLeft size={20} className="mr-2" />
-          Voltar
+          {t("common.back")}
         </button>
 
         {editingHistoryItem && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
             <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700 animate-scale-in">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Editar Registro</h3>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white">{t("goals.edit_record")}</h3>
                 <button onClick={() => setEditingHistoryItem(null)} className="active:scale-95 transition-transform"><X size={24} className="text-slate-400" /></button>
               </div>
               <form onSubmit={handleHistoryEditSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Valor</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t("common.value")}</label>
                   <input type="number" step="0.01" required min="0" value={historyEditForm.amount} onChange={e => setHistoryEditForm({...historyEditForm, amount: e.target.value})} className="w-full p-3 rounded-xl border bg-slate-50 text-slate-800 border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white font-bold" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Data</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t("common.date")}</label>
                   <input type="date" required value={historyEditForm.date} onChange={e => setHistoryEditForm({...historyEditForm, date: e.target.value})} className="w-full p-3 rounded-xl border bg-slate-50 text-slate-800 border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nota</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t("common.note")}</label>
                   <input type="text" value={historyEditForm.note} onChange={e => setHistoryEditForm({...historyEditForm, note: e.target.value})} className="w-full p-3 rounded-xl border bg-slate-50 text-slate-800 border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white" />
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
-                  <button type="button" onClick={() => setEditingHistoryItem(null)} className="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-xl active:scale-95 transition-transform">Cancelar</button>
-                  <button type="submit" className="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold active:scale-95 transition-transform">Salvar</button>
+                  <button type="button" onClick={() => setEditingHistoryItem(null)} className="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-xl active:scale-95 transition-transform">{t("common.cancel")}</button>
+                  <button type="submit" className="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold active:scale-95 transition-transform">{t("common.save")}</button>
                 </div>
               </form>
             </div>
@@ -172,7 +172,7 @@ const Goals: React.FC<GoalsProps> = ({
                  )}
                </div>
                <h2 className="text-2xl md:text-3xl font-bold mb-1 tracking-tight truncate">{selectedGoal.name}</h2>
-               <p className="text-white/70 mb-8 text-sm font-medium">Alvo: {new Date(selectedGoal.deadline).toLocaleDateString('pt-BR')}</p>
+               <p className="text-white/70 mb-8 text-sm font-medium">{t("goals.target")}: {new Date(selectedGoal.deadline).toLocaleDateString('pt-BR')}</p>
                
                <div className="mb-2 flex justify-between items-end">
                  <span className="text-2xl md:text-4xl font-bold tracking-tight truncate">{currencyFormatter(selectedGoal.currentAmount)}</span>
@@ -182,16 +182,16 @@ const Goals: React.FC<GoalsProps> = ({
                </div>
                <div className="flex justify-between text-xs font-medium text-white/60">
                  <span>{percentage.toFixed(0)}%</span>
-                 <span className="truncate ml-2">Meta: {currencyFormatter(selectedGoal.targetAmount)}</span>
+                 <span className="truncate ml-2">{t("goals.goal")}: {currencyFormatter(selectedGoal.targetAmount)}</span>
                </div>
              </div>
 
              {/* Transaction Input */}
              <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700">
-               <h3 className="font-bold text-slate-800 dark:text-white mb-4">Novo Lançamento</h3>
+               <h3 className="font-bold text-slate-800 dark:text-white mb-4">{t("goals.new_entry")}</h3>
                <div className="flex p-1 bg-slate-100 dark:bg-slate-700/50 rounded-xl mb-4">
-                 <button onClick={() => setTransactionType('deposit')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${transactionType === 'deposit' ? 'bg-white dark:bg-slate-600 shadow text-emerald-600' : 'text-slate-500'}`}>Depósito</button>
-                 <button onClick={() => setTransactionType('withdraw')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${transactionType === 'withdraw' ? 'bg-white dark:bg-slate-600 shadow text-rose-500' : 'text-slate-500'}`}>Resgate</button>
+                 <button onClick={() => setTransactionType('deposit')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${transactionType === 'deposit' ? 'bg-white dark:bg-slate-600 shadow text-emerald-600' : 'text-slate-500'}`}>{t("goals.deposit")}</button>
+                 <button onClick={() => setTransactionType('withdraw')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${transactionType === 'withdraw' ? 'bg-white dark:bg-slate-600 shadow text-rose-500' : 'text-slate-500'}`}>{t("goals.withdrawal")}</button>
                </div>
                <form onSubmit={handleTransactionSubmit} className="space-y-3">
                  <div className="relative">
@@ -203,9 +203,9 @@ const Goals: React.FC<GoalsProps> = ({
                       {currencyFormatter(Number(transactionAmount))}
                     </p>
                  )}
-                 <input type="text" value={transactionNote} onChange={(e) => setTransactionNote(e.target.value)} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border-none text-sm focus:ring-2 focus:ring-primary-500" placeholder="Descrição opcional" />
+                 <input type="text" value={transactionNote} onChange={(e) => setTransactionNote(e.target.value)} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border-none text-sm focus:ring-2 focus:ring-primary-500" placeholder={t("goals.optional_description")} />
                  <button type="submit" className={`w-full py-3 rounded-xl text-white font-bold shadow-lg transition-transform active:scale-95 ${transactionType === 'deposit' ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/30' : 'bg-rose-500 hover:bg-rose-600 shadow-rose-500/30'}`}>
-                   Confirmar
+                   {t("common.confirm")}
                  </button>
                </form>
              </div>
@@ -214,7 +214,7 @@ const Goals: React.FC<GoalsProps> = ({
            {/* Right: Chart & History */}
            <div className="lg:col-span-2 space-y-6">
              <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 min-h-[350px]">
-               <h3 className="text-lg font-bold mb-6 text-slate-800 dark:text-white">Crescimento Patrimonial</h3>
+               <h3 className="text-lg font-bold mb-6 text-slate-800 dark:text-white">{t("goals.asset_growth")}</h3>
                <div className="h-64 md:h-72">
                  <ResponsiveContainer width="100%" height="100%">
                    <ComposedChart data={chartData}>
@@ -239,23 +239,23 @@ const Goals: React.FC<GoalsProps> = ({
 
              <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 overflow-hidden">
                <div className="p-6 border-b border-slate-100 dark:border-slate-700">
-                 <h3 className="font-bold text-slate-800 dark:text-white">Histórico de Transações</h3>
+                 <h3 className="font-bold text-slate-800 dark:text-white">{t("goals.transaction_history")}</h3>
                </div>
                <div className="max-h-80 overflow-y-auto overflow-x-auto">
                  <table className="w-full text-left min-w-[500px]">
                    <thead className="bg-slate-50 dark:bg-slate-700/50 sticky top-0">
                      <tr>
-                       <th className="p-4 text-xs font-bold text-slate-400 uppercase">Data</th>
-                       <th className="p-4 text-xs font-bold text-slate-400 uppercase">Descrição</th>
-                       <th className="p-4 text-xs font-bold text-slate-400 uppercase text-right">Valor</th>
-                       <th className="p-4 text-xs font-bold text-slate-400 uppercase text-right">Opções</th>
+                       <th className="p-4 text-xs font-bold text-slate-400 uppercase">{t("common.date")}</th>
+                       <th className="p-4 text-xs font-bold text-slate-400 uppercase">{t("common.description")}</th>
+                       <th className="p-4 text-xs font-bold text-slate-400 uppercase text-right">{t("common.value")}</th>
+                       <th className="p-4 text-xs font-bold text-slate-400 uppercase text-right">{t("common.options")}</th>
                      </tr>
                    </thead>
                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                      {selectedGoal.history.slice().reverse().map((item) => (
                        <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition group">
                          <td className="p-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">{new Date(item.date).toLocaleDateString('pt-BR')}</td>
-                         <td className="p-4 text-sm text-slate-600 dark:text-slate-300 min-w-[120px]">{item.note || (item.amount > 0 ? 'Depósito' : 'Resgate')}</td>
+                         <td className="p-4 text-sm text-slate-600 dark:text-slate-300 min-w-[120px]">{item.note || (item.amount > 0 ? t("goals.deposit") : t("goals.withdrawal"))}</td>
                          <td className={`p-4 text-sm font-bold text-right whitespace-nowrap tabular-nums ${item.amount > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
                            {item.amount > 0 ? '+' : '-'} {currencyFormatter(Math.abs(item.amount))}
                          </td>
@@ -283,8 +283,8 @@ const Goals: React.FC<GoalsProps> = ({
     <div className="space-y-8 animate-fade-in w-full max-w-full overflow-hidden">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Metas e Economias</h2>
-          <p className="text-slate-500 text-sm">Visualize seus sonhos se tornando realidade.</p>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{t("goals.title")}</h2>
+          <p className="text-slate-500 text-sm">{t("goals.subtitle")}</p>
         </div>
         <button 
           data-tour="btn-new-goal"
@@ -292,39 +292,39 @@ const Goals: React.FC<GoalsProps> = ({
           className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-primary-600 text-white rounded-2xl hover:bg-primary-700 transition shadow-lg shadow-primary-500/30 font-bold whitespace-nowrap active:scale-95"
         >
           <Plus size={20} className="mr-2" />
-          Nova Meta
+          {t("goals.new_goal")}
         </button>
       </div>
 
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
           <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-2xl border border-slate-200 dark:border-slate-700 animate-scale-in max-h-[90vh] overflow-y-auto">
-            <h3 className="text-xl font-bold mb-6 text-slate-800 dark:text-white">Planejar Nova Conquista</h3>
+            <h3 className="text-xl font-bold mb-6 text-slate-800 dark:text-white">{t("goals.plan_new_goal")}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nome</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t("common.name")}</label>
                 <input type="text" required value={newGoal.name} onChange={e => setNewGoal({...newGoal, name: e.target.value})} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700" placeholder="Ex: Casa Própria" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Valor Alvo</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t("goals.target_amount")}</label>
                 <input type="number" required value={newGoal.targetAmount} onChange={e => setNewGoal({...newGoal, targetAmount: e.target.value})} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 tabular-nums" placeholder="0.00" />
                 {newGoal.targetAmount && <p className="text-right text-xs font-bold text-primary-600 dark:text-primary-400 mt-1">{currencyFormatter(Number(newGoal.targetAmount))}</p>}
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Saldo Inicial</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t("goals.initial_balance")}</label>
                 <input type="number" value={newGoal.initialAmount} onChange={e => setNewGoal({...newGoal, initialAmount: e.target.value})} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 tabular-nums" placeholder="0.00" />
                 {newGoal.initialAmount && <p className="text-right text-xs font-bold text-primary-600 dark:text-primary-400 mt-1">{currencyFormatter(Number(newGoal.initialAmount))}</p>}
               </div>
                <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Juros Anuais (%)</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t("goals.annual_interest")}</label>
                 <input type="number" value={newGoal.interestRate} onChange={e => setNewGoal({...newGoal, interestRate: e.target.value})} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 tabular-nums" placeholder="Ex: 5" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Data Limite</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t("goals.deadline")}</label>
                 <input type="date" required value={newGoal.deadline} onChange={e => setNewGoal({...newGoal, deadline: e.target.value})} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Cor do Cartão</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t("goals.card_color")}</label>
                 <div className="flex gap-2 flex-wrap">
                   {['#8b5cf6', '#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#6366f1'].map(c => (
                     <div 
@@ -338,8 +338,8 @@ const Goals: React.FC<GoalsProps> = ({
               </div>
             </div>
             <div className="mt-8 flex justify-end gap-3">
-               <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 text-slate-600 hover:bg-slate-100 rounded-xl font-medium active:scale-95 transition-transform">Cancelar</button>
-               <button type="submit" className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold shadow-lg active:scale-95 transition-transform">Criar Meta</button>
+               <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 text-slate-600 hover:bg-slate-100 rounded-xl font-medium active:scale-95 transition-transform">{t("common.cancel")}</button>
+               <button type="submit" className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold shadow-lg active:scale-95 transition-transform">{t("goals.create_goal")}</button>
             </div>
           </form>
         </div>
@@ -366,7 +366,7 @@ const Goals: React.FC<GoalsProps> = ({
                   <Target size={24} />
                 </div>
                 <button 
-                  onClick={(e) => { e.stopPropagation(); if(confirm('Excluir meta?')) deleteGoal(goal.id); }}
+                  onClick={(e) => { e.stopPropagation(); if(confirm(t("goals.delete_confirm"))) deleteGoal(goal.id); }}
                   className="text-slate-300 hover:text-rose-500 p-2 rounded-full hover:bg-rose-50 transition active:scale-90"
                 >
                   <Trash2 size={18} />
@@ -375,13 +375,13 @@ const Goals: React.FC<GoalsProps> = ({
 
               <div className="pl-4 mb-6">
                 <h3 className="font-bold text-lg md:text-xl text-slate-800 dark:text-white mb-1 truncate" title={goal.name}>{goal.name}</h3>
-                <p className="text-sm text-slate-400">Vence em {new Date(goal.deadline).toLocaleDateString('pt-BR')}</p>
+                <p className="text-sm text-slate-400">{t("goals.expires_on")} {new Date(goal.deadline).toLocaleDateString('pt-BR')}</p>
               </div>
 
               <div className="pl-4">
                 <div className="flex justify-between items-end mb-2">
                   <span className="text-lg md:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate max-w-[180px]">{currencyFormatter(goal.currentAmount)}</span>
-                  <span className="text-xs font-bold text-slate-500 uppercase truncate ml-2">de {currencyFormatter(goal.targetAmount)}</span>
+                  <span className="text-xs font-bold text-slate-500 uppercase truncate ml-2">{t("goals.of")} {currencyFormatter(goal.targetAmount)}</span>
                 </div>
                 <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
                   <div 

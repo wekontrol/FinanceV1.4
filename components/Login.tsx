@@ -9,10 +9,16 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
-  const [language, setLanguage] = useState('pt');
+  const { useLanguage } = require('../contexts/LanguageContext');
+  const languageHook = useLanguage?.();
+  const { t: tFromContext, language: contextLanguage, setLanguage: setContextLanguage } = languageHook || {};
+  
+  const [language, setLanguage] = useState(contextLanguage || 'pt');
   const [view, setView] = useState<'login' | 'recovery' | 'register'>('login');
   
   const t = (key: string): string => {
+    if (tFromContext) return tFromContext(key);
+    
     const translations: { [lang: string]: { [key: string]: string } } = {
       pt: {
         'login.username': 'Usuário', 'login.password': 'Senha', 'login.enter': 'Entrar',
@@ -78,7 +84,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
       }).catch(() => {}); // Silent fail if endpoint not ready yet
       onLogin(userWithLang);
     } catch (err: any) {
-      setError(err.message || 'Erro ao fazer login');
+      setError(err.message || t("login.error_logging_in"));
     } finally {
       setLoading(false);
     }
@@ -89,7 +95,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
     setError('');
     
     if (!acceptedTerms) {
-      setError('Você deve aceitar os Termos e Condições para continuar');
+      setError(t("login.must_accept_terms"));
       return;
     }
     
@@ -104,7 +110,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
         securityQuestion,
         securityAnswer
       });
-      alert('Família registrada com sucesso! Faça login.');
+      alert(t("login.family_registered_success"));
       setView('login');
       setRegisterName('');
       setRegisterUsername('');
@@ -114,7 +120,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
       setSecurityAnswer('');
       setAcceptedTerms(false);
     } catch (err: any) {
-      setError(err.message || 'Erro ao registrar');
+      setError(err.message || t("login.error_registering"));
     } finally {
       setLoading(false);
     }

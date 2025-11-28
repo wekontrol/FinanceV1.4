@@ -70,7 +70,7 @@ const Transactions: React.FC<TransactionsProps> = ({
 
   const handleEdit = (transaction: Transaction) => {
     if (transaction.userId !== currentUserId) {
-      alert(t("transactions.note"));
+      alert(t("transactions.cannot_edit_others"));
       return;
     }
 
@@ -125,7 +125,7 @@ const Transactions: React.FC<TransactionsProps> = ({
       recorder.start();
       setIsRecording(true);
     } catch (err) {
-      alert("Erro ao acessar microfone. Verifique as permissões.");
+      alert(t("transactions.microphone_error"));
     }
   };
 
@@ -158,7 +158,7 @@ const Transactions: React.FC<TransactionsProps> = ({
           }));
           setShowForm(true);
         } catch (error) {
-          alert("Não foi possível entender o áudio.");
+          alert(t("transactions.could_not_understand_audio"));
         } finally {
           setIsProcessingSmart(false);
         }
@@ -188,7 +188,7 @@ const Transactions: React.FC<TransactionsProps> = ({
       setSmartInput('');
       setShowForm(true); 
     } catch (error) {
-      alert("Não foi possível entender o texto.");
+      alert(t("transactions.could_not_understand_text"));
     } finally {
       setIsProcessingSmart(false);
     }
@@ -229,7 +229,7 @@ const Transactions: React.FC<TransactionsProps> = ({
       }, 100);
     } catch (e) {
       console.error(e);
-      alert("Erro ao acessar câmera. Verifique as permissões.");
+      alert(t("transactions.camera_error"));
       setIsCameraOpen(false);
     }
   };
@@ -295,7 +295,7 @@ const Transactions: React.FC<TransactionsProps> = ({
         stopCamera();
         setShowForm(true);
       } catch (error) {
-        alert("Não foi possível processar o recibo.");
+        alert(t("transactions.could_not_process_receipt"));
       } finally {
         setIsProcessingSmart(false);
       }
@@ -320,7 +320,7 @@ const Transactions: React.FC<TransactionsProps> = ({
 
       for (const file of files) {
         if (file.size > MAX_FILE_SIZE) {
-          alert(`O arquivo ${file.name} excede o limite de 20MB.`);
+          alert(t("transactions.file_size_limit") + ` ${file.name}.`);
           continue;
         }
 
@@ -335,7 +335,7 @@ const Transactions: React.FC<TransactionsProps> = ({
           });
         } catch (error) {
           console.error("Erro ao processar arquivo:", error);
-          alert(`Erro ao carregar ${file.name}`);
+          alert(t("transactions.error_loading_file") + ` ${file.name}`);
         }
       }
 
@@ -425,7 +425,7 @@ const Transactions: React.FC<TransactionsProps> = ({
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 md:p-8 rounded-3xl shadow-lg shadow-indigo-500/20 text-white relative overflow-hidden" data-tour="smart-input">
          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
          <h3 className="flex items-center text-base md:text-lg font-bold mb-3 relative z-10 flex-wrap">
-           <Sparkles className="mr-2 text-yellow-300" /> Registro Inteligente
+           <Sparkles className="mr-2 text-yellow-300" /> {t("transactions.smart_input")}
          </h3>
          <form onSubmit={handleSmartSubmit} className="relative flex flex-col sm:flex-row items-center gap-3 z-10">
             <div className="relative flex-1 w-full">
@@ -465,8 +465,8 @@ const Transactions: React.FC<TransactionsProps> = ({
       <div className="flex flex-col xl:flex-row justify-between items-center gap-4">
         <div className="flex flex-col md:flex-row gap-4 items-center w-full xl:w-auto">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">Transações</h2>
-            <p className="text-slate-500 text-sm hidden md:block">Gerencie entradas e saídas.</p>
+            <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">{t("transactions.title")}</h2>
+            <p className="text-slate-500 text-sm hidden md:block">{t("transactions.subtitle")}</p>
           </div>
           
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 w-full md:w-auto overflow-x-auto" data-tour="transactions-tabs">
@@ -474,13 +474,13 @@ const Transactions: React.FC<TransactionsProps> = ({
                onClick={() => setActiveTab('history')}
                className={`flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'history' ? 'bg-white dark:bg-slate-600 shadow-sm text-primary-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
              >
-               Histórico
+               {t("common.history")}
              </button>
              <button 
                onClick={() => setActiveTab('subscriptions')}
                className={`flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center ${activeTab === 'subscriptions' ? 'bg-white dark:bg-slate-600 shadow-sm text-primary-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
              >
-               <RefreshCw size={14} className="mr-2"/> Assinaturas
+               <RefreshCw size={14} className="mr-2"/> {t("transactions.subscriptions")}
              </button>
           </div>
         </div>

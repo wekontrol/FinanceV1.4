@@ -66,14 +66,15 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ isSuperAdmi
     </div>
   );
 
-  if (loading) return <div className="text-center py-8">Carregando...</div>;
+  const { t } = require('../contexts/LanguageContext').useLanguage?.() || { t: (key: string) => key };
+  if (loading) return <div className="text-center py-8">{t("common.loading")}...</div>;
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-6 space-y-6">
       <div className="flex items-center gap-3">
         <Bell size={24} className="text-primary-600" />
         <h3 className="text-lg font-bold text-slate-800 dark:text-white">
-          {isSuperAdmin ? '🌐 Configurações Globais de Notificações' : 'Minhas Notificações'}
+          {isSuperAdmin ? t("settings.global_notifications") : t("settings.my_notifications")}
         </h3>
       </div>
 
@@ -81,27 +82,27 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ isSuperAdmi
         <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-start gap-2">
           <AlertCircle size={18} className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
           <p className="text-xs text-blue-700 dark:text-blue-300">
-            Estas configurações se aplicam globalmente a todos os usuários que não personalizaram suas preferências.
+            {t("settings.global_applies_all")}
           </p>
         </div>
       )}
 
       <div className="space-y-3">
         <div>
-          <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">Alertas</h4>
+          <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">{t("settings.alerts")}</h4>
           <div className="space-y-2">
-            <Toggle label="Alertas de Orçamento" fieldName="budget_alerts" />
-            <Toggle label="Alertas de Assinatura" fieldName="subscription_alerts" />
-            <Toggle label="Dicas Financeiras" fieldName="financial_tips" />
-            <Toggle label="Progresso de Metas" fieldName="goal_progress" />
+            <Toggle label={t("settings.budget_alerts")} fieldName="budget_alerts" />
+            <Toggle label={t("settings.subscription_alerts")} fieldName="subscription_alerts" />
+            <Toggle label={t("settings.financial_tips")} fieldName="financial_tips" />
+            <Toggle label={t("settings.goal_progress")} fieldName="goal_progress" />
           </div>
         </div>
 
         <div>
-          <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">Preferências de Entrega</h4>
+          <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">{t("settings.delivery_preferences")}</h4>
           <div className="space-y-2">
-            <Toggle label="Notificações por Email" fieldName="email_notifications" />
-            <Toggle label="Notificações Push (Web/App)" fieldName="push_notifications" />
+            <Toggle label={t("settings.email_notifications")} fieldName="email_notifications" />
+            <Toggle label={t("settings.push_notifications")} fieldName="push_notifications" />
           </div>
         </div>
 
@@ -109,7 +110,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ isSuperAdmi
           <div className="border-t border-slate-200 dark:border-slate-700 pt-6">
             <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase flex items-center gap-2">
               <Key size={16} />
-              Configuração de Credenciais
+              {t("settings.credentials_config")}
             </h4>
             <NotificationCredentialsConfig />
           </div>
@@ -118,12 +119,12 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ isSuperAdmi
         {!isSuperAdmin && (
           <>
             <div>
-              <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">🔔 Ativar Notificações Push</h4>
+              <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">🔔 {t("settings.enable_push")}</h4>
               <PushNotificationButton />
             </div>
 
             <div>
-              <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">📧 Configurar Email</h4>
+              <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase">📧 {t("settings.configure_email")}</h4>
               <EmailNotificationButton />
             </div>
           </>
@@ -136,19 +137,19 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ isSuperAdmi
           className="flex-1 flex items-center justify-center gap-2 p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition"
         >
           <Save size={18} />
-          Salvar
+          {t("common.save")}
         </button>
         {onClose && (
           <button
             onClick={onClose}
             className="flex-1 p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 font-bold transition"
           >
-            Fechar
+            {t("common.close")}
           </button>
         )}
       </div>
 
-      {saved && <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-3 text-center font-bold">✓ Salvo com sucesso!</p>}
+      {saved && <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-3 text-center font-bold">✓ {t("common.saved_success")}</p>}
     </div>
   );
 };
