@@ -4,6 +4,7 @@ import { notificationApi } from '../services/notificationApi';
 import PushNotificationButton from './PushNotificationButton';
 import EmailNotificationButton from './EmailNotificationButton';
 import NotificationCredentialsConfig from './NotificationCredentialsConfig';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface NotificationSettingsProps {
   isSuperAdmin?: boolean;
@@ -66,7 +67,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ isSuperAdmi
     </div>
   );
 
-  const { t } = require('../contexts/LanguageContext').useLanguage?.() || { t: (key: string) => key };
+  const { t } = useLanguage?.() || { t: (key: string) => key };
   if (loading) return <div className="text-center py-8">{t("common.loading")}...</div>;
 
   return (

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { User, UserStatus, UserRole } from '../types';
 import { Lock, User as UserIcon, LogIn, HelpCircle, ArrowLeft, CheckCircle, ShieldAlert, UserPlus, X, Globe } from 'lucide-react';
 import { authApi } from '../services/api';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface LoginProps {
   appName: string;
@@ -9,7 +10,6 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
-  const { useLanguage } = require('../contexts/LanguageContext');
   const languageHook = useLanguage?.();
   const { t: tFromContext, language: contextLanguage, setLanguage: setContextLanguage } = languageHook || {};
   
