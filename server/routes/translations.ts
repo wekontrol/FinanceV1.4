@@ -183,24 +183,28 @@ router.get('/stats', requireTranslatorOrAdmin, (req: Request, res: Response) => 
   try {
     const languages = db.prepare(`
       SELECT DISTINCT language FROM translations WHERE status = 'active'
-    `).all();
+    `).all() as any[];
+
+    // Get total distinct keys
+    const totalResult = db.prepare(`
+      SELECT COUNT(DISTINCT key) as count FROM translations WHERE status = 'active'
+    `).get() as any;
+    const totalKeys = totalResult?.count || 0;
 
     const stats = languages.map((row: any) => {
       const lang = row.language;
-      const total = db.prepare(`
-        SELECT COUNT(*) as count FROM (SELECT DISTINCT key FROM translations WHERE status = 'active')
-      `).get();
       
-      const translated = db.prepare(`
+      const translatedResult = db.prepare(`
         SELECT COUNT(*) as count FROM translations 
         WHERE language = ? AND status = 'active' AND value IS NOT NULL AND value != ''
-      `).get(lang);
+      `).get(lang) as any;
+      const translated = translatedResult?.count || 0;
 
       return {
         language: lang,
-        total: total?.count || 0,
-        translated: translated?.count || 0,
-        percentage: total?.count ? Math.round(((translated?.count || 0) / (total?.count || 1)) * 100) : 0
+        total: totalKeys,
+        translated: translated,
+        percentage: totalKeys ? Math.round((translated / totalKeys) * 100) : 0
       };
     });
 

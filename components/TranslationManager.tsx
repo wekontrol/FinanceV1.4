@@ -16,10 +16,18 @@ interface TranslationManagerProps {
   currentUser: User;
 }
 
+interface LanguageStat {
+  language: string;
+  total: number;
+  translated: number;
+  percentage: number;
+}
+
 const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) => {
   const { t } = useLanguage();
   const [translations, setTranslations] = useState<Translation[]>([]);
-  const [languages, setLanguages] = useState<string[]>(['pt', 'en', 'es', 'um', 'ln']);
+  const [languages, setLanguages] = useState<string[]>(['pt', 'en', 'es', 'um', 'ln', 'fr']);
+  const [stats, setStats] = useState<LanguageStat[]>([]);
   const [newLanguage, setNewLanguage] = useState('');
   const [searchKey, setSearchKey] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
@@ -58,6 +66,7 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
     if (hasAccess) {
       loadTranslations();
       loadLanguages();
+      loadStats();
     }
   }, []);
 
@@ -88,6 +97,18 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
     }
   };
 
+  const loadStats = async () => {
+    try {
+      const response = await fetch('/api/translations/stats');
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error);
+    }
+  };
+
   const handleSaveTranslation = async (key: string) => {
     setIsSaving(true);
     try {
@@ -104,6 +125,7 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
       setEditingKey(null);
       setEditingValues({});
       loadTranslations();
+      loadStats();
     } catch (error) {
       console.error('Erro ao salvar tradução:', error);
     } finally {
@@ -239,6 +261,7 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
         text: t("translations.import_success") + ` (${importedCount} ${t("translations.keys")})`
       });
       loadTranslations();
+      loadStats();
       
       setTimeout(() => setImportMessage(null), 3000);
     } catch (error) {
@@ -251,14 +274,6 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
 
   // Get unique keys
   const allKeys = [...new Set(translations.map(t => t.key))];
-  
-  // Calculate statistics
-  const stats = languages.map(lang => ({
-    lang,
-    total: allKeys.length,
-    translated: translations.filter(t => t.language === lang && t.value.trim()).length,
-    percentage: Math.round((translations.filter(t => t.language === lang && t.value.trim()).length / allKeys.length) * 100)
-  }));
 
   // Get categories
   const categories = [...new Set(allKeys.map(k => k.split('.')[0]))];
@@ -316,9 +331,9 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
       {/* Statistics Dashboard */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {stats.map(stat => (
-          <div key={stat.lang} className="bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/30 dark:to-primary-800/20 rounded-2xl p-4 border border-primary-200 dark:border-primary-800">
+          <div key={stat.language} className="bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/30 dark:to-primary-800/20 rounded-2xl p-4 border border-primary-200 dark:border-primary-800">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-primary-700 dark:text-primary-300 uppercase">{stat.lang}</span>
+              <span className="text-xs font-bold text-primary-700 dark:text-primary-300 uppercase">{stat.language}</span>
               <BarChart3 size={14} className="text-primary-600" />
             </div>
             <div className="text-2xl font-bold text-primary-900 dark:text-primary-100">{stat.percentage}%</div>
