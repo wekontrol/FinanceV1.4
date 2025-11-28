@@ -104,7 +104,7 @@ const TranslationManager: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center gap-2 mb-6">
         <Languages className="text-primary-600" size={24} />
-        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Gerenciador de Traduções</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{t("translations.manager_title")}</h2>
       </div>
 
       {/* Seletor de Idioma + Adicionar Idioma */}
@@ -112,7 +112,7 @@ const TranslationManager: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-4 items-end">
           <div className="flex-1">
             <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
-              Idioma Atual
+              {t("translations.current_language")}
             </label>
             <select
               value={selectedLanguage}

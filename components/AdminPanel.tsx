@@ -453,7 +453,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       }
 
       const response = await fetch(rawUrl);
-      if (!response.ok) throw new Error("Falha ao acessar repositório");
+      if (!response.ok) throw new Error(t("admin.repo_access_error"));
       
       const remotePkg = await response.json();
       setRemoteVersion(remotePkg.version);
@@ -555,7 +555,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
                 {isSuperAdmin && (
                   <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-700">
-                    <p className="text-xs font-bold text-rose-500 uppercase mb-2">Zona de Perigo (Super Admin)</p>
+                    <p className="text-xs font-bold text-rose-500 uppercase mb-2">{t("admin.danger_zone")}</p>
                     <button onClick={handleResetData} className="flex items-center text-rose-600 hover:text-rose-700 font-bold text-sm bg-rose-50 dark:bg-rose-900/20 px-4 py-2 rounded-lg border border-rose-200 dark:border-rose-800"><AlertTriangle size={16} className="mr-2" /> Resetar Dados de Fábrica</button>
                   </div>
                 )}
@@ -570,7 +570,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             <div onClick={() => toggleSection('families')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <div className="flex items-center">
                 <div className="p-2 bg-purple-100 text-purple-600 rounded-lg mr-4 shrink-0"><Users size={20} /></div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Gerenciar Famílias</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">{t("admin.manage_families")}</h3>
               </div>
               {expandedSection === 'families' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
@@ -714,7 +714,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   {activeProvider === 'gemini' && (
                     <div className="animate-fade-in">
                       <h4 className="font-bold mb-2 text-slate-700 dark:text-white flex items-center">
-                        <Sparkles className="mr-2 text-yellow-500" size={18} /> Configuração Google Gemini
+                        <Sparkles className="mr-2 text-yellow-500" size={18} /> {t("admin.gemini_config")}
                       </h4>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
                         Utilize a API oficial do Google para análise inteligente e categorização.
@@ -765,7 +765,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   {activeProvider === 'openrouter' && (
                     <div className="animate-fade-in">
                       <h4 className="font-bold mb-2 text-slate-700 dark:text-white flex items-center">
-                        <Network className="mr-2 text-purple-500" size={18} /> Configuração OpenRouter
+                        <Network className="mr-2 text-purple-500" size={18} /> {t("admin.openrouter_config")}
                       </h4>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
                         Acesse diversos modelos como GPT-4, Claude 3 e Llama através do OpenRouter.
@@ -814,7 +814,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   {activeProvider === 'puter' && (
                     <div className="animate-fade-in">
                       <h4 className="font-bold mb-2 text-slate-700 dark:text-white flex items-center">
-                        <Network className="mr-2 text-emerald-500" size={18} /> Configuração Puter.js
+                        <Network className="mr-2 text-emerald-500" size={18} /> {t("admin.puter_config")}
                       </h4>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
                         Acesso grátis e ilimitado a 400+ modelos de IA (GPT, Claude, Gemini, etc). Sem configuração necessária!
@@ -862,7 +862,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   {activeProvider === 'groq' && (
                     <div className="animate-fade-in">
                       <h4 className="font-bold mb-2 text-slate-700 dark:text-white flex items-center">
-                        <Cpu className="mr-2 text-blue-500" size={18} /> Configuração Groq ⚡
+                        <Cpu className="mr-2 text-blue-500" size={18} /> {t("admin.groq_config")}
                       </h4>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
                         IA ultra-rápida e gratuita. Llama 3.3 (70B), Mixtral 8x7B e mais. Requisitos: API key do Groq (grátis em groq.com).
@@ -940,7 +940,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           <div onClick={() => toggleSection('security')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
             <div className="flex items-center">
               <div className="p-2 bg-rose-100 text-rose-600 rounded-lg mr-4 shrink-0"><Lock size={20} /></div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white">Segurança & Senhas</h3>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white">{t("admin.security_passwords")}</h3>
             </div>
             {expandedSection === 'security' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
           </div>
@@ -956,7 +956,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                    <input type="password" placeholder="Confirmar Nova Senha" required value={passwordForm.confirm} onChange={e => setPasswordForm({...passwordForm, confirm: e.target.value})} className={inputClass} />
                    
                    <div className="md:col-span-2 mt-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-700">
-                     <p className="text-xs text-slate-500 mb-3 font-bold uppercase">Configurar Recuperação (Opcional)</p>
+                     <p className="text-xs text-slate-500 mb-3 font-bold uppercase">{t("admin.setup_recovery_optional")}</p>
                      <div className="grid md:grid-cols-2 gap-4">
                        <input type="text" placeholder="Pergunta de Segurança" value={passwordForm.question} onChange={e => setPasswordForm({...passwordForm, question: e.target.value})} className={inputClass} />
                        <input type="text" placeholder="Resposta" value={passwordForm.answer} onChange={e => setPasswordForm({...passwordForm, answer: e.target.value})} className={inputClass} />
@@ -1007,7 +1007,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           <div onClick={() => toggleSection('users')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 text-purple-600 rounded-lg mr-4 shrink-0"><Users size={20} /></div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white">{isManager ? 'Membros da Família' : 'Gestão de Usuários'}</h3>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white">{isManager ? t("admin.family_members") : t("admin.user_management")}</h3>
             </div>
             {expandedSection === 'users' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
           </div>
@@ -1268,7 +1268,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             <div onClick={() => toggleSection('backup')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <div className="flex items-center">
                 <div className="p-2 bg-blue-100 text-blue-600 rounded-lg mr-4 shrink-0"><HardDrive size={20} /></div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Backup & Restauro</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">{t("admin.backup_restore")}</h3>
               </div>
               {expandedSection === 'backup' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
@@ -1277,7 +1277,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 <div className="grid gap-8">
                   {/* Backup Manual */}
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 p-6 rounded-2xl border border-blue-200 dark:border-blue-800">
-                    <h4 className="font-bold text-blue-800 dark:text-blue-400 text-lg mb-4">📥 Backup Manual da Base de Dados</h4>
+                    <h4 className="font-bold text-blue-800 dark:text-blue-400 text-lg mb-4">📥 {t("admin.manual_database_backup")}</h4>
                     <p className="text-sm text-blue-700 dark:text-blue-300 mb-4">Cria um arquivo JSON com todos os seus dados. Pode ser restaurado depois.</p>
                     
                     {isBackingUp ? (
@@ -1404,7 +1404,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             <div onClick={() => toggleSection('notifications')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <div className="flex items-center">
                 <div className="p-2 bg-purple-100 text-purple-600 rounded-lg mr-4 shrink-0"><Bell size={20} /></div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white">🌐 Configurações de Notificações</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">🌐 {t("admin.notification_settings")}</h3>
               </div>
               {expandedSection === 'notifications' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
@@ -1422,7 +1422,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             <div onClick={() => toggleSection('api-configs')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <div className="flex items-center">
                 <div className="p-2 bg-blue-100 text-blue-600 rounded-lg mr-4 shrink-0"><Key size={20} /></div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white">🔑 Configurações de API</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">🔑 {t("admin.api_settings")}</h3>
               </div>
               {expandedSection === 'api-configs' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
@@ -1430,7 +1430,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className="p-8 border-t border-slate-100 dark:border-slate-700 animate-slide-down space-y-6">
                 {/* Add/Edit Form */}
                 <div className="bg-slate-50 dark:bg-slate-900/30 p-6 rounded-2xl space-y-4">
-                  <h4 className="font-bold text-slate-800 dark:text-white">{editingConfig ? 'Editar Configuração' : 'Adicionar Nova Configuração'}</h4>
+                  <h4 className="font-bold text-slate-800 dark:text-white">{editingConfig ? t("admin.edit_config") : t("admin.add_new_config")}</h4>
                   
                   <div>
                     <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-2">Provedor</label>
