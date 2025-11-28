@@ -107,3 +107,43 @@ app.post('/mock-login', (req, res) => {
   req.session.user = req.body.user;
   res.sendStatus(200);
 });
+
+describe('POST /users', () => {
+  let superAdminUser: any;
+
+  beforeEach(() => {
+    db.exec('DELETE FROM users');
+    db.exec('DELETE FROM budget_limits');
+
+    const superAdminId = 'superadmin1';
+    const familyId = 'family1';
+    const superAdminPassword = bcrypt.hashSync('password', 10);
+
+    db.prepare(`
+      INSERT INTO users (id, username, password, name, role, family_id)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(superAdminId, 'superadmin', superAdminPassword, 'Super Admin', 'SUPER_ADMIN', familyId);
+
+    superAdminUser = { id: superAdminId, role: 'SUPER_ADMIN', familyId };
+  });
+
+  it('should allow a SUPER_ADMIN to create a user in a different family', async () => {
+    const agent = request.agent(app);
+    await agent.post('/mock-login').send({ userId: superAdminUser.id, user: superAdminUser });
+
+    const newUser = {
+      username: 'newuser',
+      password: 'password',
+      name: 'New User',
+      role: 'MEMBER',
+      familyId: 'family2',
+    };
+
+    const response = await agent.post('/users').send(newUser);
+    expect(response.status).toBe(201);
+    expect(response.body.familyId).toBe('family2');
+
+    const createdUser = db.prepare('SELECT * FROM users WHERE username = ?').get(newUser.username) as any;
+    expect(createdUser.family_id).toBe('family2');
+  });
+});
