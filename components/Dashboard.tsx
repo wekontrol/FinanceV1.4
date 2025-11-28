@@ -247,20 +247,20 @@ const Dashboard: React.FC<DashboardProps> = ({
           <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">{t('dashboard.overview')}</h3>
           <p className="text-xs sm:text-sm text-slate-500 line-clamp-1">{t('dashboard.financial_health')}</p>
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-1 md:gap-2 w-full sm:w-auto">
           <button 
             onClick={() => setShowNotificationSettings(!showNotificationSettings)}
-            className="p-2.5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition text-slate-600 dark:text-slate-300"
+            className="p-2 md:p-2.5 bg-white dark:bg-slate-800 rounded-lg md:rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition text-slate-600 dark:text-slate-300"
             title={t("dashboard.notification_preferences")}
           >
-            <Bell size={20} />
+            <Bell size={18} className="md:w-5 md:h-5" />
           </button>
-          <div className="flex items-center bg-white dark:bg-slate-800 rounded-2xl p-1.5 shadow-sm border border-slate-200 dark:border-slate-700 flex-1 sm:flex-none hover:border-primary-400 transition-colors">
-          <Calendar size={16} className="text-primary-500 ml-2 mr-2 shrink-0" />
+          <div className="flex items-center bg-white dark:bg-slate-800 rounded-lg md:rounded-2xl p-1 md:p-1.5 shadow-sm border border-slate-200 dark:border-slate-700 flex-1 sm:flex-none hover:border-primary-400 transition-colors">
+          <Calendar size={14} className="md:w-4 md:h-4 text-primary-500 ml-1 md:ml-2 mr-1 md:mr-2 shrink-0" />
           <select 
             value={dateRange} 
             onChange={(e) => setDateRange(e.target.value as DateRange)}
-            className="bg-transparent border-none text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer outline-none py-1 w-full"
+            className="bg-transparent border-none text-xs md:text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer outline-none py-1 w-full"
           >
             <option value="7days">{t('dashboard.last_7_days')}</option>
             <option value="month">{t('dashboard.this_month')}</option>
@@ -275,12 +275,12 @@ const Dashboard: React.FC<DashboardProps> = ({
       {showNotificationSettings && (
         <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 animate-slide-in-left">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 truncate">
-              <Bell size={20} className="text-primary-600 flex-shrink-0" />
+            <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-800 dark:text-white flex items-center gap-1 md:gap-2 truncate">
+              <Bell size={18} className="md:w-5 md:h-5 text-primary-600 flex-shrink-0" />
               <span className="truncate">{t('dashboard.myNotifications')}</span>
             </h3>
-            <button onClick={() => setShowNotificationSettings(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-              <X size={20} />
+            <button onClick={() => setShowNotificationSettings(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1">
+              <X size={18} className="md:w-5 md:h-5" />
             </button>
           </div>
           <NotificationSettings onClose={() => setShowNotificationSettings(false)} />

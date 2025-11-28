@@ -96,21 +96,21 @@ const Sidebar: React.FC<SidebarProps> = ({
         ${isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
         md:translate-x-0 md:static md:inset-0 flex flex-col md:shadow-none
       `}>
-        <div className="h-20 flex items-center px-6 border-b border-slate-50 dark:border-slate-800">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white shadow-glow mr-3 shrink-0">
-            <Activity size={24} />
+        <div className="h-16 md:h-20 flex items-center px-4 md:px-6 border-b border-slate-50 dark:border-slate-800">
+          <div className="w-9 md:w-10 h-9 md:h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg md:rounded-xl flex items-center justify-center text-white shadow-glow mr-2 md:mr-3 shrink-0">
+            <Activity size={20} className="md:w-6 md:h-6" />
           </div>
-          <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 truncate tracking-tight min-w-0">
+          <h1 className="text-base md:text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 truncate tracking-tight min-w-0">
             {appName}
           </h1>
-          <button onClick={() => setIsMobileOpen(false)} className="md:hidden ml-auto text-slate-400 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg shrink-0 active:scale-95 transition-transform">
-            <X size={20} />
+          <button onClick={() => setIsMobileOpen(false)} className="md:hidden ml-auto text-slate-400 p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg shrink-0 active:scale-95 transition-transform">
+            <X size={18} />
           </button>
         </div>
 
-        <div className="p-4 flex-1 overflow-y-auto scrollbar-thin">
-          <div className="mb-8" data-tour="sidebar-menu">
-            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Menu Principal</p>
+        <div className="p-3 md:p-4 flex-1 overflow-y-auto scrollbar-thin">
+          <div className="mb-6 md:mb-8" data-tour="sidebar-menu">
+            <p className="px-3 md:px-4 text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Menu Principal</p>
             <nav className="space-y-1">
               {menuItems.map((item) => {
                 const Icon = item.icon;
@@ -120,13 +120,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
                     className={`
-                      w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 group active:scale-95 hover:scale-[1.02]
+                      w-full flex items-center px-3 md:px-4 py-2.5 md:py-3 text-xs md:text-sm font-semibold rounded-lg md:rounded-xl transition-all duration-300 group active:scale-95 hover:scale-[1.02]
                       ${isActive 
                         ? 'bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/30 dark:to-primary-900/10 text-primary-700 dark:text-primary-300 shadow-sm' 
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-primary-600 dark:hover:text-primary-400'}
                     `}
                   >
-                    <Icon size={18} className={`mr-3 shrink-0 transition-all duration-300 ${isActive ? 'text-primary-600 dark:text-primary-400 scale-110' : 'text-slate-400 group-hover:text-primary-500 group-hover:scale-125'}`} />
+                    <Icon size={16} className={`md:w-5 md:h-5 mr-2 md:mr-3 shrink-0 transition-all duration-300 ${isActive ? 'text-primary-600 dark:text-primary-400 scale-110' : 'text-slate-400 group-hover:text-primary-500 group-hover:scale-125'}`} />
                     <span className="truncate">{item.label}</span>
                     {isActive && <div className="ml-auto w-2 h-2 rounded-full bg-primary-600 dark:bg-primary-400 animate-pulse-soft"></div>}
                   </button>
