@@ -354,5 +354,11 @@
   "translations.error_loading": "Okusila okuzalulula",
   "translations.error_user_data": "Okutambika okuteeza okuma tekyakola. Okigire nate.",
   "admin.loading_error": "Okusila okuzalulula paneeli",
-  "admin.user_data_error": "Okutambika okuteeza okuma tekyakola. Okigire nate."
+  "admin.user_data_error": "Okutambika okuteeza okuma tekyakola. Okigire nate.",
+  "budget.default": "Okusokela",
+  "budget.unique_category_hint": "Okwambula okusokela okutali kwali okwa omanyumba",
+  "budget.new_limit_placeholder": "Okusokela Okusha",
+  "transactions.general": "Okusokela",
+  "admin.select_default_ai": "Popeka AI Okusha",
+  "admin.default_ai_hint": "Okusokela"
 }

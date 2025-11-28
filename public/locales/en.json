@@ -354,5 +354,11 @@
   "translations.error_loading": "Error loading",
   "translations.error_user_data": "Could not load user data. Please try again.",
   "admin.loading_error": "Error loading admin panel",
-  "admin.user_data_error": "Could not load user data. Please try again."
+  "admin.user_data_error": "Could not load user data. Please try again.",
+  "budget.default": "Default",
+  "budget.unique_category_hint": "Create a unique category for this budget",
+  "budget.new_limit_placeholder": "New Limit",
+  "transactions.general": "General",
+  "admin.select_default_ai": "Select Default AI",
+  "admin.default_ai_hint": "Default"
 }

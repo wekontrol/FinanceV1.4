@@ -354,5 +354,11 @@
   "translations.error_loading": "Mbeba ya kuzalulula",
   "translations.error_user_data": "Ezali impossible kuzalulula bayibanda ya molongo. Elongi lisusu.",
   "admin.loading_error": "Mbeba ya kuzalulula pane admin",
-  "admin.user_data_error": "Ezali impossible kuzalulula bayibanda ya molongo. Elongi lisusu."
+  "admin.user_data_error": "Ezali impossible kuzalulula bayibanda ya molongo. Elongi lisusu.",
+  "budget.default": "Oyo Basongeli",
+  "budget.unique_category_hint": "Wumela mpakatano ya lingomba soki ya mpakatano oyo",
+  "budget.new_limit_placeholder": "Mpakatano ya Mosusu",
+  "transactions.general": "Oyo Basongeli",
+  "admin.select_default_ai": "Pona AI Oyo Basongeli",
+  "admin.default_ai_hint": "Oyo Basongeli"
 }

@@ -354,5 +354,11 @@
   "translations.error_loading": "Error al cargar",
   "translations.error_user_data": "No se pudieron cargar los datos del usuario. Intente de nuevo.",
   "admin.loading_error": "Error al cargar panel de admin",
-  "admin.user_data_error": "No se pudieron cargar los datos del usuario. Intente de nuevo."
+  "admin.user_data_error": "No se pudieron cargar los datos del usuario. Intente de nuevo.",
+  "budget.default": "Predeterminado",
+  "budget.unique_category_hint": "Crea una categoría única para este presupuesto",
+  "budget.new_limit_placeholder": "Nuevo Límite",
+  "transactions.general": "General",
+  "admin.select_default_ai": "Selecciona IA Predeterminada",
+  "admin.default_ai_hint": "Predeterminado"
 }
