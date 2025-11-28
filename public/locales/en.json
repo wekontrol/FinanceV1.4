@@ -570,5 +570,6 @@
   "common.view_goals": "Goals",
   "common.view_inflation": "Inflation",
   "common.view_admin": "Administration",
-  "common.view_family": "Family Mode"
+  "common.view_family": "Family Mode",
+  "common.view_translations": "Translations"
 }
