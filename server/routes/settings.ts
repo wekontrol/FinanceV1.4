@@ -193,54 +193,110 @@ router.post('/default-ai-provider', (req: Request, res: Response) => {
   }
 });
 
+// Fallback rates (used if API fails)
+const FALLBACK_RATES: Record<string, Record<string, number>> = {
+  BNA: {
+    AOA: 1,
+    USD: 926.50,
+    EUR: 1003.20,
+    BRL: 188.10,
+    GBP: 1168.00,
+    CNY: 127.30,
+    ZAR: 49.10,
+    JPY: 6.35
+  },
+  FOREX: {
+    AOA: 1,
+    USD: 930.10,
+    EUR: 1008.50,
+    BRL: 189.50,
+    GBP: 1175.20,
+    CNY: 128.00,
+    ZAR: 49.50,
+    JPY: 6.40
+  },
+  PARALLEL: {
+    AOA: 1,
+    USD: 1150.00,
+    EUR: 1240.00,
+    BRL: 230.00,
+    GBP: 1450.00,
+    CNY: 160.00,
+    ZAR: 60.00,
+    JPY: 8.00
+  }
+};
+
 // Get exchange rates for a specific provider
-router.get('/rates/:provider', (req: Request, res: Response) => {
+router.get('/rates/:provider', async (req: Request, res: Response) => {
   const { provider } = req.params;
   try {
-    // Return exchange rates based on provider
-    const ratesMap: Record<string, Record<string, number>> = {
-      BNA: {
+    // Try to fetch live rates from free API (no auth needed)
+    const liveRates = await fetchLiveExchangeRates();
+    
+    if (liveRates) {
+      console.log('[GET /rates] Using LIVE rates from API');
+      return res.json({
         AOA: 1,
-        USD: 926.50,
-        EUR: 1003.20,
-        BRL: 188.10,
-        GBP: 1168.00,
-        CNY: 127.30,
-        ZAR: 49.10,
-        JPY: 6.35
-      },
-      FOREX: {
-        AOA: 1,
-        USD: 930.10,
-        EUR: 1008.50,
-        BRL: 189.50,
-        GBP: 1175.20,
-        CNY: 128.00,
-        ZAR: 49.50,
-        JPY: 6.40
-      },
-      PARALLEL: {
-        AOA: 1,
-        USD: 1150.00,
-        EUR: 1240.00,
-        BRL: 230.00,
-        GBP: 1450.00,
-        CNY: 160.00,
-        ZAR: 60.00,
-        JPY: 8.00
-      }
-    };
+        USD: liveRates.USD,
+        EUR: liveRates.EUR,
+        BRL: liveRates.BRL,
+        GBP: liveRates.GBP,
+        CNY: liveRates.CNY,
+        ZAR: liveRates.ZAR,
+        JPY: liveRates.JPY,
+        lastUpdate: new Date().toISOString(),
+        source: 'live'
+      });
+    }
+  } catch (error: any) {
+    console.warn('[GET /rates] Live API failed, using fallback:', error.message);
+  }
 
-    const rates = ratesMap[provider] || ratesMap.BNA;
+  // Fallback to hardcoded rates
+  try {
+    const fallbackRates = FALLBACK_RATES[provider] || FALLBACK_RATES.BNA;
+    console.log('[GET /rates] Using FALLBACK rates for provider:', provider);
     res.json({
-      ...rates,
+      ...fallbackRates,
       lastUpdate: new Date().toISOString(),
-      source: 'server'
+      source: 'fallback'
     });
   } catch (error: any) {
-    console.error('Error fetching rates:', error);
+    console.error('[GET /rates] Error:', error);
     res.status(500).json({ error: error.message });
   }
 });
+
+// Helper function to fetch live exchange rates from free API
+async function fetchLiveExchangeRates(): Promise<Record<string, number> | null> {
+  try {
+    // Using open-meteo API (free, no auth needed)
+    const response = await fetch(
+      'https://open.er-api.com/v6/latest/USD',
+      { signal: AbortSignal.timeout(5000) }
+    );
+
+    if (!response.ok) throw new Error('API request failed');
+
+    const data = await response.json();
+    
+    if (data.rates) {
+      return {
+        USD: 1,
+        EUR: 1 / data.rates.EUR,
+        BRL: 1 / data.rates.BRL,
+        GBP: 1 / data.rates.GBP,
+        CNY: 1 / data.rates.CNY,
+        ZAR: 1 / data.rates.ZAR,
+        JPY: 1 / data.rates.JPY
+      };
+    }
+  } catch (error: any) {
+    console.warn('[fetchLiveExchangeRates] Error:', error.message);
+  }
+
+  return null;
+}
 
 export default router;
