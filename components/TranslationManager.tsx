@@ -33,17 +33,7 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
   const [isImporting, setIsImporting] = useState(false);
 
   // Check access - with safety check
-  if (!currentUser) {
-    return (
-      <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-2xl p-8 text-center">
-        <AlertTriangle className="mx-auto text-rose-600 mb-4" size={32} />
-        <h3 className="text-lg font-bold text-rose-700 dark:text-rose-300 mb-2">{t("translations.error_loading")}</h3>
-        <p className="text-sm text-rose-600 dark:text-rose-400">{t("translations.error_user_data")}</p>
-      </div>
-    );
-  }
-
-  const hasAccess = currentUser.role === UserRole.TRANSLATOR || currentUser.role === UserRole.SUPER_ADMIN;
+  const hasAccess = currentUser?.role === UserRole.TRANSLATOR || currentUser?.role === UserRole.SUPER_ADMIN;
 
   useEffect(() => {
     if (hasAccess) {
