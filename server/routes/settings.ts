@@ -193,4 +193,54 @@ router.post('/default-ai-provider', (req: Request, res: Response) => {
   }
 });
 
+// Get exchange rates for a specific provider
+router.get('/rates/:provider', (req: Request, res: Response) => {
+  const { provider } = req.params;
+  try {
+    // Return exchange rates based on provider
+    const ratesMap: Record<string, Record<string, number>> = {
+      BNA: {
+        AOA: 1,
+        USD: 926.50,
+        EUR: 1003.20,
+        BRL: 188.10,
+        GBP: 1168.00,
+        CNY: 127.30,
+        ZAR: 49.10,
+        JPY: 6.35
+      },
+      FOREX: {
+        AOA: 1,
+        USD: 930.10,
+        EUR: 1008.50,
+        BRL: 189.50,
+        GBP: 1175.20,
+        CNY: 128.00,
+        ZAR: 49.50,
+        JPY: 6.40
+      },
+      PARALLEL: {
+        AOA: 1,
+        USD: 1150.00,
+        EUR: 1240.00,
+        BRL: 230.00,
+        GBP: 1450.00,
+        CNY: 160.00,
+        ZAR: 60.00,
+        JPY: 8.00
+      }
+    };
+
+    const rates = ratesMap[provider] || ratesMap.BNA;
+    res.json({
+      ...rates,
+      lastUpdate: new Date().toISOString(),
+      source: 'server'
+    });
+  } catch (error: any) {
+    console.error('Error fetching rates:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
