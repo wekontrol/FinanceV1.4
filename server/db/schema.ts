@@ -8,7 +8,52 @@ const db = new Database(dbPath);
 
 db.pragma('journal_mode = WAL');
 
+/**
+ * Sync translations from JSON files to database
+ * Ensures database is always up-to-date with translation files
+ */
+function syncTranslationsFromJSON() {
+  const localesPath = path.join(process.cwd(), 'public', 'locales');
+  const languages = ['pt', 'en', 'es', 'um', 'ln', 'fr'];
+  
+  languages.forEach(lang => {
+    const filePath = path.join(localesPath, `${lang}.json`);
+    
+    if (!fs.existsSync(filePath)) {
+      console.warn(`Translation file not found: ${filePath}`);
+      return;
+    }
+    
+    try {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const translations = JSON.parse(content);
+      
+      // Temporarily disable foreign key constraints for sync
+      db.exec('PRAGMA foreign_keys = OFF');
+      
+      // Insert or update each translation in the database
+      for (const [key, value] of Object.entries(translations)) {
+        if (value && typeof value === 'string') {
+          db.prepare(`
+            INSERT OR REPLACE INTO translations (id, language, key, value, created_by, updated_at, status)
+            VALUES (?, ?, ?, ?, ?, datetime('now'), 'active')
+          `).run(`tr${Date.now()}${Math.random().toString(36).substr(2, 9)}`, lang, key, value, 'system');
+        }
+      }
+      
+      // Re-enable foreign key constraints
+      db.exec('PRAGMA foreign_keys = ON');
+      
+      console.log(`✓ Synced ${Object.keys(translations).length} keys for ${lang}`);
+    } catch (error: any) {
+      console.error(`Error syncing ${lang} translations:`, error.message);
+    }
+  });
+}
+
 export function initializeDatabase() {
+  // Sync translations from JSON files first
+  syncTranslationsFromJSON();
   // Migrations: Add missing columns if they don't exist
   try {
     db.exec(`ALTER TABLE api_configurations ADD COLUMN is_default INTEGER DEFAULT 0;`);
