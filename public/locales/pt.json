@@ -99,6 +99,7 @@
   "budget.category": "Categoria",
   "budget.limit": "Limite",
   "budget.spent": "Gasto",
+  "budget.target": "Metas",
   "budget.remaining": "Restante",
   "budget.delete": "Excluir",
   "budget.save": "Guardar",
