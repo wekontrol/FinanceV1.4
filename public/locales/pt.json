@@ -561,5 +561,6 @@
   "transactions.attachments": "Anexos",
   "transactions.old_attachment": "Anexo (Antigo)",
   "common.download": "Baixar",
-  "common.attachment": "Anexo"
+  "common.attachment": "Anexo",
+  "common.no_data_period": "Sem dados no período"
 }

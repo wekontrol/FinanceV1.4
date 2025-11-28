@@ -561,5 +561,6 @@
   "transactions.attachments": "Pièces jointes",
   "transactions.old_attachment": "Pièce jointe (Ancienne)",
   "common.download": "Télécharger",
-  "common.attachment": "Pièce jointe"
+  "common.attachment": "Pièce jointe",
+  "common.no_data_period": "Aucune donnée pour la période"
 }

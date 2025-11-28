@@ -561,5 +561,6 @@
   "transactions.attachments": "Attachments",
   "transactions.old_attachment": "Attachment (Old)",
   "common.download": "Download",
-  "common.attachment": "Attachment"
+  "common.attachment": "Attachment",
+  "common.no_data_period": "No data in the period"
 }

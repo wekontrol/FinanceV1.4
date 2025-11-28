@@ -561,5 +561,6 @@
   "transactions.attachments": "Ifayili",
   "transactions.old_attachment": "Ifayili (Olukala)",
   "common.download": "Okukoleka",
-  "common.attachment": "Ifayili"
+  "common.attachment": "Ifayili",
+  "common.no_data_period": "Kuvala vya data okwiondo"
 }

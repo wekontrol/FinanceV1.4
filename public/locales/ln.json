@@ -561,5 +561,6 @@
   "transactions.attachments": "Mafeele",
   "transactions.old_attachment": "Mafeele (Ya Kala)",
   "common.download": "Kolokola",
-  "common.attachment": "Mafeele"
+  "common.attachment": "Mafeele",
+  "common.no_data_period": "Mbula te makila na mosala"
 }

@@ -583,7 +583,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-full mb-3">
                 <PieChartIcon size={32} />
               </div>
-              <p>Sem dados no período</p>
+              <p>{t("common.no_data_period")}</p>
             </div>
           )}
         </div>
