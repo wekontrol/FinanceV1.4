@@ -12,18 +12,62 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
   const { t, language, setLanguage } = useLanguage();
   const [view, setView] = useState<'login' | 'recovery' | 'register'>('login');
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>(['pt', 'en', 'es', 'um', 'ln']);
   
-  // Get language name in current language
+  // Load available languages from backend
+  React.useEffect(() => {
+    const loadLanguages = async () => {
+      try {
+        const response = await fetch('/api/translations/languages');
+        if (response.ok) {
+          const langs = await response.json();
+          setAvailableLanguages(langs);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar idiomas:', error);
+      }
+    };
+    loadLanguages();
+  }, []);
+  
+  // Get language name in current language - extended to support all languages
   const getLangName = (lang: string): string => {
     const names: { [key: string]: { [key: string]: string } } = {
-      pt: { pt: 'Português', en: 'Portuguese', es: 'Portugués', um: 'Potogo', ln: 'Lopoto' },
-      en: { pt: 'Inglês', en: 'English', es: 'Inglés', um: 'Linglisi', ln: 'Lingleza' },
-      es: { pt: 'Espanhol', en: 'Spanish', es: 'Español', um: 'Sipe', ln: 'Sepaniya' },
-      um: { pt: 'Umbundu', en: 'Umbundu', es: 'Umbundu', um: 'Umbundu', ln: 'Umbundu' },
-      ln: { pt: 'Lingala', en: 'Lingala', es: 'Lingala', um: 'Lingala', ln: 'Lingala' }
+      pt: { pt: 'Português', en: 'Portuguese', es: 'Portugués', um: 'Potogo', ln: 'Lopoto', fr: 'Português' },
+      en: { pt: 'Inglês', en: 'English', es: 'Inglés', um: 'Linglisi', ln: 'Lingleza', fr: 'Anglais' },
+      es: { pt: 'Espanhol', en: 'Spanish', es: 'Español', um: 'Sipe', ln: 'Sepaniya', fr: 'Espagnol' },
+      um: { pt: 'Umbundu', en: 'Umbundu', es: 'Umbundu', um: 'Umbundu', ln: 'Umbundu', fr: 'Umbundu' },
+      ln: { pt: 'Lingala', en: 'Lingala', es: 'Lingala', um: 'Lingala', ln: 'Lingala', fr: 'Lingala' },
+      fr: { pt: 'Francês', en: 'French', es: 'Francés', um: 'Francês', ln: 'Francês', fr: 'Français' },
+      de: { pt: 'Alemão', en: 'German', es: 'Alemán', um: 'Alemão', ln: 'Alemão', fr: 'Allemand' },
+      it: { pt: 'Italiano', en: 'Italian', es: 'Italiano', um: 'Italiano', ln: 'Italiano', fr: 'Italien' },
+      ja: { pt: 'Japonês', en: 'Japanese', es: 'Japonés', um: 'Japonês', ln: 'Japonês', fr: 'Japonais' },
+      zh: { pt: 'Chinês', en: 'Chinese', es: 'Chino', um: 'Chinês', ln: 'Chinês', fr: 'Chinois' },
+      ar: { pt: 'Árabe', en: 'Arabic', es: 'Árabe', um: 'Árabe', ln: 'Árabe', fr: 'Arabe' },
+      ru: { pt: 'Russo', en: 'Russian', es: 'Ruso', um: 'Russo', ln: 'Russo', fr: 'Russe' }
     };
-    return names[lang]?.[language] || lang;
+    return names[lang]?.[language] || lang.toUpperCase();
   };
+
+  // Get flag emoji for language
+  const getFlagEmoji = (lang: string): string => {
+    const flags: { [key: string]: string } = {
+      pt: '🇵🇹',
+      en: '🇬🇧',
+      es: '🇪🇸',
+      um: '🇦🇴',
+      ln: '🇨🇩',
+      fr: '🇫🇷',
+      de: '🇩🇪',
+      it: '🇮🇹',
+      ja: '🇯🇵',
+      zh: '🇨🇳',
+      ar: '🇸🇦',
+      ru: '🇷🇺'
+    };
+    return flags[lang] || '🌍';
+  };
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -356,11 +400,9 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
             }}
             className="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
           >
-            <option value="pt">🇵🇹 {getLangName('pt')}</option>
-            <option value="en">🇬🇧 {getLangName('en')}</option>
-            <option value="es">🇪🇸 {getLangName('es')}</option>
-            <option value="um">🇦🇴 {getLangName('um')}</option>
-            <option value="ln">🇨🇩 {getLangName('ln')}</option>
+            {availableLanguages.map(lang => (
+              <option key={lang} value={lang}>{getFlagEmoji(lang)} {getLangName(lang)}</option>
+            ))}
           </select>
         </div>
         
