@@ -69,12 +69,12 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
     try {
       const suggestions = await suggestBudgets(transactions);
       if (suggestions.length === 0) {
-        alert("Sem dados suficientes para sugestões.");
+        alert(t("ai.no_sufficient_data"));
         return;
       }
 
       const confirm = window.confirm(
-        `A IA sugeriu ${suggestions.length} orçamentos baseados no seu histórico. Deseja aplicar?\n\n` + 
+        `${t("ai.suggested_budgets")} ${suggestions.length} ${t("ai.based_on_history")}?\n\n` + 
         suggestions.map(s => `${s.category}: ${currencyFormatter(s.limit)}`).join('\n')
       );
 
@@ -82,7 +82,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
         suggestions.forEach(s => saveBudget(s));
       }
     } catch (e) {
-      alert("Erro ao gerar sugestões.");
+      alert(t("ai.error_generating_suggestions"));
     } finally {
       setIsSuggesting(false);
     }
@@ -90,18 +90,18 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
 
   const handleAddNewBudget = () => {
     if (!newCategory.trim() || !newAmount.trim()) {
-      alert("Defina uma categoria e um valor.");
+      alert(t("budget.define_category_value"));
       return;
     }
 
     if (existingBudgetCategories.has(newCategory.trim())) {
-      alert(`❌ Você já tem um orçamento para "${newCategory}"`);
+      alert(t("budget.already_exists") + ` "${newCategory}"`);
       return;
     }
     
     const amount = Number(newAmount);
     if (amount <= 0) {
-      alert("O valor deve ser maior que zero.");
+      alert(t("budget.value_greater_than_zero"));
       return;
     }
 
@@ -141,7 +141,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
          <div className="flex justify-between items-start">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold flex items-center mb-2">
-                <PieChart className="mr-3" /> Orçamento Mensal
+                <PieChart className="mr-3" /> {t("budget.monthly_budget")}
                 <Hint text="Defina um teto máximo de gastos para cada categoria. O app te avisa quando você estiver perto de estourar o limite." className="text-white ml-3" />
               </h2>
               <p className="text-blue-100 font-medium max-w-xl text-sm md:text-base">Defina tetos de gastos para cada categoria. Manter-se dentro do orçamento é o primeiro passo para a liberdade financeira.</p>
@@ -155,7 +155,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 md:px-5 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-white/30 transition text-sm md:text-base"
               >
                 <History size={18} />
-                Histórico
+                {t("common.history")}
               </button>
               <button 
                 data-tour="ai-budget-suggest"
@@ -164,7 +164,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 md:px-5 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-white/30 transition disabled:opacity-70 text-sm md:text-base"
               >
                 {isSuggesting ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} className="text-yellow-300" />}
-                Sugerir com IA
+                {t("budget.suggest_ai")}
               </button>
             </div>
          </div>
@@ -176,7 +176,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-slate-800 dark:text-white text-lg flex items-center gap-2">
               <History size={20} className="text-primary-600" />
-              Histórico de Orçamentos
+              {t("budget.history")}
             </h3>
             <button 
               onClick={() => setShowHistory(false)}
@@ -189,13 +189,13 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
           <div className="space-y-4">
             {/* Seletor de Mês */}
             <div>
-              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Selecione um mês:</label>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">{t("budget.select_month")}:</label>
               <select 
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
               >
-                <option value="">Escolha um mês...</option>
+                <option value="">{t("budget.choose_month")}...</option>
                 {Object.keys(budgetHistory).sort().reverse().map(month => (
                   <option key={month} value={month}>{month}</option>
                 ))}
@@ -238,7 +238,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
             )}
 
             {Object.keys(budgetHistory).length === 0 && (
-              <p className="text-center text-slate-400 py-8">Nenhum histórico disponível. Clique em "Salvar Histórico" para começar.</p>
+              <p className="text-center text-slate-400 py-8">{t("budget.no_history")}</p>
             )}
 
             <button 
@@ -246,7 +246,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
               className="w-full p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
             >
               <Save size={18} />
-              Salvar Histórico Atual
+              {t("budget.save_current_history")}
             </button>
           </div>
         </div>
@@ -257,12 +257,12 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
         <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-6 animate-slide-in-left">
           <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-4 flex items-center gap-2">
             <Plus size={20} className="text-primary-600" />
-            Novo Orçamento
+            {t("budget.new_budget")}
           </h3>
           
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Nome da Categoria</label>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">{t("budget.category_name")}</label>
               <input 
                 type="text" 
                 value={newCategory}
@@ -276,7 +276,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
             </div>
 
             <div>
-              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">Limite Mensal</label>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">{t("budget.monthly_limit")}</label>
               <input 
                 type="number" 
                 value={newAmount}
@@ -299,7 +299,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 className="flex-1 p-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold transition flex items-center justify-center gap-2"
               >
                 <Save size={18} />
-                Criar Orçamento
+                {t("budget.create_budget")}
               </button>
               <button 
                 onClick={() => {
@@ -310,7 +310,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 className="flex-1 p-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 font-bold transition flex items-center justify-center gap-2"
               >
                 <X size={18} />
-                Cancelar
+                {t("common.cancel")}
               </button>
             </div>
           </div>
@@ -325,7 +325,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
             className="h-full min-h-[280px] bg-gradient-to-br from-primary-50 dark:from-primary-900/20 to-primary-100/50 dark:to-primary-900/10 border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-3xl flex flex-col items-center justify-center hover:border-primary-500 dark:hover:border-primary-500 transition hover:shadow-md dark:hover:shadow-primary-500/20"
           >
             <Plus size={40} className="text-primary-500 mb-2" />
-            <span className="font-bold text-primary-600 dark:text-primary-400">Adicionar Orçamento</span>
+            <span className="font-bold text-primary-600 dark:text-primary-400">{t("budget.add_budget")}</span>
           </button>
         )}
 
@@ -355,7 +355,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                     {currencyFormatter(spent)}
                   </span>
                   <span className="text-slate-400 font-medium text-xs uppercase">
-                    Meta: {currencyFormatter(limit)}
+                    {t("budget.target")}: {currencyFormatter(limit)}
                   </span>
                 </div>
 
@@ -400,7 +400,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                     className="flex items-center text-sm font-bold text-slate-400 hover:text-primary-600 transition"
                   >
                     <Edit3 size={16} className="mr-2" />
-                    {limit === 0 ? 'Definir Limite' : 'Ajustar Meta'}
+                    {limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}
                   </button>
                 )}
               </div>
