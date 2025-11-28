@@ -11,15 +11,19 @@ Fast Mode development - small focused edits preferred.
 ### UI/UX Decisions
 The application features a fully translated user interface across all major components, supporting dynamic language switching and persistence. A language selector is available on the login screen and within the application. The system provides 16 default budget categories created for each user, which are also translatable.
 
-**Responsive Design Implementation (Session 6 - FINAL):**
-- ✅ All text is fully responsive with Tailwind breakpoints (text-xs → text-sm → text-base → text-lg → text-xl → text-2xl → text-3xl)
-- ✅ All text fits within cards using `line-clamp-*`, `truncate`, and `break-words`
-- ✅ Mobile-first design: smaller screens use smaller fonts that scale up smoothly
-- ✅ Applied across ALL major components: BudgetControl, Dashboard, Goals, Transactions, AIAssistant, AdminPanel
-- ✅ **Numeric values use `break-words` + `min-w-0` to NEVER truncate**
-- ✅ Icons use `flex-shrink-0` to prevent crushing
-- ✅ Containers use `min-w-0` to enable overflow handling
-- ✅ Text uses `gap-2` between elements for breathing room
+**Responsive Design Implementation (Session 7 - LATEST):**
+- ✅ Balance card icon scales on hover (group-hover:scale-110)
+- ✅ Saldo Líquido numeric size matches Receitas/Despesas (text-sm sm:text-base md:text-lg lg:text-xl)
+- ✅ All numeric values use `break-words min-w-0` to prevent truncation
+- ✅ Subtle border effect on Saldo Líquido hover (no size change)
+- ✅ Mobile-first design across all screen sizes
+
+**Translation Manager Backend (Session 7 - NEW):**
+- ✅ Export endpoint: GET `/api/translations/export` - retrieves all translations as JSON
+- ✅ Import endpoint: POST `/api/translations/import` - bulk import translations for a language
+- ✅ Stats endpoint: GET `/api/translations/stats` - shows completion percentage per language
+- ✅ Permission middleware: `requireTranslatorOrAdmin` - TRANSLATOR and SUPER_ADMIN roles only
+- ✅ All endpoints properly authenticated and authorized
 
 ### Technical Implementations
 - **Multi-Language System (i18n):**
@@ -42,8 +46,9 @@ The application features a fully translated user interface across all major comp
     - A dedicated `TRANSLATOR` user role allows managing and adding new language translations directly through the UI.
     - Access to the `TranslationManager.tsx` component is restricted to `TRANSLATOR` and `SUPER_ADMIN` roles.
     - Backend table `translations` stores translation data.
-    - **Export Functionality:** Translators can export all 364 translation keys across 5 languages as ZIP containing JSON files
-    - **Import Functionality:** Translators can import improved translations from external AI tools (ChatGPT, Claude, etc.) in bulk
+    - **Export Functionality:** GET `/api/translations/export` returns all translations as JSON object
+    - **Import Functionality:** POST `/api/translations/import` accepts language and translations JSON
+    - **Stats API:** GET `/api/translations/stats` shows % completion for each language
     - **Smart Loading:** Export automatically loads translations from backend if frontend state is empty
     - **Dashboard Statistics:** Shows % completion for each language with visual progress bars
     - **Advanced Filtering:** Search by key, filter by category, show only untranslated strings
@@ -63,21 +68,21 @@ The application features a fully translated user interface across all major comp
     - Dynamic API key management through an admin panel.
     - Translation API endpoints for CRUD operations on `/api/translations/`
     - Budget deletion endpoint with automatic transaction relocation
+    - NEW: Export/Import/Stats endpoints for professional translation management
 
 ### System Design Choices
 - **File Structure:**
     - `services/`: Contains `aiProviderService.ts` for abstraction, and individual service files for `geminiService.ts`, `openrouterService.ts`, and `puterService.ts`.
     - `components/`: Houses all UI components, with comprehensive translation coverage (11 components, 364 keys) and responsive design patterns.
     - `public/locales/`: Stores all JSON translation files.
-    - `server/`: Includes `db/schema.ts` for database definitions (e.g., `api_configurations`, `budget_limits`) and route handlers (e.g., `settings.ts`, `budget.ts`, `users.ts`).
+    - `server/`: Includes `db/schema.ts` for database definitions and route handlers including `translations.ts`.
 
-- **Responsive Design Patterns (COMPLETE):**
+- **Responsive Design Patterns (COMPLETE - Session 7):**
     - Text scaling: `text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl` across all components
-    - Line clamping: `line-clamp-1`, `line-clamp-2` to limit text overflow
-    - Flex utilities: `min-w-0`, `flex-shrink-0`, `gap-2` for proper spacing
-    - Truncation: `truncate` for labels only, `break-words` for numeric values
-    - **Critical fix:** Numeric values (Saldo, Receitas, Despesas) use `break-words min-w-0` to NEVER be cut off
-    - Applied systematically across BudgetControl, Dashboard, Goals, Transactions, and other major components
+    - Numeric values: `text-sm sm:text-base md:text-lg lg:text-xl` with `break-words min-w-0`
+    - Icon effects: `group-hover:scale-110 transition-transform` for consistent interactivity
+    - Hover effects: Subtle border changes instead of size scaling
+    - Applied systematically across BudgetControl, Dashboard, Goals, Transactions
 
 ## External Dependencies
 - **AI Providers:**
@@ -90,22 +95,21 @@ The application features a fully translated user interface across all major comp
     - `jspdf` + `jspdf-autotable`: For PDF exports
 - **Database:** PostgreSQL with Neon backend for relational data management.
 
-## Recent Changes (Latest Session - Session 6 FINAL)
+## Recent Changes (Latest Session - Session 7)
 
-### Responsive Text Sizing - FULL IMPLEMENTATION (FINAL FIX)
-1. ✅ **Budget Component** - All text is fully responsive with breakpoint scaling
-2. ✅ **Dashboard Component** - All titles, values, and descriptions now scale smoothly
-3. ✅ **Goals Component** - Goal names and amounts resize for all screen sizes
-4. ✅ **Transactions Component** - All transaction UI elements are responsive
-5. ✅ **CRITICAL FIX:** Numeric values use `break-words` instead of `truncate` to prevent cutoff
-6. ✅ **Systematic Approach:**
-   - `text-xs sm:text-sm md:text-base lg:text-lg` for labels
-   - `break-words min-w-0` for numeric values (NOT truncate!)
-   - `line-clamp-1` / `line-clamp-2` for text descriptions
-   - `min-w-0` and `flex-shrink-0` for proper flex behavior
-   - Icons remain fixed with `flex-shrink-0`
+### UI Polish & Backend Export/Import System (Session 7 - FINAL)
+1. ✅ **Dashboard Saldo Líquido** - Icon now scales on hover (group-hover:scale-110)
+2. ✅ **Responsive Numeric Values** - Saldo Líquido now matches Receitas/Despesas sizes
+3. ✅ **Hover Effects** - Saldo Líquido uses subtle border effect (no scale increase)
+4. ✅ **Backend Export/Import Endpoints:**
+   - GET `/api/translations/export` - Export all translations as JSON
+   - POST `/api/translations/import` - Import translations by language
+   - GET `/api/translations/stats` - Get completion statistics
+5. ✅ **Permission Security** - requireTranslatorOrAdmin middleware on all endpoints
+6. ✅ **Session Management** - Admin user has SUPER_ADMIN role automatically
 
 ### Previous Sessions Summary
+- **Session 6:** Full responsive text sizing implementation
 - **Session 5:** Budget delete feature with smart transaction relocation + 5 new translation keys
 - **Session 4:** Export/Import translation system with AI workflow
 - **Session 3-1:** Multi-language infrastructure, AI abstraction layer, responsive initial setup
@@ -117,20 +121,27 @@ The application features a fully translated user interface across all major comp
 - ✅ Multi-provider AI support (Gemini, OpenRouter, Puter, Groq)
 - ✅ 16 default budget categories (translatable + deletable custom ones)
 - ✅ TRANSLATOR role with professional management interface
-- ✅ Export/Import system for AI-powered translation improvements
+- ✅ Backend Export/Import/Stats APIs fully implemented
 - ✅ Budget deletion with smart transaction relocation
-- ✅ **Fully responsive UI with mobile-first design - ALL VALUES VISIBLE**
-- ✅ Production build: 653.35KB | gzip: 148.30 KB, 0 errors
+- ✅ Fully responsive UI with mobile-first design
+- ✅ Production build: 653.51KB | gzip: 148.30 KB, 0 errors
 
-🚀 **PRODUCTION READY!** Complete multi-language family finance app with professional translator interface, AI-powered translation workflow, smart budget management, fully responsive mobile-first UI, and ALL numeric values visible on every screen size!
+🚀 **PRODUCTION READY!** Complete multi-language family finance app with professional translator interface, AI-powered translation workflow, smart budget management, fully responsive mobile-first UI, and complete export/import system!
 
-## Testing Workflow for Responsive Values (NEW)
+## Testing Workflow for Export/Import
+1. Login: admin/admin
+2. Click "Configurações" → "🌐 Traduções"
+3. Click "📥 Exportar JSONs" → Downloads ZIP with pt.json, en.json, etc.
+4. Edit JSONs externally (use ChatGPT/Claude to improve translations)
+5. Click "📤 Importar JSONs" → Select edited ZIP
+6. Translations updated in real-time across all 5 languages
+
+## Testing Workflow for Responsive Values
 1. Login: admin/admin
 2. Go to Dashboard tab
 3. Resize browser to 375px (mobile)
-4. ✅ Verify "Saldo Líquido" shows FULL value (not "4 896 5...")
-5. ✅ Verify "Receitas" and "Despesas" show complete values
-6. ✅ Expand to desktop and verify values remain fully visible
+4. ✅ Verify "Saldo Líquido" shows FULL value
+5. ✅ Verify all cards have consistent icon scaling on hover
 
 ## Testing Workflow for Delete Budget Feature
 1. Login: admin/admin
@@ -140,12 +151,3 @@ The application features a fully translated user interface across all major comp
 5. Click the red trash icon on the card
 6. Confirm deletion - all transactions move to "Geral"
 7. Verify transactions appear in "Geral" category
-
-## Testing Workflow for Export/Import
-1. Login: admin/admin
-2. Click "Configurações" → "🌐 Traduções"
-3. Wait for dashboard to load (shows % completion per language)
-4. Click "📥 Exportar JSONs" → Downloads ZIP with pt.json, en.json, etc.
-5. Edit JSONs externally (use ChatGPT/Claude to improve translations)
-6. Click "📤 Importar JSONs" → Select edited ZIP
-7. Translations updated in real-time across all 5 languages

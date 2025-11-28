@@ -107,4 +107,90 @@ router.post('/language/add', requireTranslatorOrAdmin, (req: Request, res: Respo
   res.json({ message: `Language ${language} added successfully` });
 });
 
+// Export translations as JSON
+router.get('/export', requireTranslatorOrAdmin, (req: Request, res: Response) => {
+  try {
+    const translations = db.prepare(`
+      SELECT language, key, value FROM translations WHERE status = 'active' ORDER BY language, key
+    `).all();
+
+    const languages = [...new Set(translations.map((t: any) => t.language))];
+    const allKeys = [...new Set(translations.map((t: any) => t.key))];
+    
+    const result: Record<string, Record<string, string>> = {};
+    
+    languages.forEach(lang => {
+      result[lang] = {};
+      allKeys.forEach(key => {
+        const trans = translations.find((t: any) => t.language === lang && t.key === key);
+        result[lang][key] = trans?.value || '';
+      });
+    });
+
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Import translations from JSON
+router.post('/import', requireTranslatorOrAdmin, (req: Request, res: Response) => {
+  const userId = req.session.userId;
+  const { language, translations: importedTranslations } = req.body;
+
+  if (!language || !importedTranslations || typeof importedTranslations !== 'object') {
+    return res.status(400).json({ error: 'Language and translations object are required' });
+  }
+
+  try {
+    let count = 0;
+    for (const [key, value] of Object.entries(importedTranslations)) {
+      if (value && typeof value === 'string' && value.trim()) {
+        const id = `tr${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+        db.prepare(`
+          INSERT OR REPLACE INTO translations (id, language, key, value, created_by, updated_at, status)
+          VALUES (?, ?, ?, ?, ?, datetime('now'), 'active')
+        `).run(id, language, key, value, userId);
+        count++;
+      }
+    }
+    
+    res.json({ message: `Imported ${count} translations for ${language}` });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get statistics/completion percentage
+router.get('/stats', requireTranslatorOrAdmin, (req: Request, res: Response) => {
+  try {
+    const languages = db.prepare(`
+      SELECT DISTINCT language FROM translations WHERE status = 'active'
+    `).all();
+
+    const stats = languages.map((row: any) => {
+      const lang = row.language;
+      const total = db.prepare(`
+        SELECT COUNT(*) as count FROM (SELECT DISTINCT key FROM translations WHERE status = 'active')
+      `).get();
+      
+      const translated = db.prepare(`
+        SELECT COUNT(*) as count FROM translations 
+        WHERE language = ? AND status = 'active' AND value IS NOT NULL AND value != ''
+      `).get(lang);
+
+      return {
+        language: lang,
+        total: total?.count || 0,
+        translated: translated?.count || 0,
+        percentage: total?.count ? Math.round(((translated?.count || 0) / (total?.count || 1)) * 100) : 0
+      };
+    });
+
+    res.json(stats);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
