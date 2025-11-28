@@ -864,30 +864,30 @@ const Transactions: React.FC<TransactionsProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50 dark:divide-slate-700/50">
-                  {paginatedTransactions.map((t) => (
-                    <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group">
+                  {paginatedTransactions.map((transaction) => (
+                    <tr key={transaction.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group">
                       <td className="p-4 md:p-6">
                         <div className="flex items-center">
-                          <div className={`p-2.5 rounded-full mr-4 shrink-0 ${t.type === TransactionType.INCOME ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30'}`}>
-                            {t.type === TransactionType.INCOME ? <ArrowUpCircle size={20} /> : <ArrowDownCircle size={20} />}
+                          <div className={`p-2.5 rounded-full mr-4 shrink-0 ${transaction.type === TransactionType.INCOME ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30'}`}>
+                            {transaction.type === TransactionType.INCOME ? <ArrowUpCircle size={20} /> : <ArrowDownCircle size={20} />}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-bold text-slate-800 dark:text-white text-base truncate max-w-[120px] sm:max-w-xs" title={t.description}>{t.description}</p>
+                            <p className="font-bold text-slate-800 dark:text-white text-base truncate max-w-[120px] sm:max-w-xs" title={transaction.description}>{transaction.description}</p>
                             <div className="flex flex-wrap gap-2 mt-0.5">
-                               {(t.attachments && t.attachments.length > 0) ? (
+                               {(transaction.attachments && transaction.attachments.length > 0) ? (
                                  <div className="flex gap-1">
-                                   {t.attachments.slice(0, 1).map((att) => (
+                                   {transaction.attachments.slice(0, 1).map((att) => (
                                      <button 
                                        key={att.id}
                                        onClick={() => downloadAttachment(att)}
                                        className="flex items-center text-xs text-primary-500 hover:text-primary-600 font-medium bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded-md transition active:scale-95"
                                        title={`${t("common.download")} ${att.name}`}
                                      >
-                                       <FileIcon size={10} className="mr-1" /> {t.attachments && t.attachments.length > 1 ? `${t.attachments.length} ${t("transactions.attachments")}` : t("common.attachment")}
+                                       <FileIcon size={10} className="mr-1" /> {transaction.attachments && transaction.attachments.length > 1 ? `${transaction.attachments.length} ${t("transactions.attachments")}` : t("common.attachment")}
                                      </button>
                                    ))}
                                  </div>
-                               ) : t.attachmentName ? (
+                               ) : transaction.attachmentName ? (
                                  <span className="flex items-center text-xs text-slate-400 font-medium">
                                    <Paperclip size={10} className="mr-1" /> {t("transactions.old_attachment")}
                                  </span>
@@ -898,27 +898,27 @@ const Transactions: React.FC<TransactionsProps> = ({
                       </td>
                       <td className="p-4 md:p-6">
                         <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 whitespace-nowrap">
-                          {t.category}
+                          {transaction.category}
                         </span>
                       </td>
                       <td className="p-4 md:p-6 text-sm text-slate-500 font-medium whitespace-nowrap">
-                        {new Date(t.date).toLocaleDateString('pt-BR')}
+                        {new Date(transaction.date).toLocaleDateString('pt-BR')}
                       </td>
-                      <td className={`p-4 md:p-6 text-right font-bold text-base whitespace-nowrap tabular-nums ${t.type === TransactionType.INCOME ? 'text-emerald-600' : 'text-rose-500'}`}>
-                        {t.type === TransactionType.INCOME ? '+' : '-'} {currencyFormatter(t.amount)}
+                      <td className={`p-4 md:p-6 text-right font-bold text-base whitespace-nowrap tabular-nums ${transaction.type === TransactionType.INCOME ? 'text-emerald-600' : 'text-rose-500'}`}>
+                        {transaction.type === TransactionType.INCOME ? '+' : '-'} {currencyFormatter(transaction.amount)}
                       </td>
                       <td className="p-4 md:p-6 text-right">
                         <div className="flex justify-end gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition">
-                           {t.userId === currentUserId && (
+                           {transaction.userId === currentUserId && (
                             <>
                               <button 
-                                onClick={() => handleEdit(t)}
+                                onClick={() => handleEdit(transaction)}
                                 className="p-2 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition active:scale-90"
                               >
                                 <Edit2 size={16} />
                               </button>
                               <button 
-                                onClick={() => { if(confirm(t("transactions.delete_confirm"))) deleteTransaction(t.id); }}
+                                onClick={() => { if(confirm(t("transactions.delete_confirm"))) deleteTransaction(transaction.id); }}
                                 className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition active:scale-90"
                               >
                                 <Trash2 size={16} />
@@ -936,41 +936,41 @@ const Transactions: React.FC<TransactionsProps> = ({
 
           {/* Mobile View (Simplified List) */}
           <div className="md:hidden space-y-3">
-            {paginatedTransactions.map(t => (
-              <div key={t.id} onClick={() => setExpandedId(expandedId === t.id ? null : t.id)} className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 active:scale-[0.98] transition-transform cursor-pointer">
+            {paginatedTransactions.map(transaction => (
+              <div key={transaction.id} onClick={() => setExpandedId(expandedId === transaction.id ? null : transaction.id)} className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 active:scale-[0.98] transition-transform cursor-pointer">
                  {/* Header: Transação | Valor */}
                  <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3 overflow-hidden">
                        {/* Icon */}
-                       <div className={`p-2 rounded-full shrink-0 ${t.type === 'RECEITA' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30'}`}>
-                          {t.type === 'RECEITA' ? <ArrowUpCircle size={18} /> : <ArrowDownCircle size={18} />}
+                       <div className={`p-2 rounded-full shrink-0 ${transaction.type === 'RECEITA' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30'}`}>
+                          {transaction.type === 'RECEITA' ? <ArrowUpCircle size={18} /> : <ArrowDownCircle size={18} />}
                        </div>
-                       <span className="font-bold text-slate-800 dark:text-white truncate text-sm">{t.description}</span>
+                       <span className="font-bold text-slate-800 dark:text-white truncate text-sm">{transaction.description}</span>
                     </div>
-                    <span className={`font-bold whitespace-nowrap text-sm ${t.type === 'RECEITA' ? 'text-emerald-600' : 'text-rose-500'}`}>
-                       {t.type === 'RECEITA' ? '+' : '-'} {currencyFormatter(t.amount)}
+                    <span className={`font-bold whitespace-nowrap text-sm ${transaction.type === 'RECEITA' ? 'text-emerald-600' : 'text-rose-500'}`}>
+                       {transaction.type === 'RECEITA' ? '+' : '-'} {currencyFormatter(transaction.amount)}
                     </span>
                  </div>
 
                  {/* Expanded Details */}
-                 {expandedId === t.id && (
+                 {expandedId === transaction.id && (
                     <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 animate-fade-in space-y-3">
                        {/* Details Grid */}
                        <div className="grid grid-cols-2 gap-2 text-sm">
                           <div>
                              <p className="text-xs text-slate-400 uppercase font-bold mb-1">{t("common.date")}</p>
-                             <p className="text-slate-700 dark:text-slate-200 font-medium">{new Date(t.date).toLocaleDateString('pt-BR')}</p>
+                             <p className="text-slate-700 dark:text-slate-200 font-medium">{new Date(transaction.date).toLocaleDateString('pt-BR')}</p>
                           </div>
                           <div>
                              <p className="text-xs text-slate-400 uppercase font-bold mb-1">{t("transactions.category_header")}</p>
-                             <span className="inline-block px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold">{t.category}</span>
+                             <span className="inline-block px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold">{transaction.category}</span>
                           </div>
                        </div>
 
                        {/* Attachments */}
-                       {(t.attachments && t.attachments.length > 0) && (
+                       {(transaction.attachments && transaction.attachments.length > 0) && (
                          <div className="flex flex-wrap gap-2">
-                           {t.attachments.map((att) => (
+                           {transaction.attachments.map((att) => (
                              <button 
                                key={att.id}
                                onClick={(e) => { e.stopPropagation(); downloadAttachment(att); }}

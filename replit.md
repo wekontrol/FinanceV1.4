@@ -80,6 +80,9 @@ Fast Mode development - small focused edits preferred.
   - **Budget Persistence:** Added cache-control headers to prevent browser caching of dynamic API data
     - Headers: `Cache-Control: no-cache, no-store, must-revalidate`
     - Prevents budgets from disappearing due to stale cache
+  - **Transaction Variable Naming:** Fixed white page error when clicking transactions
+    - Changed map function parameter from `t` to `transaction` to avoid conflicts with translation function
+    - Applied fix to both desktop and mobile transaction list views
 
 ### FINAL STATISTICS:
 - **Total Translation Keys: 500** (all 6 languages synced from JSON)
