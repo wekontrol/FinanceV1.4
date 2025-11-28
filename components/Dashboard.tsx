@@ -117,27 +117,12 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   const filteredTransactions = useMemo(() => {
     const now = new Date();
-    return transactions.filter(t => {
+    const filtered = transactions.filter(t => {
       const tDate = new Date(t.date);
       switch (dateRange) {
         case '7days':
           const sevenDaysAgo = new Date();
           sevenDaysAgo.setDate(now.getDate() - 7);
-      {/* Alertas e Gráficos */}
-      {showAlerts && (
-        <AlertsPanel transactions={transactions} budgets={budgets} currentInflation={currentInflation} onClose={() => setShowAlerts(false)} />
-      )}
-      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 md:p-8">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold">{t('dashboard.expenses_by_category')}</h3>
-          {currentUser && (
-            <button onClick={() => generatePDFReport(transactions, savingsGoals, "month", currencyFormatter, currentUser)} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-bold">
-              <Download size={16} /> Exportar PDF
-            </button>
-          )}
-        </div>
-        <CategoryBreakdown transactions={transactions} currencyFormatter={currencyFormatter} />
-      </div>
           return tDate >= sevenDaysAgo;
         case 'month':
           return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
@@ -148,6 +133,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           return true;
       }
     });
+    return filtered;
   }, [transactions, dateRange]);
 
   const summary = useMemo(() => {
