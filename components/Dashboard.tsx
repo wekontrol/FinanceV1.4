@@ -406,7 +406,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               
               <div className="flex-1 text-center z-10">
                  <p className={`text-[10px] md:text-xs font-bold py-1.5 px-2 rounded-full bg-gradient-to-r transition-all duration-300 ${healthScore > 70 ? 'from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/20 text-emerald-700 dark:text-emerald-300' : healthScore > 40 ? 'from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/20 text-amber-700 dark:text-amber-300' : 'from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-900/20 text-rose-700 dark:text-rose-300'}`}>
-                   {healthScore > 80 ? '✨ Ótimo' : healthScore > 50 ? '⚠️ Bom' : '🚨 Crítico'}
+                   {healthScore > 80 ? t('dashboard.score_excellent') : healthScore > 50 ? t('dashboard.score_good') : t('dashboard.score_critical')}
                  </p>
                  <p className="text-[9px] text-slate-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">40% poupança<br/>30% despesa<br/>30% metas</p>
               </div>
@@ -421,7 +421,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
           <div className="bg-white/5 backdrop-blur-sm p-4 md:p-6 rounded-[20px]">
              <h3 className="font-bold text-lg mb-2 flex items-center text-white">
-              <Sparkles className="mr-2 text-yellow-300 animate-pulse shrink-0" size={20} /> Insight Inteligente
+              <Sparkles className="mr-2 text-yellow-300 animate-pulse shrink-0" size={20} /> {t('dashboard.intelligent_insight')}
             </h3>
             <p className="text-slate-200 leading-relaxed font-light text-sm md:text-base break-words">"{advice}"</p>
           </div>
@@ -441,7 +441,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               <div className="space-y-2 text-sm">
                 <p className="text-rose-200 font-semibold">{t('dashboard.waste_indicators')}:</p>
                 <ul className="text-slate-300 text-xs space-y-1 list-disc list-inside">{waste.wasteIndicators?.slice(0, 3).map((w: string, i: number) => <li key={i}>{w}</li>)}</ul>
-                <p className="text-rose-300 font-bold pt-2">Estimativa: {currencyFormatter(waste.totalWaste || 0)} em desperdício</p>
+                <p className="text-rose-300 font-bold pt-2">{t('dashboard.waste_estimate', { amount: currencyFormatter(waste.totalWaste || 0) })}</p>
                 <button onClick={() => generateAnalysisPDF(waste, forecast, currencyFormatter, currentUser)} className="mt-2 text-xs bg-rose-500/30 hover:bg-rose-500/50 px-2 py-1 rounded text-rose-200 font-bold">📥 Exportar</button>
               </div>
             ) : (
