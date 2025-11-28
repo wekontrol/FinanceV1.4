@@ -510,7 +510,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         {isAdmin && pendingUsers.length > 0 && (
           <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-3xl p-6">
             <h3 className="text-lg font-bold text-amber-800 dark:text-amber-400 mb-4 flex items-center">
-              <UserCheck className="mr-2" /> Aprovações Pendentes ({pendingUsers.length})
+              <UserCheck className="mr-2" /> {t("admin.pending_approvals")} ({pendingUsers.length})
             </h3>
             <div className="space-y-2">
               {pendingUsers.map(u => (
@@ -535,7 +535,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             <div onClick={() => toggleSection('general')} className="p-6 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <div className="flex items-center">
                 <div className="p-2 bg-orange-100 text-orange-600 rounded-lg mr-4 shrink-0"><Sliders size={20} /></div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Geral</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">{t("admin.general")}</h3>
               </div>
               {expandedSection === 'general' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
@@ -580,10 +580,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 {familiesLoading ? (
                   <div className="text-center py-8">
                     <div className="inline-block animate-spin"><Loader2 size={24} className="text-slate-400" /></div>
-                    <p className="text-slate-400 mt-2">Carregando famílias...</p>
+                    <p className="text-slate-400 mt-2">{t("admin.loading_families")}</p>
                   </div>
                 ) : families.length === 0 ? (
-                  <p className="text-slate-400 text-center py-8">Nenhuma família cadastrada.</p>
+                  <p className="text-slate-400 text-center py-8">{t("admin.no_families")}</p>
                 ) : (
                   <div className="grid gap-3">
                     {families.map(family => (
@@ -624,7 +624,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 {termsLoading ? (
                   <div className="text-center py-8">
                     <div className="inline-block animate-spin"><Loader2 size={24} className="text-slate-400" /></div>
-                    <p className="text-slate-400 mt-2">Carregando termos...</p>
+                    <p className="text-slate-400 mt-2">{t("admin.loading_families")}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">

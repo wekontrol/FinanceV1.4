@@ -6,6 +6,25 @@ A comprehensive family financial management platform built with React, TypeScrip
 ## User Preferences
 Fast Mode development - small focused edits preferred.
 
+## Current Status
+
+### Phase 1: COMPLETE ✅
+- Dashboard + Transactions fully translated
+- 20 new translation keys added across all components
+- All 6 languages: 400 keys each
+- Fixed variable naming conflicts (transaction vs t)
+- All hardcoded strings in Dashboard & Transactions replaced
+
+### Phase 2: IN PROGRESS (95% COMPLETE)
+- Simulations.tsx: 15 hardcoded strings → t() calls ✅
+- InflationControl.tsx: 14 hardcoded strings → t() calls ✅
+- FamilyMode.tsx: 11 hardcoded strings → t() calls ✅
+- AdminPanel.tsx: 13 hardcoded strings pending
+- All 6 language files updated with 60 new keys ✅
+
+### Phase 3: PENDING
+- Tutorial, EmailNotificationButton, misc components (~5 keys)
+
 ## System Architecture
 
 ### UI/UX Decisions
@@ -25,6 +44,8 @@ The application features a fully translated user interface supporting dynamic la
     -   `public/locales/`: Stores all JSON translation files.
     -   `server/`: Database schemas and route handlers, including `translations.ts`.
 -   **Responsive Design Patterns:** Implemented systematically across components with text scaling, dynamic numeric value sizing, and consistent icon/hover effects.
+-   **Translation Key Pattern:** All new keys follow format `module.specific_key` (e.g., `simulations.loan_amount`, `inflation_control.data_source`, `family_mode.family_hub`)
+-   **Variable Naming:** Always use named variables in map functions to avoid conflicts with translation function `t` (e.g., `transaction` instead of `t`)
 
 ## External Dependencies
 -   **AI Providers:**

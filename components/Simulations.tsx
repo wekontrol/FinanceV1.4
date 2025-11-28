@@ -124,7 +124,7 @@ const Simulations: React.FC<SimulationsProps> = ({
   };
 
   const handleSave = () => {
-    if (!saveName.trim()) return alert("Digite um nome para salvar.");
+    if (!saveName.trim()) return alert(t('simulations.save_name_required'));
     onSaveSimulation(simulation, saveName);
     setSaveName('');
     setSidebarOpen(true);
@@ -148,10 +148,10 @@ const Simulations: React.FC<SimulationsProps> = ({
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 md:p-8 rounded-3xl text-white shadow-lg shadow-purple-500/20 relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold flex items-center mb-2">
-            <Calculator className="mr-3 shrink-0" /> Simulação Inteligente
+            <Calculator className="mr-3 shrink-0" /> {t('simulations.intelligent_simulation')}
           </h2>
           <p className="text-purple-100 font-medium max-w-xl text-sm md:text-base">
-            Carregue uma proposta bancária (PDF) e deixe nossa IA extrair os dados.
+            {t('simulations.upload_pdf_instructions')}
           </p>
         </div>
         <button 
@@ -159,7 +159,7 @@ const Simulations: React.FC<SimulationsProps> = ({
           onClick={() => setSidebarOpen(!isSidebarOpen)}
           className="bg-white/20 backdrop-blur-sm p-3 rounded-xl hover:bg-white/30 transition flex items-center gap-2 whitespace-nowrap self-start sm:self-auto"
         >
-          <Clock size={20} /> Salvas
+          <Clock size={20} /> {t('simulations.saved_simulations')}
         </button>
       </div>
 
@@ -174,9 +174,9 @@ const Simulations: React.FC<SimulationsProps> = ({
               <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
                 {loading ? <Loader2 className="animate-spin text-primary-500 mb-2" /> : <Upload className="text-slate-400 mb-2" />}
                 <p className="mb-2 text-sm text-slate-500 dark:text-slate-400 font-semibold">
-                  {loading ? 'Analisando com IA...' : 'Enviar PDF do Banco'}
+                  {loading ? t('simulations.analyzing_pdf') : t('simulations.upload_pdf_bank')}
                 </p>
-                <p className="text-xs text-slate-400">PDF (Propostas, Contratos)</p>
+                <p className="text-xs text-slate-400">{t('simulations.pdf_formats')}</p>
               </div>
               <input type="file" className="hidden" accept="application/pdf" onChange={handleFileUpload} disabled={loading} />
             </label>
@@ -184,7 +184,7 @@ const Simulations: React.FC<SimulationsProps> = ({
 
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Valor do Empréstimo</label>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">{t('simulations.loan_amount')}</label>
               <div className="relative">
                 <DollarSign size={16} className="absolute left-3 top-3.5 text-slate-400" />
                 <input type="number" value={simulation.loanAmount} onChange={e => setSimulation({...simulation, loanAmount: Number(e.target.value)})} className="w-full pl-9 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 tabular-nums" />
@@ -194,14 +194,14 @@ const Simulations: React.FC<SimulationsProps> = ({
               </div>
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Taxa Anual (%)</label>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">{t('simulations.annual_rate_percent')}</label>
               <div className="relative">
                 <Percent size={16} className="absolute left-3 top-3.5 text-slate-400" />
                 <input type="number" step="0.1" value={simulation.interestRateAnnual} onChange={e => setSimulation({...simulation, interestRateAnnual: Number(e.target.value)})} className="w-full pl-9 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 tabular-nums" />
               </div>
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Prazo (Meses)</label>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">{t('simulations.term_months')}</label>
               <div className="relative">
                 <Calendar size={16} className="absolute left-3 top-3.5 text-slate-400" />
                 <input type="number" value={simulation.termMonths} onChange={e => setSimulation({...simulation, termMonths: Number(e.target.value)})} className="w-full pl-9 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 tabular-nums" />
@@ -209,7 +209,7 @@ const Simulations: React.FC<SimulationsProps> = ({
             </div>
             <div>
               <label className="flex items-center text-xs font-bold text-slate-500 uppercase mb-1">
-                Sistema
+                {t('simulations.system_label')}
                 <Hint text="PRICE: Parcelas fixas, juros maiores no final. SAC: Parcelas decrescentes, paga-se menos juros no total." />
               </label>
               <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
@@ -218,11 +218,11 @@ const Simulations: React.FC<SimulationsProps> = ({
               </div>
             </div>
             <button onClick={calculateAmortization} className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary-500/30 flex justify-center items-center">
-               Calcular <ArrowRight size={18} className="ml-2" />
+               {t('simulations.calculate_button')} <ArrowRight size={18} className="ml-2" />
             </button>
             
             <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
-              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Salvar Cenário</label>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">{t('simulations.save_scenario')}</label>
               <div className="flex gap-2">
                 <input type="text" value={saveName} onChange={e => setSaveName(e.target.value)} placeholder="Nome (ex: Banco X)" className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm min-w-0" />
                 <button onClick={handleSave} className="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 p-2 rounded-xl text-slate-600 dark:text-slate-300 shrink-0">
@@ -239,11 +239,11 @@ const Simulations: React.FC<SimulationsProps> = ({
             <>
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700">
-                    <p className="text-xs font-bold text-slate-400 uppercase">Total Pago</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase">{t('simulations.total_paid')}</p>
                     <p className="text-2xl font-bold text-slate-800 dark:text-white tabular-nums truncate">{currencyFormatter(totalPayment)}</p>
                  </div>
                  <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700">
-                    <p className="text-xs font-bold text-slate-400 uppercase">Total Juros</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase">{t('simulations.total_interest')}</p>
                     <p className="text-2xl font-bold text-rose-500 tabular-nums truncate">{currencyFormatter(totalInterest)}</p>
                  </div>
                </div>

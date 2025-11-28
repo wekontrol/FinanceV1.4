@@ -126,14 +126,14 @@ const FamilyMode: React.FC<FamilyModeProps> = ({
         <div className="inline-flex items-center justify-center p-4 md:p-5 bg-blue-50 dark:bg-blue-900/20 rounded-full mb-4 md:mb-6 text-blue-600 dark:text-blue-400 shadow-glow">
           <Users size={32} className="md:w-12 md:h-12" />
         </div>
-        <h2 className="text-2xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-2 md:mb-3 tracking-tight">Núcleo Familiar</h2>
-        <p className="text-sm md:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Gestão financeira, tarefas e eventos compartilhados.</p>
+        <h2 className="text-2xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-2 md:mb-3 tracking-tight">{t('family_mode.family_hub')}</h2>
+        <p className="text-sm md:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">{t('family_mode.family_hub_desc')}</p>
       </div>
 
       {/* Financial Summary */}
       <section>
          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">Resumo Financeiro</h3>
+            <h3 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">{t('family_mode.financial_summary')}</h3>
             <div className="flex -space-x-2">
               {familyUsers.map(user => (
                 <div key={user.id} className="relative group">
@@ -153,19 +153,19 @@ const FamilyMode: React.FC<FamilyModeProps> = ({
 
          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             <div className="p-6 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-soft border-b-4 border-slate-200 dark:border-slate-700 text-center relative">
-              <p className="text-xs font-bold text-slate-400 uppercase">Saldo Total</p>
+              <p className="text-xs font-bold text-slate-400 uppercase">{t('family_mode.total_balance')}</p>
               <p className={`text-2xl md:text-4xl font-extrabold mt-2 ${balance >= 0 ? 'text-slate-800 dark:text-white' : 'text-rose-500'}`}>
                 {currencyFormatter(balance)}
                 {hasMaskedData && <span className="text-sm align-top text-slate-400">*</span>}
               </p>
             </div>
             <div className="p-6 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-soft border-b-4 border-emerald-500/30 text-center">
-              <p className="text-xs font-bold text-emerald-500 uppercase">Entradas</p>
+              <p className="text-xs font-bold text-emerald-500 uppercase">{t('family_mode.income')}</p>
               <p className="text-2xl md:text-4xl font-extrabold mt-2 text-emerald-600">{currencyFormatter(totalIncome)}</p>
             </div>
             <div className="p-6 md:p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-soft h-full flex items-center justify-center relative overflow-hidden">
                {totalIncome === 0 && totalExpense === 0 ? (
-                  <p className="text-slate-400 text-sm">Sem dados combinados.</p>
+                  <p className="text-slate-400 text-sm">{t('family_mode.no_combined_data')}</p>
                 ) : (
                   <ResponsiveContainer width="100%" height={120}>
                     <PieChart>
@@ -188,11 +188,11 @@ const FamilyMode: React.FC<FamilyModeProps> = ({
           className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-4 md:p-6 flex flex-col h-[500px]"
         >
           <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white mb-4 md:mb-6 flex items-center">
-            <CheckSquare className="mr-3 text-primary-500" /> Tarefas & Planos
+            <CheckSquare className="mr-3 text-primary-500" /> {t('family_mode.tasks_plans')}
           </h3>
           
           <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-2">
-            {familyTasks.length === 0 && <p className="text-center text-slate-400 py-10">Nenhuma tarefa pendente.</p>}
+            {familyTasks.length === 0 && <p className="text-center text-slate-400 py-10">{t('family_mode.no_pending_tasks')}</p>}
             {familyTasks.map(task => {
               const assignedUser = familyUsers.find(u => u.id === task.assignedTo);
               return (
@@ -216,14 +216,14 @@ const FamilyMode: React.FC<FamilyModeProps> = ({
           </div>
 
           <form onSubmit={handleAddTask} className="mt-auto relative">
-             <input type="text" value={newTaskDesc} onChange={e => setNewTaskDesc(e.target.value)} placeholder="Adicionar nova tarefa..." className="w-full pl-4 pr-12 py-3 bg-slate-100 dark:bg-slate-900 rounded-xl border-none outline-none focus:ring-2 focus:ring-primary-500 text-sm md:text-base" />
+             <input type="text" value={newTaskDesc} onChange={e => setNewTaskDesc(e.target.value)} placeholder={t('family_mode.add_new_task')} className="w-full pl-4 pr-12 py-3 bg-slate-100 dark:bg-slate-900 rounded-xl border-none outline-none focus:ring-2 focus:ring-primary-500 text-sm md:text-base" />
              <button type="submit" className="absolute right-2 top-2 p-1.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"><Plus size={18} /></button>
           </form>
         </section>
 
         <section className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-4 md:p-6 flex flex-col h-auto md:h-[500px]">
           <div className="flex justify-between items-center mb-4 md:mb-6">
-            <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white flex items-center"><CalendarIcon className="mr-2 md:mr-3 text-orange-500" /> Calendário</h3>
+            <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white flex items-center"><CalendarIcon className="mr-2 md:mr-3 text-orange-500" /> {t('family_mode.calendar')}</h3>
             <div className="flex items-center gap-2 md:gap-4 bg-slate-100 dark:bg-slate-900 rounded-full px-3 py-1">
               <button onClick={prevMonth} className="p-1 hover:bg-white dark:hover:bg-slate-700 rounded-full"><ChevronLeft size={16}/></button>
               <span className="font-bold text-xs md:text-sm min-w-[90px] md:min-w-[100px] text-center">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
@@ -254,7 +254,7 @@ const FamilyMode: React.FC<FamilyModeProps> = ({
                 
                 {/* Form moved UP to prevent overlap with floating AI button on mobile */}
                 <form onSubmit={handleAddEvent} className="mb-3 flex flex-col md:flex-row gap-2">
-                  <input type="text" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} placeholder="Novo evento..." className="flex-1 p-3 md:p-2 text-sm border rounded-xl dark:bg-slate-900 dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary-500 min-w-0" />
+                  <input type="text" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} placeholder={t('family_mode.new_event')} className="flex-1 p-3 md:p-2 text-sm border rounded-xl dark:bg-slate-900 dark:text-white dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary-500 min-w-0" />
                   <div className="flex gap-2">
                     <select value={newEventType} onChange={e => setNewEventType(e.target.value as any)} className="p-3 md:p-2 text-sm border rounded-xl dark:bg-slate-900 dark:text-white dark:border-slate-700 outline-none flex-1 md:w-auto">
                       <option value="general">Geral</option>
