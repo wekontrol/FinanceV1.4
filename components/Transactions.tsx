@@ -465,7 +465,7 @@ const Transactions: React.FC<TransactionsProps> = ({
       <div className="flex flex-col xl:flex-row justify-between items-center gap-4">
         <div className="flex flex-col md:flex-row gap-4 items-center w-full xl:w-auto">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">{t("transactions.title")}</h2>
+            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 dark:text-white truncate">{t("transactions.title")}</h2>
             <p className="text-slate-500 text-sm hidden md:block">{t("transactions.subtitle")}</p>
           </div>
           
@@ -528,7 +528,7 @@ const Transactions: React.FC<TransactionsProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
           <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-2xl border border-slate-100 dark:border-slate-700 animate-scale-in max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 dark:text-white truncate">
                 {editingId ? 'Editar Transação' : 'Nova Transação'}
               </h3>
               <button type="button" onClick={() => setShowForm(false)} className="text-slate-400 hover:text-slate-600 active:scale-95 transition-transform">

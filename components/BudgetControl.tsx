@@ -368,27 +368,27 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
           const isNearLimit = limit > 0 && spent > limit * 0.9 && !isOverBudget;
 
           return (
-            <div key={cat} className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-6 flex flex-col justify-between transition-transform hover:-translate-y-1 duration-300">
+            <div key={cat} className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-4 sm:p-6 flex flex-col justify-between transition-transform hover:-translate-y-1 duration-300">
               <div>
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-slate-800 dark:text-white text-lg">{cat}</h3>
-                    {isDefault && <span className="text-xs font-bold px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">Padrão</span>}
+                <div className="flex justify-between items-start mb-4 gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <h3 className="font-bold text-slate-800 dark:text-white text-sm sm:text-base md:text-lg line-clamp-2 break-words">{cat}</h3>
+                    {isDefault && <span className="text-xs font-bold px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full whitespace-nowrap flex-shrink-0">Padrão</span>}
                   </div>
                   {isOverBudget && <AlertTriangle className="text-rose-500 animate-pulse" size={22} />}
                   {!isOverBudget && limit > 0 && <CheckCircle className="text-emerald-500" size={22} />}
                 </div>
 
-                <div className="flex justify-between items-end mb-2 text-sm">
-                  <div className="flex flex-col">
+                <div className="flex justify-between items-end mb-2 gap-2 min-w-0">
+                  <div className="flex flex-col min-w-0">
                     <span className="text-slate-600 dark:text-slate-400 text-xs uppercase">{t("budget.spent")}</span>
-                    <span className={`text-xl md:text-2xl font-bold ${isOverBudget ? 'text-rose-600' : 'text-slate-800 dark:text-white'}`}>
+                    <span className={`text-base sm:text-lg md:text-xl lg:text-2xl font-bold truncate ${isOverBudget ? 'text-rose-600' : 'text-slate-800 dark:text-white'}`}>
                       {currencyFormatter(spent)}
                     </span>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex flex-col min-w-0">
                     <span className="text-slate-600 dark:text-slate-400 text-xs uppercase">{t("budget.target")}</span>
-                    <span className="block text-slate-400 font-medium text-sm">
+                    <span className="block text-slate-400 font-medium text-xs sm:text-sm truncate">
                       {currencyFormatter(limit)}
                     </span>
                   </div>
@@ -404,47 +404,48 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 </div>
               </div>
 
-              <div className="border-t border-slate-50 dark:border-slate-700 pt-4 space-y-2">
+              <div className="border-t border-slate-50 dark:border-slate-700 pt-3 sm:pt-4 space-y-2">
                 {editingCategory === cat ? (
-                  <div className="flex items-center space-x-2 animate-fade-in">
-                    <div className="flex-1 flex flex-col">
+                  <div className="flex items-center space-x-2 animate-fade-in gap-1 sm:gap-2">
+                    <div className="flex-1 flex flex-col min-w-0">
                       <input 
                         type="number" 
                         value={editAmount}
                         onChange={(e) => setEditAmount(e.target.value)}
-                        className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+                        className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-xs sm:text-sm focus:ring-2 focus:ring-primary-500 outline-none"
                         autoFocus
                         placeholder="Novo Limite"
                       />
                       {editAmount && (
-                        <p className="text-right text-xs font-bold text-primary-600 dark:text-primary-400 mt-1">
+                        <p className="text-right text-xs font-bold text-primary-600 dark:text-primary-400 mt-1 truncate">
                           {currencyFormatter(Number(editAmount))}
                         </p>
                       )}
                     </div>
                     <button 
                       onClick={() => handleSave(cat)}
-                      className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 shadow"
+                      className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 shadow flex-shrink-0"
                     >
-                      <Save size={18} />
+                      <Save size={16} className="sm:w-18" />
                     </button>
                   </div>
                 ) : (
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center gap-2 min-w-0">
                     <button 
                       onClick={() => handleEdit(cat, limit)}
-                      className="flex items-center text-sm font-bold text-slate-400 hover:text-primary-600 transition"
+                      className="flex items-center text-xs sm:text-sm font-bold text-slate-400 hover:text-primary-600 transition truncate"
                     >
-                      <Edit3 size={16} className="mr-2" />
-                      {limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}
+                      <Edit3 size={14} className="sm:w-16 mr-1 flex-shrink-0" />
+                      <span className="hidden sm:inline">{limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}</span>
+                      <span className="sm:hidden">{limit === 0 ? t("budget.set_limit") : t("budget.adjust")}</span>
                     </button>
                     {!isDefault && (
                       <button 
                         onClick={() => handleDeleteBudget(cat)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 transition hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg"
+                        className="p-1.5 text-slate-400 hover:text-rose-600 transition hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg flex-shrink-0"
                         title={t("budget.delete")}
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} className="sm:w-16" />
                       </button>
                     )}
                   </div>

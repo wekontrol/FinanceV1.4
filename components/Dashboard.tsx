@@ -243,9 +243,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     <div className="space-y-6 md:space-y-8 animate-fade-in w-full max-w-full overflow-x-hidden">
       {/* Header + Filters */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h3 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white tracking-tight">{t('dashboard.overview')}</h3>
-          <p className="text-sm text-slate-500">{t('dashboard.financial_health')}</p>
+        <div className="min-w-0">
+          <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">{t('dashboard.overview')}</h3>
+          <p className="text-xs sm:text-sm text-slate-500 line-clamp-1">{t('dashboard.financial_health')}</p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button 
@@ -275,9 +275,9 @@ const Dashboard: React.FC<DashboardProps> = ({
       {showNotificationSettings && (
         <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 animate-slide-in-left">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-              <Bell size={20} className="text-primary-600" />
-              {t('dashboard.myNotifications')}
+            <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 truncate">
+              <Bell size={20} className="text-primary-600 flex-shrink-0" />
+              <span className="truncate">{t('dashboard.myNotifications')}</span>
             </h3>
             <button onClick={() => setShowNotificationSettings(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
               <X size={20} />
@@ -294,8 +294,8 @@ const Dashboard: React.FC<DashboardProps> = ({
          <div className="relative z-10">
             <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
               <div className="max-w-full min-w-0">
-                <h3 className="text-lg font-bold flex items-center flex-wrap">
-                  <BrainCircuit className="mr-2 text-cyan-400 shrink-0" /> {t('dashboard.behavioral_analysis')}
+                <h3 className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 truncate">
+                  <BrainCircuit className="text-cyan-400 shrink-0" size={18} /> <span className="truncate">{t('dashboard.behavioral_analysis')}</span>
                   <Hint text={t("dashboard.hint_analyze_behavior")} className="text-white ml-2 hidden sm:inline-block" />
                 </h3>
                 <p className="text-blue-200 text-sm mt-1 truncate max-w-full">{t("dashboard.discover_spending_profile")}</p>
@@ -319,7 +319,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                        <User size={24} />
                     </div>
                     <p className="text-xs uppercase font-bold text-cyan-300">{t("dashboard.your_persona")}</p>
-                    <p className="text-lg md:text-xl font-bold break-words">{behavior.persona}</p>
+                    <p className="text-xs sm:text-sm md:text-base lg:text-lg font-bold break-words line-clamp-2">{behavior.persona}</p>
                  </div>
                  
                  <div className="flex flex-col justify-center md:border-r border-white/10 px-2 md:px-4 py-2 md:py-0 border-t border-b md:border-t-0 md:border-b-0 border-white/10 my-2 md:my-0">
@@ -330,7 +330,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                  <div className="flex flex-col justify-center items-center px-4">
                     <p className="text-xs uppercase font-bold text-emerald-300 mb-1 text-center">{t("dashboard.next_month_projection")}</p>
-                    <p className="text-xl md:text-2xl font-bold tracking-tight break-all text-center">{currencyFormatter(behavior.nextMonthProjection)}</p>
+                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight break-all text-center truncate">{currencyFormatter(behavior.nextMonthProjection)}</p>
                     <p className="text-[10px] text-blue-200">{t("dashboard.estimated_by_ai")}</p>
                  </div>
               </div>
@@ -353,7 +353,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               </span>
             </div>
             <p className="text-indigo-100 text-sm font-medium mb-1">{t('dashboard.balance_liquid')}</p>
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight truncate break-all" title={currencyFormatter(summary.balance)}>
+            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-tight truncate" title={currencyFormatter(summary.balance)}>
               {currencyFormatter(summary.balance)}
             </h3>
           </div>
@@ -367,7 +367,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               <ArrowUpRight className="text-emerald-500" size={20} />
             </div>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('dashboard.income')}</p>
-            <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white truncate break-all" title={currencyFormatter(summary.totalIncome)}>
+            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 dark:text-white truncate" title={currencyFormatter(summary.totalIncome)}>
               {currencyFormatter(summary.totalIncome)}
             </h3>
           </div>
@@ -381,7 +381,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               <ArrowDownRight className="text-rose-500" size={20} />
             </div>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('dashboard.expenses')}</p>
-            <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white truncate break-all" title={currencyFormatter(summary.totalExpense)}>
+            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 dark:text-white truncate" title={currencyFormatter(summary.totalExpense)}>
               {currencyFormatter(summary.totalExpense)}
             </h3>
           </div>
@@ -397,7 +397,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   💰 Score
                 </h3>
                 <div className="animate-bounce-in">
-                   <span className={`text-2xl md:text-3xl font-extrabold transition-colors duration-300 ${healthScore > 70 ? 'text-emerald-500' : healthScore > 40 ? 'text-amber-500' : 'text-rose-500'}`}>
+                   <span className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold transition-colors duration-300 truncate ${healthScore > 70 ? 'text-emerald-500' : healthScore > 40 ? 'text-amber-500' : 'text-rose-500'}`}>
                      {healthScore}
                    </span>
                    <span className="text-[10px] text-slate-400 block font-bold">/ 100</span>
