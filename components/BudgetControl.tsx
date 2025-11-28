@@ -438,7 +438,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                     >
                       <Edit3 size={14} className="sm:w-16 mr-1 flex-shrink-0" />
                       <span className="hidden sm:inline">{limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}</span>
-                      <span className="sm:hidden">{limit === 0 ? t("budget.set_limit") : t("budget.adjust")}</span>
+                      <span className="sm:hidden">{limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}</span>
                     </button>
                     {!isDefault && (
                       <button 
