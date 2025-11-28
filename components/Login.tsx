@@ -373,7 +373,11 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
         <div className="absolute top-4 right-4 flex items-center gap-2">
           <select 
             value={language}
-            onChange={(e) => setLanguage(e.target.value as any)}
+            onChange={(e) => {
+              const newLang = e.target.value;
+              setLanguage(newLang as any);
+              if (setContextLanguage) setContextLanguage(newLang);
+            }}
             className="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
           >
             <option value="pt">🇵🇹 Português</option>
