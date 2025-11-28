@@ -10,44 +10,8 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
-  const languageHook = useLanguage?.();
-  const { t: tFromContext, language: contextLanguage, setLanguage: setContextLanguage } = languageHook || {};
-  
-  const [language, setLanguage] = useState(contextLanguage || 'pt');
+  const { t, language, setLanguage } = useLanguage();
   const [view, setView] = useState<'login' | 'recovery' | 'register'>('login');
-  
-  const t = (key: string): string => {
-    if (tFromContext) return tFromContext(key);
-    
-    const translations: { [lang: string]: { [key: string]: string } } = {
-      pt: {
-        'login.username': 'Usuário', 'login.password': 'Senha', 'login.enter': 'Entrar',
-        'login.forgotPassword': 'Esqueci minha senha', 'login.createFamily': 'Criar Família',
-        'login.subtitle': 'Gestão Financeira Familiar',
-      },
-      en: {
-        'login.username': 'Username', 'login.password': 'Password', 'login.enter': 'Sign In',
-        'login.forgotPassword': 'Forgot password', 'login.createFamily': 'Create Family',
-        'login.subtitle': 'Family Financial Management',
-      },
-      es: {
-        'login.username': 'Usuario', 'login.password': 'Contraseña', 'login.enter': 'Iniciar sesión',
-        'login.forgotPassword': 'Olvidé mi contraseña', 'login.createFamily': 'Crear Familia',
-        'login.subtitle': 'Gestor Financiero Familiar',
-      },
-      um: {
-        'login.username': 'Ongila', 'login.password': 'Ondombolo', 'login.enter': 'Inga',
-        'login.forgotPassword': 'Ongila wanu', 'login.createFamily': 'Onga fomilia',
-        'login.subtitle': 'Ongila Ndombolo wa Fomilia',
-      },
-      ln: {
-        'login.username': 'Nkombo', 'login.password': 'Motébi', 'login.enter': 'Kota',
-        'login.forgotPassword': 'Nabosani nkombo', 'login.createFamily': 'Kundikanga libota',
-        'login.subtitle': 'Nkambo ya libota libota',
-      }
-    };
-    return translations[language]?.[key] || key;
-  };
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -370,14 +334,10 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
       <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700 animate-bounce-in relative z-10">
         
         {/* Language Selector */}
-        <div className="absolute top-4 right-4 flex items-center gap-2">
+        <div className="absolute top-4 right-4">
           <select 
             value={language}
-            onChange={(e) => {
-              const newLang = e.target.value;
-              setLanguage(newLang as any);
-              if (setContextLanguage) setContextLanguage(newLang);
-            }}
+            onChange={(e) => setLanguage(e.target.value as any)}
             className="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
           >
             <option value="pt">🇵🇹 Português</option>
