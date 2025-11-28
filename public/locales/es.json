@@ -545,10 +545,10 @@
   "common.date": "Fecha",
   "common.note": "Nota",
   "transactions.smart_input_example": "Ej: Pagué 15000 por internet...",
-  "transactions.stop_recording": "Detener Grabación",
-  "transactions.start_recording": "Grabar Audio",
+  "transactions.stop_recording": "Detener grabación",
+  "transactions.start_recording": "Grabar audio",
   "transactions.new_transaction": "Nuevo",
-  "transactions.edit_transaction": "Editar Transacción",
+  "transactions.edit_transaction": "Editar transacción",
   "transactions.expense_type": "Gasto",
   "transactions.income_type": "Ingreso",
   "transactions.amount_label": "Monto",
@@ -559,7 +559,7 @@
   "transactions.category_header": "Categoría",
   "transactions.actions_header": "Acciones",
   "transactions.attachments": "Adjuntos",
-  "transactions.old_attachment": "Adjunto (Antiguo)",
+  "transactions.old_attachment": "Adjunto (Anterior)",
   "common.download": "Descargar",
   "common.attachment": "Adjunto"
 }
