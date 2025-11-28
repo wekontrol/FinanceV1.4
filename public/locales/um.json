@@ -343,5 +343,9 @@
   "translations.export_error": "✗ Okusila okuzagula JSONs",
   "translations.import_success": "✓ Okusikila okuzalululla nkokwagire",
   "translations.import_error": "✗ Okusila okuzalulula JSONs. Tegeka engeri.",
-  "translations.import_export_tip": "💡 Okuteeza: Zagula JSONs, sikila n'okwikuluze (ChatGPT/Claude), era zalulula okukoma enkyama!"
+  "translations.import_export_tip": "💡 Okuteeza: Zagula JSONs, sikila n'okwikuluze (ChatGPT/Claude), era zalulula okukoma enkyama!",
+  "translations.error_loading": "Okusila okuzalulula",
+  "translations.error_user_data": "Okutambika okuteeza okuma tekyakola. Okigire nate.",
+  "admin.loading_error": "Okusila okuzalulula paneeli",
+  "admin.user_data_error": "Okutambika okuteeza okuma tekyakola. Okigire nate."
 }

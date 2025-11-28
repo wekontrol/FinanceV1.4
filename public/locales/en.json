@@ -343,5 +343,9 @@
   "translations.export_error": "✗ Error exporting JSONs",
   "translations.import_success": "✓ Translations imported successfully",
   "translations.import_error": "✗ Error importing JSONs. Check the format.",
-  "translations.import_export_tip": "💡 Tip: Export JSONs, edit with AI (ChatGPT/Claude), and reimport to apply batch improvements!"
+  "translations.import_export_tip": "💡 Tip: Export JSONs, edit with AI (ChatGPT/Claude), and reimport to apply batch improvements!",
+  "translations.error_loading": "Error loading",
+  "translations.error_user_data": "Could not load user data. Please try again.",
+  "admin.loading_error": "Error loading admin panel",
+  "admin.user_data_error": "Could not load user data. Please try again."
 }

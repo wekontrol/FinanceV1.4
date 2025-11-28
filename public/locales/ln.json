@@ -343,5 +343,9 @@
   "translations.export_error": "✗ Mbeba ya kusombela JSONs",
   "translations.import_success": "✓ Lokambo zwakomiamaki na liwa",
   "translations.import_error": "✗ Mbeba ya kuzwa JSONs. Verifika format.",
-  "translations.import_export_tip": "💡 Mombembe: Sombela JSONs, sikila na Boyikoli (ChatGPT/Claude), mpe zwa mokili ya koiza lisusu!"
+  "translations.import_export_tip": "💡 Mombembe: Sombela JSONs, sikila na Boyikoli (ChatGPT/Claude), mpe zwa mokili ya koiza lisusu!",
+  "translations.error_loading": "Mbeba ya kuzalulula",
+  "translations.error_user_data": "Ezali impossible kuzalulula bayibanda ya molongo. Elongi lisusu.",
+  "admin.loading_error": "Mbeba ya kuzalulula pane admin",
+  "admin.user_data_error": "Ezali impossible kuzalulula bayibanda ya molongo. Elongi lisusu."
 }

@@ -116,6 +116,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
   const toggleSection = (section: string) => setExpandedSection(expandedSection === section ? null : section);
 
+  // Safety check for currentUser
+  if (!currentUser) {
+    return (
+      <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-2xl p-8 text-center">
+        <AlertTriangle className="mx-auto text-rose-600 mb-4" size={32} />
+        <h3 className="text-lg font-bold text-rose-700 dark:text-rose-300 mb-2">{t("admin.loading_error")}</h3>
+        <p className="text-sm text-rose-600 dark:text-rose-400">{t("admin.user_data_error")}</p>
+      </div>
+    );
+  }
+
   const isSuperAdmin = currentUser.role === UserRole.SUPER_ADMIN;
   const isAdmin = currentUser.role === UserRole.ADMIN || isSuperAdmin;
   const isManager = currentUser.role === UserRole.MANAGER;

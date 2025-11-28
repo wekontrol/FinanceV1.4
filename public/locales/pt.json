@@ -343,5 +343,9 @@
   "translations.export_error": "✗ Erro ao exportar JSONs",
   "translations.import_success": "✓ Traduções importadas com sucesso",
   "translations.import_error": "✗ Erro ao importar JSONs. Verifique o formato.",
-  "translations.import_export_tip": "💡 Dica: Exporte os JSONs, edite com IA (ChatGPT/Claude), e reimporte para aplicar melhorias em lote!"
+  "translations.import_export_tip": "💡 Dica: Exporte os JSONs, edite com IA (ChatGPT/Claude), e reimporte para aplicar melhorias em lote!",
+  "translations.error_loading": "Erro ao carregar",
+  "translations.error_user_data": "Não foi possível carregar dados do utilizador. Tente novamente.",
+  "admin.loading_error": "Erro ao carregar painel",
+  "admin.user_data_error": "Não foi possível carregar dados do utilizador. Tente novamente."
 }
