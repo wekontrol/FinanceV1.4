@@ -164,5 +164,21 @@
   "app.inflation": "Mbalela",
   "app.simulations": "Lolenge",
   "app.logout": "Kamatá",
-  "app.settings": "Mayele"
+  "app.settings": "Mayele",
+  "common.delete": "Kasa",
+  "common.save": "Kobikisa",
+  "common.cancel": "Landa",
+  "common.search": "Yanda",
+  "common.export": "Pota",
+  "budget.new_limit": "Motango ya Sika",
+  "goals.my_goals": "Makanisi Naya",
+  "trans.note": "Lisolo oyo Masali",
+  "trans.general": "Moso",
+  "form.current_password": "Motele oyo Bakala",
+  "form.new_password": "Motele ya Sika",
+  "form.confirm_password": "Yebisa Motele",
+  "form.security_question": "Likambi ya Bobele",
+  "form.security_answer": "Kozala",
+  "settings.budget_alerts": "Binduni Mpakatano",
+  "settings.financial_tips": "Toloso Mbongo"
 }

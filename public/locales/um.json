@@ -164,5 +164,21 @@
   "app.inflation": "Okuwanduka",
   "app.simulations": "Okusundila",
   "app.logout": "Okupumbula",
-  "app.settings": "Okusungula"
+  "app.settings": "Okusungula",
+  "common.delete": "Okukatula",
+  "common.save": "Okuvala",
+  "common.cancel": "Okuondola",
+  "common.search": "Okukundeka",
+  "common.export": "Okusaka",
+  "budget.new_limit": "Okupimila Okiliki",
+  "goals.my_goals": "Ondanda Yame",
+  "trans.note": "Okukamenyesha Okusungula",
+  "trans.general": "Okusungu",
+  "form.current_password": "Okusipi Okukukota",
+  "form.new_password": "Okusipi Okiliki",
+  "form.confirm_password": "Okutangula Okusipi",
+  "form.security_question": "Okusungula Omu",
+  "form.security_answer": "Okuvaika",
+  "settings.budget_alerts": "Okulumuka kwa Omanyumba",
+  "settings.financial_tips": "Okusungula Ovimali"
 }

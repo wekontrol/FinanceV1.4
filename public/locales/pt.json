@@ -164,5 +164,21 @@
   "app.inflation": "Inflação",
   "app.simulations": "Simulações",
   "app.logout": "Sair",
-  "app.settings": "Configurações"
+  "app.settings": "Configurações",
+  "common.delete": "Excluir",
+  "common.save": "Guardar",
+  "common.cancel": "Cancelar",
+  "common.search": "Buscar",
+  "common.export": "Exportar",
+  "budget.new_limit": "Novo Limite",
+  "goals.my_goals": "Minhas Metas",
+  "trans.note": "Descrição opcional",
+  "trans.general": "Geral",
+  "form.current_password": "Senha Atual",
+  "form.new_password": "Nova Senha",
+  "form.confirm_password": "Confirmar Senha",
+  "form.security_question": "Pergunta de Segurança",
+  "form.security_answer": "Resposta",
+  "settings.budget_alerts": "Alertas de Orçamento",
+  "settings.financial_tips": "Dicas Financeiras"
 }
