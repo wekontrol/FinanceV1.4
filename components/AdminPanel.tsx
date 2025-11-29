@@ -1140,7 +1140,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
               ) : (
                 <button onClick={() => { 
                   setEditingUser(null); 
-                  setUserFormData({ name: '', username: '', password: '', role: UserRole.MEMBER, avatar: '/default-avatar.svg', birthDate: '', allowParentView: true }); 
+                  setUserFormData({ name: '', email: '', username: '', password: '', role: UserRole.MEMBER, avatar: '/default-avatar.svg', birthDate: '', allowParentView: true }); 
                   setIsUserFormOpen(true); 
                 }} className="mb-6 flex items-center gap-2 px-6 py-3 bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300 rounded-xl font-bold hover:bg-primary-100 dark:hover:bg-primary-900/40 transition w-full sm:w-auto justify-center">
                   <UserPlus size={18}/> {isManager ? 'Adicionar Membro' : 'Adicionar Usuário'}
@@ -1177,6 +1177,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                           setEditingUser(user); 
                           setUserFormData({ 
                             name: user.name, 
+                            email: user.email || '', 
                             username: user.username, 
                             password: '', 
                             role: user.role, 

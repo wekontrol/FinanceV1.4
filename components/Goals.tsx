@@ -73,7 +73,7 @@ const Goals: React.FC<GoalsProps> = ({
       }
       const finalAmount = transactionType === 'withdraw' ? -value : value;
       const defaultNote = transactionNote || (transactionType === 'withdraw' ? 'Resgate' : 'Depósito');
-      addContribution(selectedGoalId, finalAmount, defaultNote);
+      addContribution({ id: selectedGoalId, amount: finalAmount, note: defaultNote });
       setTransactionAmount(''); setTransactionNote(''); setTransactionType('deposit');
     }
   };
