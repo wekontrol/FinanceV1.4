@@ -1269,14 +1269,14 @@ const Transactions: React.FC<TransactionsProps> = ({
               </p>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {previewTransactions.map((txn, i) => (
-                  <div key={i} className={`p-3 rounded-lg border ${txn.type === 'INCOME' ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800' : 'bg-rose-50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-800'}`}>
+                  <div key={i} className={`p-3 rounded-lg border ${txn.type === 'RECEITA' ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800' : 'bg-rose-50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-800'}`}>
                     <div className="flex justify-between">
                       <div>
                         <p className="text-sm font-bold text-slate-800 dark:text-white">{txn.description}</p>
                         <p className="text-xs text-slate-600 dark:text-slate-400">{txn.category} • {txn.date}</p>
                       </div>
-                      <p className={`text-sm font-bold ${txn.type === 'INCOME' ? 'text-green-600' : 'text-rose-600'}`}>
-                        {txn.type === 'INCOME' ? '+' : '-'} {txn.amount}
+                      <p className={`text-sm font-bold ${txn.type === 'RECEITA' ? 'text-green-600' : 'text-rose-600'}`}>
+                        {txn.type === 'RECEITA' ? '+' : '-'} {txn.amount}
                       </p>
                     </div>
                   </div>
