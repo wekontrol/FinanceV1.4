@@ -52,15 +52,15 @@ export function createDefaultBudgetsForUser(userId: string): number {
   
   DEFAULT_BUDGETS.forEach((budget) => {
     const existing = db.prepare(`
-      SELECT id FROM budget_limits WHERE user_id = ? AND translation_key = ?
+      SELECT id FROM budget_limits WHERE user_id = ? AND category = ?
     `).get(userId, budget.translationKey);
 
     if (!existing) {
       const budgetId = uuidv4();
       db.prepare(`
-        INSERT INTO budget_limits (id, user_id, category, translation_key, limit_amount, is_default)
-        VALUES (?, ?, ?, ?, ?, 1)
-      `).run(budgetId, userId, budget.translationKey, budget.translationKey, budget.defaultLimit);
+        INSERT INTO budget_limits (id, user_id, category, limit_amount, is_default)
+        VALUES (?, ?, ?, ?, 1)
+      `).run(budgetId, userId, budget.translationKey, budget.defaultLimit);
       created++;
     }
   });
