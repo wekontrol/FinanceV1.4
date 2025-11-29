@@ -14,7 +14,6 @@ interface TransactionsProps {
   onExport: (type: 'PDF' | 'CSV') => void;
 }
 
-const ITEMS_PER_PAGE = 10;
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
 const Transactions: React.FC<TransactionsProps> = ({ 
@@ -32,6 +31,7 @@ const Transactions: React.FC<TransactionsProps> = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   
   const [smartInput, setSmartInput] = useState('');
@@ -485,12 +485,17 @@ const Transactions: React.FC<TransactionsProps> = ({
     setCurrentPage(1);
   }, [searchTerm, activeTab]);
 
-  const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
   const paginatedTransactions = useMemo(() => {
     if (filteredTransactions.length === 0) return [];
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredTransactions.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredTransactions, currentPage]);
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredTransactions.slice(start, start + itemsPerPage);
+  }, [filteredTransactions, currentPage, itemsPerPage]);
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
 
   const totalSubscriptions = transactions
     .filter(t => t.isRecurring && t.type === TransactionType.EXPENSE)
@@ -1124,25 +1129,40 @@ const Transactions: React.FC<TransactionsProps> = ({
           </div>
           
           {/* Pagination Controls */}
-          {filteredTransactions.length > ITEMS_PER_PAGE && (
-            <div className="p-4 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/30 mt-4 md:mt-0 rounded-b-3xl md:rounded-b-none rounded-t-3xl md:rounded-t-none">
-              <button 
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 text-slate-600 dark:text-slate-300 transition active:scale-95"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
-                Página {currentPage} de {totalPages}
-              </span>
-              <button 
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={totalPages === 0 || currentPage === totalPages}
-                className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 text-slate-600 dark:text-slate-300 transition active:scale-95"
-              >
-                <ChevronRight size={20} />
-              </button>
+          {filteredTransactions.length > itemsPerPage && (
+            <div className="p-4 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 dark:bg-slate-900/30 mt-4 md:mt-0 rounded-b-3xl md:rounded-b-none rounded-t-3xl md:rounded-t-none">
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-400">Itens/página:</label>
+                <select 
+                  value={itemsPerPage} 
+                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-white cursor-pointer hover:border-slate-300 dark:hover:border-slate-600 transition"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 text-slate-600 dark:text-slate-300 transition active:scale-95"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <span className="text-sm font-bold text-slate-600 dark:text-slate-400 min-w-[100px] text-center">
+                  Página {currentPage} de {totalPages}
+                </span>
+                <button 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={totalPages === 0 || currentPage === totalPages}
+                  className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 text-slate-600 dark:text-slate-300 transition active:scale-95"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
             </div>
           )}
         </>
