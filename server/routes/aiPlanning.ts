@@ -1,7 +1,18 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import db from '../db/schema';
 
 const router = Router();
+
+// Authentication middleware
+function requireAuth(req: Request, res: Response, next: Function) {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+  next();
+}
+
+// Apply authentication to all routes
+router.use(requireAuth);
 
 interface TransactionData {
   id: string;
@@ -58,13 +69,9 @@ interface AnalysisResult {
 }
 
 // Get AI Planning Analysis (with caching)
-router.get('/analyze', (req: any, res) => {
+router.get('/analyze', (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
+    const userId = req.session.userId as string;
     const currentMonth = new Date().toISOString().slice(0, 7);
     const forceRefresh = req.query.refresh === 'true';
 
@@ -96,9 +103,9 @@ router.get('/analyze', (req: any, res) => {
 
     // Fetch budgets with spending
     const budgets = db.prepare(`
-      SELECT DISTINCT bl.category, bl.limit
-      FROM budget_limits bl
-      WHERE bl.user_id = ?
+      SELECT DISTINCT category, limit_amount as "limit"
+      FROM budget_limits
+      WHERE user_id = ?
     `).all(userId) as Array<{ category: string; limit: number }>;
 
     // Calculate spending per category (current month)

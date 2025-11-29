@@ -7,11 +7,22 @@ A comprehensive family financial management platform built with React, TypeScrip
 Fast Mode development - small focused edits preferred.
 
 ## Recent Changes (Phase 15+++ - BUG FIXES + OPTIMIZATIONS)
-- ✅ **Backend Improvements:** Graceful cache failure handling, better logging, non-critical cache writes
-- ✅ **Frontend Optimizations:** useEffect only runs once on mount (fixed repeated API calls)
+- ✅ **Backend Improvements:** 
+  - Graceful cache failure handling - continues if table doesn't exist
+  - Better logging with [AI Planning] tags
+  - Non-critical cache writes - analysis returns even if cache fails
+  - Fixed SQL column names - `limit_amount` instead of reserved word
+- ✅ **Frontend Optimizations:** 
+  - useEffect only runs once on mount (fixed repeated API calls)
+  - No dependencies = prevents re-renders on data changes
+  - Error handling with retry button
+- ✅ **Authentication Fix:**
+  - Added requireAuth middleware to aiPlanning router
+  - Fixed 401 Unauthorized error - now properly validates sessions
+  - Session middleware working correctly
 - ✅ **Error Handling:** Improved error messages with retry button
 - ✅ **Removed:** Budget "Juros / Multas" from default categories
-- ✅ **Status:** All issues resolved - "Planificação IA" fully operational
+- ✅ **Status:** ✅ ALL ISSUES RESOLVED - "Planificação IA" fully operational!
 
 ## System Architecture
 
