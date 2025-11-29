@@ -24,7 +24,7 @@ router.get('/template', requireAuth, async (req: Request, res: Response) => {
       { header: 'Data (DD/MM/YYYY)', key: 'date', width: 15 },
       { header: 'Descrição', key: 'description', width: 25 },
       { header: 'Categoria', key: 'category', width: 15 },
-      { header: 'Tipo (INCOME/EXPENSE)', key: 'type', width: 15 },
+      { header: 'Tipo (INCOME/RECEITA ou EXPENSE/DESPESA)', key: 'type', width: 25 },
       { header: 'Valor', key: 'amount', width: 12 }
     ];
 
@@ -32,13 +32,20 @@ router.get('/template', requireAuth, async (req: Request, res: Response) => {
     sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
     sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4B0082' } };
 
-    // Add example row
+    // Add example rows
     sheet.addRow({
       date: '01/12/2024',
       description: 'Exemplo: Compra no supermercado',
       category: 'Alimentação',
-      type: 'EXPENSE',
+      type: 'DESPESA',
       amount: 150.00
+    });
+    sheet.addRow({
+      date: '05/12/2024',
+      description: 'Exemplo: Salário',
+      category: 'Salário',
+      type: 'RECEITA',
+      amount: 5000.00
     });
 
     // Set response headers
@@ -90,10 +97,16 @@ router.post('/import', requireAuth, async (req: Request, res: Response) => {
       }
 
       try {
-        // Validate and normalize type
+        // Validate and normalize type (support both English and Portuguese)
         const typeStr = String(typeRaw).trim().toUpperCase();
-        if (typeStr !== 'INCOME' && typeStr !== 'EXPENSE') {
-          errors.push(`Linha ${rowNumber}: Tipo deve ser INCOME ou EXPENSE (encontrado: ${typeRaw})`);
+        let normalizedType = typeStr;
+        
+        if (typeStr === 'RECEITA') {
+          normalizedType = 'INCOME';
+        } else if (typeStr === 'DESPESA') {
+          normalizedType = 'EXPENSE';
+        } else if (typeStr !== 'INCOME' && typeStr !== 'EXPENSE') {
+          errors.push(`Linha ${rowNumber}: Tipo deve ser INCOME, EXPENSE, RECEITA ou DESPESA (encontrado: ${typeRaw})`);
           return;
         }
 
@@ -127,7 +140,7 @@ router.post('/import', requireAuth, async (req: Request, res: Response) => {
           dateObj.toISOString().split('T')[0],
           String(description).trim(),
           String(category).trim(),
-          typeStr,
+          normalizedType,
           amountNum
         );
         imported++;
