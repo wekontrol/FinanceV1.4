@@ -57,23 +57,32 @@ const AIPlanning: React.FC<AIPlanningProps> = ({
   const [activeTab, setActiveTab] = useState<'overview' | 'suggestions' | 'goals' | 'comparisons'>('overview');
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showCharts, setShowCharts] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [loadedOnce, setLoadedOnce] = useState(false);
 
+  // Load analysis only once on component mount, or when manually triggered
   useEffect(() => {
     const loadAnalysis = async () => {
       try {
         setLoading(true);
+        setError(null);
         const data = await aiPlanningApi.analyze();
         setAnalysis(data);
-      } catch (error) {
-        console.error('Erro ao carregar análise IA:', error);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Erro desconhecido ao carregar análise';
+        console.error('Erro ao carregar análise IA:', message);
+        setError(message);
       } finally {
         setLoading(false);
+        setLoadedOnce(true);
       }
     };
 
-    loadAnalysis();
-  }, [transactions, budgets, goals]);
+    // Only load if not loaded yet (prevents repeated calls)
+    if (!loadedOnce) {
+      loadAnalysis();
+    }
+  }, []); // Empty dependency array - load only once on mount
 
   const getHealthColor = (score: number): string => {
     if (score >= 90) return 'text-green-600';
@@ -95,9 +104,47 @@ const AIPlanning: React.FC<AIPlanningProps> = ({
     return <TrendingUp className="text-blue-500" size={20} />;
   };
 
+  if (error && !loadedOnce) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 sm:p-6 md:p-8">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="text-red-600 dark:text-red-400 flex-shrink-0 mt-1" size={24} />
+              <div>
+                <h3 className="text-lg font-semibold text-red-900 dark:text-red-100 mb-1">
+                  Erro ao carregar Planificação IA
+                </h3>
+                <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
+                <button
+                  onClick={() => {
+                    setError(null);
+                    setLoadedOnce(false);
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                >
+                  Tentar Novamente
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 sm:p-6 md:p-8">
       <div className="max-w-6xl mx-auto">
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+            <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+              Aviso: {error}
+            </p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -269,7 +316,15 @@ const AIPlanning: React.FC<AIPlanningProps> = ({
                 <button
                   onClick={() => {
                     setLoading(true);
-                    aiPlanningApi.analyze().then(setAnalysis).finally(() => setLoading(false));
+                    setError(null);
+                    aiPlanningApi.analyze()
+                      .then(setAnalysis)
+                      .catch(err => {
+                        const message = err instanceof Error ? err.message : 'Erro ao atualizar';
+                        setError(message);
+                        console.error('Erro ao atualizar análise:', message);
+                      })
+                      .finally(() => setLoading(false));
                   }}
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
                 >

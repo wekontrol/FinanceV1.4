@@ -2,8 +2,12 @@ const API_BASE = '/api';
 
 async function handleResponse(response: Response) {
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Request failed' }));
-    throw new Error(error.error || 'Request failed');
+    try {
+      const error = await response.json();
+      throw new Error(error.error || error.message || `Request failed: ${response.status}`);
+    } catch (parseError) {
+      throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+    }
   }
   return response.json();
 }

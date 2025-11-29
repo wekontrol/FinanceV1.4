@@ -6,6 +6,13 @@ A comprehensive family financial management platform built with React, TypeScrip
 ## User Preferences
 Fast Mode development - small focused edits preferred.
 
+## Recent Changes (Phase 15+++ - BUG FIXES + OPTIMIZATIONS)
+- ✅ **Backend Improvements:** Graceful cache failure handling, better logging, non-critical cache writes
+- ✅ **Frontend Optimizations:** useEffect only runs once on mount (fixed repeated API calls)
+- ✅ **Error Handling:** Improved error messages with retry button
+- ✅ **Removed:** Budget "Juros / Multas" from default categories
+- ✅ **Status:** All issues resolved - "Planificação IA" fully operational
+
 ## System Architecture
 
 ### UI/UX Decisions

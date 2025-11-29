@@ -70,13 +70,19 @@ router.get('/analyze', (req: any, res) => {
 
     // Check cache if not forcing refresh
     if (!forceRefresh) {
-      const cache = db.prepare(`
-        SELECT analysis_data FROM ai_analysis_cache
-        WHERE user_id = ? AND month = ? AND expires_at > datetime('now')
-      `).get(userId, currentMonth) as { analysis_data: string } | undefined;
+      try {
+        const cache = db.prepare(`
+          SELECT analysis_data FROM ai_analysis_cache
+          WHERE user_id = ? AND month = ? AND expires_at > datetime('now')
+        `).get(userId, currentMonth) as { analysis_data: string } | undefined;
 
-      if (cache) {
-        return res.json(JSON.parse(cache.analysis_data));
+        if (cache) {
+          console.log(`[AI Planning] Cache HIT for user ${userId} month ${currentMonth}`);
+          return res.json(JSON.parse(cache.analysis_data));
+        }
+      } catch (cacheError) {
+        console.warn(`[AI Planning] Cache read failed (table may not exist):`, cacheError);
+        // Continue without cache
       }
     }
 
@@ -139,7 +145,7 @@ router.get('/analyze', (req: any, res) => {
       monthly_comparison: monthlySpending
     };
 
-    // Save to cache (expires in 30 minutes)
+    // Save to cache (expires in 30 minutes) - non-critical operation
     const cacheId = `cache_${userId}_${currentMonth}_${Date.now()}`;
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
     
@@ -148,14 +154,19 @@ router.get('/analyze', (req: any, res) => {
         INSERT OR REPLACE INTO ai_analysis_cache (id, user_id, month, analysis_data, expires_at)
         VALUES (?, ?, ?, ?, ?)
       `).run(cacheId, userId, currentMonth, JSON.stringify(fullResponse), expiresAt);
-    } catch (e) {
-      // Cache write failed, but continue with response
+      console.log(`[AI Planning] Cache SAVED for user ${userId} month ${currentMonth}`);
+    } catch (cacheError) {
+      console.warn(`[AI Planning] Cache write failed (table may not exist):`, cacheError);
+      // Continue - analysis is still valid without cache
     }
 
     res.json(fullResponse);
   } catch (error) {
-    console.error('Error analyzing AI Planning:', error);
-    res.status(500).json({ error: 'Failed to analyze' });
+    console.error('[AI Planning] Error analyzing:', error);
+    res.status(500).json({ 
+      error: 'Failed to analyze',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
