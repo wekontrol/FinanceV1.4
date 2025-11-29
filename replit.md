@@ -84,6 +84,22 @@ Fast Mode development - small focused edits preferred.
     - Changed map function parameter from `t` to `transaction` to avoid conflicts with translation function
     - Applied fix to both desktop and mobile transaction list views
 
+### Phase 7: BUG FIXES - GITHUB URL SAVE + BUDGET DISAPPEARING ✅
+- **GitHub URL Save Error:** Fixed `/api/settings` endpoint usage
+  - **Root Cause:** `setSetting()` function sending only `{ value }` to wrong endpoint
+  - **Fix:** Changed to send `{ key, value }` to `/api/settings` POST endpoint
+  - **File:** `services/api.ts` - Updated `settingsApi.setSetting()` method
+  - **Result:** GitHub repository URLs now save correctly in Settings panel
+- **Budgets Always Disappearing:** Fixed duplicate budget retrieval issue
+  - **Root Cause 1:** Missing `credentials: 'include'` in `/api/budget/create-defaults` fetch
+  - **Fix 1:** Added session credentials to budget defaults creation in `App.tsx` loadAllData()
+  - **Root Cause 2:** Duplicate budgets returned due to complex family query logic
+  - **Fix 2:** Simplified `/api/budget/limits` endpoint to return ONLY current user's budgets (no family duplication)
+  - **Files Changed:**
+    - `App.tsx` - Added credentials and error checking to budget defaults creation
+    - `server/routes/budget.ts` - Simplified query to avoid duplicates
+  - **Result:** Budgets now persist correctly and display without duplication
+
 ### FINAL STATISTICS:
 - **Total Translation Keys: 500** (all 6 languages synced from JSON)
 - **All Components 100% Translated:**

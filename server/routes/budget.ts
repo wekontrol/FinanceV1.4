@@ -118,20 +118,12 @@ router.use(requireAuth);
 
 router.get('/limits', (req: Request, res: Response) => {
   const userId = req.session.userId;
-  const user = req.session.user;
 
-  let limits;
-  if (user.role === 'SUPER_ADMIN' || user.role === 'MANAGER') {
-    limits = db.prepare(`
-      SELECT bl.* FROM budget_limits bl
-      JOIN users u ON bl.user_id = u.id
-      WHERE u.family_id = ? OR bl.user_id = ?
-    `).all(user.familyId, userId);
-  } else {
-    limits = db.prepare(`
-      SELECT * FROM budget_limits WHERE user_id = ?
-    `).all(userId);
-  }
+  // Always return only the current user's budgets (no family logic to avoid duplicates)
+  const limits = db.prepare(`
+    SELECT * FROM budget_limits WHERE user_id = ?
+    ORDER BY category
+  `).all(userId);
 
   const formattedLimits = limits.map((l: any) => ({
     category: l.category,
