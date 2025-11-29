@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Transaction, TransactionType, TransactionAttachment } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useDeleteTransaction } from '../hooks/useQueries';
 import { categorizeTransaction, parseTransactionFromText, parseTransactionFromAudio, parseTransactionFromReceipt } from '../services/aiProviderService';
 import { Plus, Paperclip, Loader2, Trash2, Edit2, ArrowDownCircle, ArrowUpCircle, Search, Sparkles, Mic, Square, RefreshCw, CalendarClock, CreditCard, X, ChevronLeft, ChevronRight, FileText, FileSpreadsheet, UploadCloud, File as FileIcon, Download, Camera, Check, RotateCcw } from 'lucide-react';
 
@@ -21,13 +22,14 @@ const Transactions: React.FC<TransactionsProps> = ({
   transactions, 
   addTransaction, 
   updateTransaction,
-  deleteTransaction,
+  deleteTransaction: deleteTransactionProp,
   currentUserId,
   currencyFormatter,
   onExport,
   onRefresh
 }) => {
   const { t } = useLanguage();
+  const { mutate: deleteTransaction } = useDeleteTransaction();
   const [activeTab, setActiveTab] = useState<'history' | 'subscriptions'>('history');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -95,7 +97,6 @@ const Transactions: React.FC<TransactionsProps> = ({
     if (!confirm(`${t("transactions.delete_confirm")} ${selectedIds.size} transações?`)) return;
     selectedIds.forEach(id => deleteTransaction(id));
     setSelectedIds(new Set());
-    if (onRefresh) onRefresh();
   };
 
   const handleSort = (column: 'description' | 'category' | 'date' | 'amount') => {
