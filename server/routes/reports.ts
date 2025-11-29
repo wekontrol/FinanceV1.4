@@ -100,9 +100,10 @@ router.post('/preview', requireAuth, async (req: Request, res: Response) => {
       try {
         const typeStr = String(typeRaw).trim().toUpperCase();
         let normalizedType = typeStr;
-        if (typeStr === 'RECEITA') normalizedType = 'INCOME';
-        else if (typeStr === 'DESPESA') normalizedType = 'EXPENSE';
-        else if (typeStr !== 'INCOME' && typeStr !== 'EXPENSE') {
+        // Normalize to Portuguese (RECEITA/DESPESA) for consistency with enum
+        if (typeStr === 'INCOME') normalizedType = 'RECEITA';
+        else if (typeStr === 'EXPENSE') normalizedType = 'DESPESA';
+        else if (typeStr !== 'RECEITA' && typeStr !== 'DESPESA') {
           errors.push(`Linha ${rowNumber}: Tipo deve ser INCOME/EXPENSE/RECEITA/DESPESA`);
           return;
         }
@@ -195,12 +196,12 @@ router.post('/import', requireAuth, async (req: Request, res: Response) => {
         const typeStr = String(typeRaw).trim().toUpperCase();
         console.log(`[IMPORT] Row ${rowNumber}: typeRaw="${typeRaw}" -> typeStr="${typeStr}"`);
         let normalizedType = typeStr;
-        
-        if (typeStr === 'RECEITA') {
-          normalizedType = 'INCOME';
-        } else if (typeStr === 'DESPESA') {
-          normalizedType = 'EXPENSE';
-        } else if (typeStr !== 'INCOME' && typeStr !== 'EXPENSE') {
+        // Normalize to Portuguese (RECEITA/DESPESA) for consistency with enum
+        if (typeStr === 'INCOME') {
+          normalizedType = 'RECEITA';
+        } else if (typeStr === 'EXPENSE') {
+          normalizedType = 'DESPESA';
+        } else if (typeStr !== 'RECEITA' && typeStr !== 'DESPESA') {
           errors.push(`Linha ${rowNumber}: Tipo deve ser INCOME, EXPENSE, RECEITA ou DESPESA (encontrado: ${typeRaw})`);
           return;
         }
