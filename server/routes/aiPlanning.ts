@@ -101,6 +101,28 @@ router.get('/analyze', (req: Request, res: Response) => {
       ORDER BY date DESC
     `).all(userId) as TransactionData[];
 
+    // **CRITICAL FIX:** If no transactions, return empty analysis (not fictional data)
+    if (transactions.length === 0) {
+      console.log(`[AI Planning] ⚠️ No transactions found for user ${userId}`);
+      return res.json({
+        health_score: 0,
+        health_grade: 'N/A',
+        spending_trends: { month_avg: 0, trend: 'stable' as const, change_percent: 0 },
+        savings_potential: 0,
+        at_risk_categories: [],
+        suggestions: [{ 
+          id: 'add-transactions', 
+          title: 'Adicione transações', 
+          description: 'Para receber análise, adicione suas transações mensais primeiro',
+          priority: 'high' as const,
+          potential_savings: 0,
+          category: 'general'
+        }],
+        goals_progress: [],
+        monthly_comparison: []
+      });
+    }
+
     // Fetch budgets with spending
     const budgets = db.prepare(`
       SELECT DISTINCT category, limit_amount as "limit"
