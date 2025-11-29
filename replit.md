@@ -50,7 +50,7 @@ Fast Mode development - small focused edits preferred.
 - ✅ Frontend forces fresh fetch every time
 - ✅ **USER MUST DO HARD REFRESH OR NEW LOGIN** to see changes (browser cache of old HTML/JS)
 
-## Recent Changes (Phase 17 - BUDGET TRANSLATION KEYS) ✅
+## Recent Changes (Phase 17 - BUDGET TRANSLATION KEYS + TRANSLATION UI FIX) ✅
 
 ### Budget Categories Internationalization Complete:
 - ✅ **Translation Key Architecture:** 16 default budget categories now use translation keys (`budget.category.food`, etc.)
@@ -60,11 +60,18 @@ Fast Mode development - small focused edits preferred.
 - ✅ **Migration Safe:** Old budgets without translation_key are cleaned up, new ones created with proper keys
 - ✅ **Frontend Updated:** BudgetControl.tsx displays translated category names dynamically
 
+### Translation Manager UI Fixed:
+- ✅ **Translation Interface UI Bug Fixed:** Added 9 missing translation keys to all language files
+- ✅ **Keys Added:** filter_language, all_languages, filter_key, history, no_history, translate_with_ai, translation_result, copy, translating
+- ✅ **All 6 Languages Updated:** PT, EN, ES, UM, LN, FR - no more raw translation keys displayed in UI
+- ✅ **Translation Manager Now Shows Proper Text:** History tab, AI assistant, and editor now display translated labels instead of raw keys
+
 ### Technical Changes:
 - Added `translation_key` column to `budget_limits` table
 - Created LEGACY_CATEGORY_MAP for backward compatibility with Portuguese category names
 - Budget /summary and /history endpoints use dual-lookup (translation_key + legacy names)
 - autoSaveMonthlyHistory scheduler updated for translation key support
+- Added 9 missing i18n keys to public/locales/*.json files for TranslationManager component
 
 ## Previous Changes (Phase 15+++ - BUG FIXES + OPTIMIZATIONS)
 - ✅ **Backend Improvements:** 
