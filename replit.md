@@ -50,7 +50,23 @@ Fast Mode development - small focused edits preferred.
 - ✅ Frontend forces fresh fetch every time
 - ✅ **USER MUST DO HARD REFRESH OR NEW LOGIN** to see changes (browser cache of old HTML/JS)
 
-## Recent Changes (Phase 15+++ - BUG FIXES + OPTIMIZATIONS)
+## Recent Changes (Phase 17 - BUDGET TRANSLATION KEYS) ✅
+
+### Budget Categories Internationalization Complete:
+- ✅ **Translation Key Architecture:** 16 default budget categories now use translation keys (`budget.category.food`, etc.)
+- ✅ **Multi-Language Support:** All 16 categories translated in 6 languages (PT, EN, ES, UM, LN, FR)
+- ✅ **Backward Compatibility:** LEGACY_CATEGORY_MAP ensures existing transactions with Portuguese names still work
+- ✅ **Auto-Creation:** Default budgets created automatically on user registration or first /summary access
+- ✅ **Migration Safe:** Old budgets without translation_key are cleaned up, new ones created with proper keys
+- ✅ **Frontend Updated:** BudgetControl.tsx displays translated category names dynamically
+
+### Technical Changes:
+- Added `translation_key` column to `budget_limits` table
+- Created LEGACY_CATEGORY_MAP for backward compatibility with Portuguese category names
+- Budget /summary and /history endpoints use dual-lookup (translation_key + legacy names)
+- autoSaveMonthlyHistory scheduler updated for translation key support
+
+## Previous Changes (Phase 15+++ - BUG FIXES + OPTIMIZATIONS)
 - ✅ **Backend Improvements:** 
   - Graceful cache failure handling - continues if table doesn't exist
   - Better logging with [AI Planning] tags
