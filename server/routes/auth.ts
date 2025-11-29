@@ -112,13 +112,21 @@ router.post('/register', (req: Request, res: Response) => {
   );
 
   // Create default budgets for new user
-  defaultBudgets.forEach((budget: any) => {
-    const budgetId = `bl${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
-    db.prepare(`
-      INSERT INTO budget_limits (id, user_id, category, limit_amount, is_default)
-      VALUES (?, ?, ?, ?, 1)
-    `).run(budgetId, userId, budget.category, budget.limit);
-  });
+  try {
+    let budgetsCreated = 0;
+    defaultBudgets.forEach((budget: any) => {
+      const budgetId = `bl${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      db.prepare(`
+        INSERT INTO budget_limits (id, user_id, category, limit_amount, is_default)
+        VALUES (?, ?, ?, ?, 1)
+      `).run(budgetId, userId, budget.category, budget.limit);
+      budgetsCreated++;
+    });
+    console.log(`✓ Created ${budgetsCreated} default budgets for user ${userId}`);
+  } catch (error: any) {
+    console.error(`✗ Error creating default budgets for user ${userId}:`, error.message);
+    return res.status(500).json({ error: 'Failed to create default budgets', details: error.message });
+  }
 
   const user = db.prepare(`
     SELECT id, username, name, role, avatar, status, family_id as familyId
