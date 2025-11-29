@@ -134,27 +134,27 @@ router.get('/limits', (req: Request, res: Response) => {
   res.json(formattedLimits);
 });
 
-// Criar orçamentos padrão se não existirem
+// Criar orçamentos padrão se não existirem (usando a mesma lista do register)
 router.post('/create-defaults', (req: Request, res: Response) => {
   const userId = req.session.userId;
 
   const defaultBudgets = [
-    { category: 'Renda', limit: 0 },
-    { category: 'Energia', limit: 150 },
-    { category: 'Água', limit: 80 },
+    { category: 'Alimentação', limit: 500 },
     { category: 'Transporte', limit: 200 },
-    { category: 'Alimentação', limit: 300 },
-    { category: 'Combustível', limit: 200 },
-    { category: 'Compras domésticas', limit: 150 },
-    { category: 'Lazer', limit: 150 },
-    { category: 'Roupas', limit: 100 },
-    { category: 'Saúde', limit: 200 },
-    { category: 'Cuidados pessoais', limit: 80 },
-    { category: 'Juros / Multas', limit: 100 },
-    { category: 'Reparações e Manutenção', limit: 150 },
-    { category: 'Presentes', limit: 100 },
-    { category: 'Eventos', limit: 200 },
-    { category: 'Viagens', limit: 300 }
+    { category: 'Saúde', limit: 300 },
+    { category: 'Educação', limit: 400 },
+    { category: 'Entretenimento', limit: 150 },
+    { category: 'Utilidades', limit: 350 },
+    { category: 'Vestuário', limit: 250 },
+    { category: 'Comunicação', limit: 100 },
+    { category: 'Seguros', limit: 200 },
+    { category: 'Poupança', limit: 1000 },
+    { category: 'Investimentos', limit: 500 },
+    { category: 'Lazer', limit: 200 },
+    { category: 'Viagens', limit: 300 },
+    { category: 'Casa', limit: 400 },
+    { category: 'Pets', limit: 150 },
+    { category: 'Geral', limit: 500 }
   ];
 
   let created = 0;

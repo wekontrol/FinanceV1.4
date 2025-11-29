@@ -6,33 +6,38 @@ A comprehensive family financial management platform built with React, TypeScrip
 ## User Preferences
 Fast Mode development - small focused edits preferred.
 
-## Recent Changes (Phase 8)
+## Recent Changes (Phase 9)
 
-### Phase 8: EXCEL TEMPLATES + MULTI-SELECT DELETE ✅
-- **Excel Template Download + Import:**
-  - Added "Template" button in Transactions tab (blue) → downloads blank Excel template
-  - Added "Importar" button in Transactions tab (purple) → imports multiple transactions from Excel
-  - Template columns: Data (DD/MM/YYYY) | Descrição | Categoria | Tipo | Valor
-  - Validation: Strict type checking (only INCOME/EXPENSE), date parsing, positive amounts
-  - Error messages in Portuguese per line
+### Phase 9: BUGFIX + OPTIMIZATION ✅
+- **Fixed TransactionType Enum Mismatch:**
+  - Enum defines: INCOME='RECEITA', EXPENSE='DESPESA' (Portuguese)
+  - Backend was normalizing backwards (saving INCOME instead of RECEITA)
+  - Fixed: `/api/reports/preview` and `/api/reports/import` now normalize to Portuguese before saving
+  - Result: INCOME displays green ✓, EXPENSE displays red ✓
   
-- **Multi-Select Delete:**
-  - Checkboxes on each transaction row (desktop table view)
-  - "Select All" checkbox in table header
-  - Selected rows highlighted with blue background
-  - Delete bar appears when items selected (shows count + red delete button)
-  - Confirmation dialog shows count before deleting
-  - State: `selectedIds` (Set<string>)
+- **Fixed Preview Modal Colors:**
+  - Modal was comparing with 'INCOME'/'EXPENSE' strings instead of 'RECEITA'/'DESPESA'
+  - Now uses correct Portuguese strings
+  - Colors display correctly before importing
   
-- **Dashboard Type Compatibility:**
-  - Fixed to accept both INCOME/EXPENSE and RECEITA/DESPESA formats
-  - Dashboard now properly filters imported transactions
+- **Auto-Refresh After Operations:**
+  - Added `onRefresh` callback prop to Transactions component
+  - Called after: import Excel, add transaction, edit transaction, delete transaction
+  - Automatically reloads data without manual F5/refresh
+  
+- **Fixed Default Budgets Recurring Issue:**
+  - **Problem:** Two different budget lists (auth.ts ≠ budget.ts), called recursively at every login
+  - **Solution:** Consolidated to single list (16 categories from auth.ts)
+  - Removed redundant `/api/budget/create-defaults` call from `loadAllData()` 
+  - Now created only at registration (auth.ts)
+  - Result: No more unnecessary recreations, cleaner database
+  - Each user has independent budgets, unaffected by other users
   
 - **Files Modified:**
-  - `components/Transactions.tsx` - Added 3 handlers (toggleSelect, toggleSelectAll, deleteSelected) + UI for checkboxes and delete bar
-  - `server/routes/reports.ts` - Added Excel import endpoint with validation
-  - `components/Dashboard.tsx` - Fixed type filtering to support both formats
-  - `server/index.ts` - Registered /api/reports route
+  - `server/routes/reports.ts` - Fixed type normalization (INCOME→RECEITA, EXPENSE→DESPESA)
+  - `components/Transactions.tsx` - Fixed preview modal strings, added onRefresh callback
+  - `server/routes/budget.ts` - Consolidated default budgets list
+  - `App.tsx` - Removed redundant create-defaults call from loadAllData()
 
 ## System Architecture
 
