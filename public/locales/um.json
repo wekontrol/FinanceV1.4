@@ -604,5 +604,21 @@
   "ai_planning.goal_emergency": "Okuveya okwa Akuti",
   "ai_planning.goal_vacation": "Okuvila Okwonona",
   "ai_planning.goal_education": "Okuva",
-  "ai_planning.no_goals": "Akakala okweyakile okwa kweyela okwalunga"
+  "ai_planning.no_goals": "Akakala okweyakile okwa kweyela okwalunga",
+  "budget.category.food": "Okulya",
+  "budget.category.transport": "Okuenda",
+  "budget.category.health": "Usoka",
+  "budget.category.education": "Osikola",
+  "budget.category.entertainment": "Okuyovola",
+  "budget.category.utilities": "Ovilumba",
+  "budget.category.clothing": "Ombalo",
+  "budget.category.communication": "Okuyovola",
+  "budget.category.insurance": "Okalunga",
+  "budget.category.savings": "Okusindika",
+  "budget.category.investments": "Okuyikila",
+  "budget.category.leisure": "Okupemba",
+  "budget.category.travel": "Olundu",
+  "budget.category.home": "Ongongo",
+  "budget.category.pets": "Ovinyama",
+  "budget.category.general": "Ovitwa"
 }

@@ -301,11 +301,12 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                 {budgetHistory[selectedMonth].map((item) => {
                   const percentage = item.limit > 0 ? (item.spent / item.limit) * 100 : 0;
                   const isOverBudget = item.limit > 0 && item.spent > item.limit;
+                  const historyDisplayName = item.category.startsWith('budget.category.') ? t(item.category) : item.category;
                   
                   return (
                     <div key={item.category} className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-slate-800 dark:text-white">{item.category}</h4>
+                        <h4 className="font-bold text-slate-800 dark:text-white">{historyDisplayName}</h4>
                         <span className={`text-xs font-bold px-2 py-1 rounded-full ${isOverBudget ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
                           {percentage.toFixed(0)}%
                         </span>
@@ -457,8 +458,10 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
         {budgets.map(budget => {
           const limit = budget.limit;
           const cat = budget.category;
-          const isDefault = (budget as any).isDefault || false;
-          const spent = categorySpending[cat] || 0;
+          const translationKey = budget.translationKey;
+          const isDefault = budget.isDefault || false;
+          const displayName = translationKey ? t(translationKey) : cat;
+          const spent = categorySpending[cat] || categorySpending[translationKey || ''] || 0;
           const percentage = limit > 0 ? (spent / limit) * 100 : 0;
           const isOverBudget = limit > 0 && spent > limit;
           const isNearLimit = limit > 0 && spent > limit * 0.9 && !isOverBudget;
@@ -468,7 +471,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
               <div>
                 <div className="flex justify-between items-start mb-4 gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <h3 className="font-bold text-slate-800 dark:text-white text-sm sm:text-base md:text-lg line-clamp-2 break-words">{cat}</h3>
+                    <h3 className="font-bold text-slate-800 dark:text-white text-sm sm:text-base md:text-lg line-clamp-2 break-words">{displayName}</h3>
                     {isDefault && <span className="text-xs font-bold px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full whitespace-nowrap flex-shrink-0">{t("budget.default")}</span>}
                   </div>
                   {isOverBudget && <AlertTriangle className="text-rose-500 animate-pulse" size={22} />}

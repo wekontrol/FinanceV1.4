@@ -604,5 +604,21 @@
   "ai_planning.goal_emergency": "Fonds de Secours",
   "ai_planning.goal_vacation": "Vacances en Famille",
   "ai_planning.goal_education": "Éducation",
-  "ai_planning.no_goals": "Vous n'avez pas encore créé d'objectifs financiers"
+  "ai_planning.no_goals": "Vous n'avez pas encore créé d'objectifs financiers",
+  "budget.category.food": "Alimentation",
+  "budget.category.transport": "Transport",
+  "budget.category.health": "Santé",
+  "budget.category.education": "Éducation",
+  "budget.category.entertainment": "Divertissement",
+  "budget.category.utilities": "Services",
+  "budget.category.clothing": "Vêtements",
+  "budget.category.communication": "Communication",
+  "budget.category.insurance": "Assurances",
+  "budget.category.savings": "Épargne",
+  "budget.category.investments": "Investissements",
+  "budget.category.leisure": "Loisirs",
+  "budget.category.travel": "Voyages",
+  "budget.category.home": "Maison",
+  "budget.category.pets": "Animaux",
+  "budget.category.general": "Général"
 }

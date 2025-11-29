@@ -604,5 +604,21 @@
   "ai_planning.goal_emergency": "Fundo de Emergência",
   "ai_planning.goal_vacation": "Férias em Família",
   "ai_planning.goal_education": "Educação",
-  "ai_planning.no_goals": "Você ainda não criou nenhuma meta financeira"
+  "ai_planning.no_goals": "Você ainda não criou nenhuma meta financeira",
+  "budget.category.food": "Alimentação",
+  "budget.category.transport": "Transporte",
+  "budget.category.health": "Saúde",
+  "budget.category.education": "Educação",
+  "budget.category.entertainment": "Entretenimento",
+  "budget.category.utilities": "Utilidades",
+  "budget.category.clothing": "Vestuário",
+  "budget.category.communication": "Comunicação",
+  "budget.category.insurance": "Seguros",
+  "budget.category.savings": "Poupança",
+  "budget.category.investments": "Investimentos",
+  "budget.category.leisure": "Lazer",
+  "budget.category.travel": "Viagens",
+  "budget.category.home": "Casa",
+  "budget.category.pets": "Animais de Estimação",
+  "budget.category.general": "Geral"
 }

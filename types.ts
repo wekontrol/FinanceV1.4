@@ -92,7 +92,9 @@ export interface Notification {
 
 export interface BudgetLimit {
   category: string;
+  translationKey?: string;
   limit: number;
+  isDefault?: boolean;
 }
 
 export interface CategoryBudget {

@@ -68,6 +68,23 @@ export function initializeDatabase() {
   }
 
   try {
+    db.exec(`ALTER TABLE budget_limits ADD COLUMN translation_key TEXT;`);
+  } catch (e) {
+    // Column already exists
+  }
+
+  try {
+    const oldBudgets = db.prepare(`SELECT * FROM budget_limits WHERE translation_key IS NULL AND is_default = 1 LIMIT 1`).get();
+    if (oldBudgets) {
+      console.log('[Migration] Removing old default budgets without translation_key...');
+      db.exec(`DELETE FROM budget_limits WHERE translation_key IS NULL AND is_default = 1`);
+      console.log('[Migration] Old default budgets removed. New ones will be created on next access.');
+    }
+  } catch (e) {
+    console.log('[Migration] Budget migration check skipped');
+  }
+
+  try {
     db.exec(`ALTER TABLE users ADD COLUMN currency_provider_preference TEXT DEFAULT 'BNA';`);
   } catch (e) {
     // Column already exists

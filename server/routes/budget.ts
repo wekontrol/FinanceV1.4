@@ -3,7 +3,74 @@ import db from '../db/schema';
 
 const router = Router();
 
-// Função para salvar automaticamente histórico do mês anterior ao final do mês
+const LEGACY_CATEGORY_MAP: Record<string, string> = {
+  'budget.category.food': 'Alimentação',
+  'budget.category.transport': 'Transporte',
+  'budget.category.health': 'Saúde',
+  'budget.category.education': 'Educação',
+  'budget.category.entertainment': 'Entretenimento',
+  'budget.category.utilities': 'Utilidades',
+  'budget.category.clothing': 'Vestuário',
+  'budget.category.communication': 'Comunicação',
+  'budget.category.insurance': 'Seguros',
+  'budget.category.savings': 'Poupança',
+  'budget.category.investments': 'Investimentos',
+  'budget.category.leisure': 'Lazer',
+  'budget.category.travel': 'Viagens',
+  'budget.category.home': 'Casa',
+  'budget.category.pets': 'Pets',
+  'budget.category.general': 'Geral',
+};
+
+const REVERSE_LEGACY_MAP: Record<string, string> = Object.entries(LEGACY_CATEGORY_MAP).reduce(
+  (acc, [key, value]) => ({ ...acc, [value]: key }),
+  {}
+);
+
+export const DEFAULT_BUDGETS = [
+  { translationKey: 'budget.category.food', defaultLimit: 500 },
+  { translationKey: 'budget.category.transport', defaultLimit: 200 },
+  { translationKey: 'budget.category.health', defaultLimit: 300 },
+  { translationKey: 'budget.category.education', defaultLimit: 400 },
+  { translationKey: 'budget.category.entertainment', defaultLimit: 150 },
+  { translationKey: 'budget.category.utilities', defaultLimit: 350 },
+  { translationKey: 'budget.category.clothing', defaultLimit: 250 },
+  { translationKey: 'budget.category.communication', defaultLimit: 100 },
+  { translationKey: 'budget.category.insurance', defaultLimit: 200 },
+  { translationKey: 'budget.category.savings', defaultLimit: 1000 },
+  { translationKey: 'budget.category.investments', defaultLimit: 500 },
+  { translationKey: 'budget.category.leisure', defaultLimit: 200 },
+  { translationKey: 'budget.category.travel', defaultLimit: 300 },
+  { translationKey: 'budget.category.home', defaultLimit: 400 },
+  { translationKey: 'budget.category.pets', defaultLimit: 150 },
+  { translationKey: 'budget.category.general', defaultLimit: 500 }
+];
+
+export function createDefaultBudgetsForUser(userId: string): number {
+  let created = 0;
+  
+  DEFAULT_BUDGETS.forEach((budget) => {
+    const existing = db.prepare(`
+      SELECT id FROM budget_limits WHERE user_id = ? AND translation_key = ?
+    `).get(userId, budget.translationKey);
+
+    if (!existing) {
+      const budgetId = `bl${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      db.prepare(`
+        INSERT INTO budget_limits (id, user_id, category, translation_key, limit_amount, is_default)
+        VALUES (?, ?, ?, ?, ?, 1)
+      `).run(budgetId, userId, budget.translationKey, budget.translationKey, budget.defaultLimit);
+      created++;
+    }
+  });
+
+  if (created > 0) {
+    console.log(`[Budget] Created ${created} default budgets for user ${userId}`);
+  }
+  
+  return created;
+}
+
 export function autoSaveMonthlyHistory(userId: string) {
   try {
     const lastSave = db.prepare(`
@@ -13,7 +80,6 @@ export function autoSaveMonthlyHistory(userId: string) {
     const lastMonth = lastSave?.value || '2000-01';
     const currentMonth = new Date().toISOString().slice(0, 7);
 
-    // Se mudou de mês, salva histórico do mês anterior
     if (lastMonth !== currentMonth) {
       const previousMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().slice(0, 7);
       
@@ -28,7 +94,6 @@ export function autoSaveMonthlyHistory(userId: string) {
         GROUP BY category
       `).all(userId, `${previousMonth}%`) as any[];
 
-      // Adiciona também as assinaturas ativas no mês anterior
       const recurringTransactions = db.prepare(`
         SELECT category, SUM(amount) as total
         FROM transactions
@@ -38,20 +103,30 @@ export function autoSaveMonthlyHistory(userId: string) {
 
       let saved = 0;
       limits.forEach((limit: any) => {
-        const spent = transactions.find(t => t.category === limit.category);
-        const recurring = recurringTransactions.find(t => t.category === limit.category);
+        const categoryKey = limit.translation_key || limit.category;
+        const legacyName = LEGACY_CATEGORY_MAP[categoryKey];
+        
+        const spent = transactions.find(t => 
+          t.category === categoryKey || 
+          t.category === limit.category ||
+          (legacyName && t.category === legacyName)
+        );
+        const recurring = recurringTransactions.find(t => 
+          t.category === categoryKey || 
+          t.category === limit.category ||
+          (legacyName && t.category === legacyName)
+        );
         const totalSpent = (spent?.total || 0) + (recurring?.total || 0);
         const id = `bh${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
         
         db.prepare(`
           INSERT OR REPLACE INTO budget_history (id, user_id, category, month, limit_amount, spent_amount)
           VALUES (?, ?, ?, ?, ?, ?)
-        `).run(id, userId, limit.category, previousMonth, limit.limit_amount, totalSpent);
+        `).run(id, userId, categoryKey, previousMonth, limit.limit_amount, totalSpent);
         
         saved++;
       });
 
-      // Atualiza a data do último salvamento
       db.prepare(`
         INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)
       `).run(`budget_history_saved_${userId}`, currentMonth);
@@ -63,12 +138,9 @@ export function autoSaveMonthlyHistory(userId: string) {
   }
 }
 
-// Background scheduler - executa a cada 30 minutos para salvar históricos automáticamente
 export function startMonthlyHistoryScheduler() {
-  // Executa a cada 30 minutos (1800000 ms)
   const interval = setInterval(() => {
     try {
-      // Pega todos os usuários que têm orçamentos definidos
       const users = db.prepare(`
         SELECT DISTINCT user_id FROM budget_limits
       `).all() as any[];
@@ -82,9 +154,8 @@ export function startMonthlyHistoryScheduler() {
     } catch (error) {
       console.error('[Budget Scheduler] Error:', error);
     }
-  }, 30 * 60 * 1000); // 30 minutos
+  }, 30 * 60 * 1000);
 
-  // Também executa uma vez na inicialização (após 1 segundo de delay)
   setTimeout(() => {
     try {
       const users = db.prepare(`
@@ -119,14 +190,22 @@ router.use(requireAuth);
 router.get('/limits', (req: Request, res: Response) => {
   const userId = req.session.userId;
 
-  // Always return only the current user's budgets (no family logic to avoid duplicates)
-  const limits = db.prepare(`
+  let limits = db.prepare(`
     SELECT * FROM budget_limits WHERE user_id = ?
     ORDER BY category
-  `).all(userId);
+  `).all(userId) as any[];
+
+  if (limits.length === 0) {
+    createDefaultBudgetsForUser(userId!);
+    limits = db.prepare(`
+      SELECT * FROM budget_limits WHERE user_id = ?
+      ORDER BY category
+    `).all(userId) as any[];
+  }
 
   const formattedLimits = limits.map((l: any) => ({
     category: l.category,
+    translationKey: l.translation_key,
     limit: l.limit_amount,
     isDefault: l.is_default === 1
   }));
@@ -134,73 +213,39 @@ router.get('/limits', (req: Request, res: Response) => {
   res.json(formattedLimits);
 });
 
-// Criar orçamentos padrão se não existirem (usando a mesma lista do register)
 router.post('/create-defaults', (req: Request, res: Response) => {
   const userId = req.session.userId;
-
-  const defaultBudgets = [
-    { category: 'Alimentação', limit: 500 },
-    { category: 'Transporte', limit: 200 },
-    { category: 'Saúde', limit: 300 },
-    { category: 'Educação', limit: 400 },
-    { category: 'Entretenimento', limit: 150 },
-    { category: 'Utilidades', limit: 350 },
-    { category: 'Vestuário', limit: 250 },
-    { category: 'Comunicação', limit: 100 },
-    { category: 'Seguros', limit: 200 },
-    { category: 'Poupança', limit: 1000 },
-    { category: 'Investimentos', limit: 500 },
-    { category: 'Lazer', limit: 200 },
-    { category: 'Viagens', limit: 300 },
-    { category: 'Casa', limit: 400 },
-    { category: 'Pets', limit: 150 },
-    { category: 'Geral', limit: 500 }
-  ];
-
-  let created = 0;
-  defaultBudgets.forEach((budget: any) => {
-    const existing = db.prepare(`
-      SELECT id FROM budget_limits WHERE user_id = ? AND category = ?
-    `).get(userId, budget.category);
-
-    if (!existing) {
-      const budgetId = `bl${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
-      db.prepare(`
-        INSERT INTO budget_limits (id, user_id, category, limit_amount, is_default)
-        VALUES (?, ?, ?, ?, 1)
-      `).run(budgetId, userId, budget.category, budget.limit);
-      created++;
-    }
-  });
-
+  const created = createDefaultBudgetsForUser(userId!);
   res.json({ message: `Created ${created} default budgets`, created });
 });
 
 router.post('/limits', (req: Request, res: Response) => {
   const userId = req.session.userId;
-  const { category, limit } = req.body;
+  const { category, limit, translationKey } = req.body;
 
   if (!category || limit === undefined) {
     return res.status(400).json({ error: 'Category and limit are required' });
   }
 
+  const categoryIdentifier = translationKey || category;
+  
   const existing = db.prepare(`
-    SELECT * FROM budget_limits WHERE user_id = ? AND category = ?
-  `).get(userId, category);
+    SELECT * FROM budget_limits WHERE user_id = ? AND (category = ? OR translation_key = ?)
+  `).get(userId, categoryIdentifier, categoryIdentifier);
 
   if (existing) {
     db.prepare(`
-      UPDATE budget_limits SET limit_amount = ? WHERE user_id = ? AND category = ?
-    `).run(limit, userId, category);
+      UPDATE budget_limits SET limit_amount = ? WHERE user_id = ? AND (category = ? OR translation_key = ?)
+    `).run(limit, userId, categoryIdentifier, categoryIdentifier);
   } else {
     const id = `bl${Date.now()}`;
     db.prepare(`
-      INSERT INTO budget_limits (id, user_id, category, limit_amount)
-      VALUES (?, ?, ?, ?)
-    `).run(id, userId, category, limit);
+      INSERT INTO budget_limits (id, user_id, category, translation_key, limit_amount, is_default)
+      VALUES (?, ?, ?, ?, ?, 0)
+    `).run(id, userId, category, translationKey || null, limit);
   }
 
-  res.json({ category, limit });
+  res.json({ category, limit, translationKey });
 });
 
 router.delete('/limits/:category', (req: Request, res: Response) => {
@@ -208,26 +253,23 @@ router.delete('/limits/:category', (req: Request, res: Response) => {
   const { category } = req.params;
   const decodedCategory = decodeURIComponent(category);
 
-  // Verifica se é um orçamento padrão (não pode deletar)
   const budget = db.prepare(`
-    SELECT is_default FROM budget_limits WHERE user_id = ? AND category = ?
-  `).get(userId, decodedCategory) as any;
+    SELECT is_default, translation_key FROM budget_limits WHERE user_id = ? AND (category = ? OR translation_key = ?)
+  `).get(userId, decodedCategory, decodedCategory) as any;
 
   if (budget?.is_default === 1) {
     return res.status(403).json({ error: 'Não pode deletar orçamentos padrão' });
   }
 
-  // Realoca todas as transações desta categoria para "Geral"
   db.prepare(`
-    UPDATE transactions SET category = ? WHERE user_id = ? AND category = ?
-  `).run('Geral', userId, decodedCategory);
-
-  // Deleta o orçamento
-  db.prepare(`
-    DELETE FROM budget_limits WHERE user_id = ? AND category = ?
+    UPDATE transactions SET category = 'budget.category.general' WHERE user_id = ? AND category = ?
   `).run(userId, decodedCategory);
 
-  res.json({ message: 'Budget deleted and transactions moved to Geral' });
+  db.prepare(`
+    DELETE FROM budget_limits WHERE user_id = ? AND (category = ? OR translation_key = ?)
+  `).run(userId, decodedCategory, decodedCategory);
+
+  res.json({ message: 'Budget deleted and transactions moved to General' });
 });
 
 router.get('/summary', (req: Request, res: Response) => {
@@ -236,8 +278,18 @@ router.get('/summary', (req: Request, res: Response) => {
 
   const currentMonth = new Date().toISOString().slice(0, 7);
 
+  let limits = db.prepare(`
+    SELECT * FROM budget_limits WHERE user_id = ?
+  `).all(userId) as any[];
+
+  if (limits.length === 0) {
+    createDefaultBudgetsForUser(userId!);
+    limits = db.prepare(`
+      SELECT * FROM budget_limits WHERE user_id = ?
+    `).all(userId) as any[];
+  }
+
   let transactions;
-  // Despesas simples + assinaturas/recorrências do mês atual
   if (user.role === 'SUPER_ADMIN' || user.role === 'MANAGER') {
     transactions = db.prepare(`
       SELECT category, SUM(amount) as total
@@ -255,24 +307,29 @@ router.get('/summary', (req: Request, res: Response) => {
     `).all(userId, `${currentMonth}%`, new Date().toISOString().split('T')[0]);
   }
 
-  const limits = db.prepare(`
-    SELECT * FROM budget_limits WHERE user_id = ?
-  `).all(userId);
-
   const summary = limits.map((l: any) => {
-    const spent = (transactions as any[]).find(t => t.category === l.category);
+    const categoryKey = l.translation_key || l.category;
+    const legacyName = LEGACY_CATEGORY_MAP[categoryKey];
+    
+    const spent = (transactions as any[]).find(t => 
+      t.category === categoryKey || 
+      t.category === l.category ||
+      (legacyName && t.category === legacyName)
+    );
+    
     return {
       category: l.category,
+      translationKey: l.translation_key,
       limit: l.limit_amount,
       spent: spent ? spent.total : 0,
-      percentage: spent ? Math.round((spent.total / l.limit_amount) * 100) : 0
+      percentage: spent ? Math.round((spent.total / l.limit_amount) * 100) : 0,
+      isDefault: l.is_default === 1
     };
   });
 
   res.json(summary);
 });
 
-// Get budget history for all months
 router.get('/history', (req: Request, res: Response) => {
   const userId = req.session.userId;
   
@@ -298,7 +355,6 @@ router.get('/history', (req: Request, res: Response) => {
   res.json(grouped);
 });
 
-// Save current month to history (called at end of month or manually)
 router.post('/history/save', (req: Request, res: Response) => {
   const userId = req.session.userId;
   const currentMonth = new Date().toISOString().slice(0, 7);
@@ -317,13 +373,14 @@ router.post('/history/save', (req: Request, res: Response) => {
 
     let saved = 0;
     limits.forEach((limit: any) => {
-      const spent = transactions.find(t => t.category === limit.category);
+      const categoryKey = limit.translation_key || limit.category;
+      const spent = transactions.find(t => t.category === categoryKey || t.category === limit.category);
       const id = `bh${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
       
       db.prepare(`
         INSERT OR REPLACE INTO budget_history (id, user_id, category, month, limit_amount, spent_amount)
         VALUES (?, ?, ?, ?, ?, ?)
-      `).run(id, userId, limit.category, currentMonth, limit.limit_amount, spent ? spent.total : 0);
+      `).run(id, userId, categoryKey, currentMonth, limit.limit_amount, spent ? spent.total : 0);
       
       saved++;
     });

@@ -604,5 +604,21 @@
   "ai_planning.goal_emergency": "Kusindisa ya Akuti",
   "ai_planning.goal_vacation": "Molende ya Famille",
   "ai_planning.goal_education": "Boyekoli",
-  "ai_planning.no_goals": "Oyekilaki te layini ya mbongo"
+  "ai_planning.no_goals": "Oyekilaki te layini ya mbongo",
+  "budget.category.food": "Bilei",
+  "budget.category.transport": "Botamboli",
+  "budget.category.health": "Nzoto",
+  "budget.category.education": "Mateya",
+  "budget.category.entertainment": "Masano",
+  "budget.category.utilities": "Bisaleli",
+  "budget.category.clothing": "Bilamba",
+  "budget.category.communication": "Masolo",
+  "budget.category.insurance": "Libanzi",
+  "budget.category.savings": "Kobomba",
+  "budget.category.investments": "Lotomba",
+  "budget.category.leisure": "Kopema",
+  "budget.category.travel": "Mobembo",
+  "budget.category.home": "Ndako",
+  "budget.category.pets": "Nyama",
+  "budget.category.general": "Nyonso"
 }
