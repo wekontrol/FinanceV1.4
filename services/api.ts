@@ -138,6 +138,11 @@ export const budgetApi = {
       body: JSON.stringify({})
     });
     return handleResponse(response);
+  },
+
+  getSummary: async () => {
+    const response = await fetch(`${API_BASE}/budget/summary`, { credentials: 'include' });
+    return handleResponse(response);
   }
 };
 

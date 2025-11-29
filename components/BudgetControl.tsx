@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Transaction, TransactionType, BudgetLimit } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { PieChart, Save, AlertTriangle, CheckCircle, Edit3, Sparkles, Loader2, Plus, X, History, Calendar, Trash2 } from 'lucide-react';
@@ -20,6 +20,13 @@ interface HistoryEntry {
   spent: number;
 }
 
+interface BudgetSummary {
+  category: string;
+  limit: number;
+  spent: number;
+  percentage: number;
+}
+
 const BudgetControl: React.FC<BudgetControlProps> = ({ 
   transactions, 
   budgets, 
@@ -36,23 +43,33 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
   const [showHistory, setShowHistory] = useState(false);
   const [budgetHistory, setBudgetHistory] = useState<Record<string, HistoryEntry[]>>({});
   const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [budgetSummary, setBudgetSummary] = useState<BudgetSummary[]>([]);
 
   // Get all existing budget categories for current user
   const existingBudgetCategories = useMemo(() => {
     return new Set(budgets.map(b => b.category));
   }, [budgets]);
 
-  const categorySpending = useMemo(() => {
-    const now = new Date();
-    const spending: Record<string, number> = {};
-    transactions.forEach(t => {
-      const tDate = new Date(t.date);
-      if (t.type === TransactionType.EXPENSE && tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear()) {
-        spending[t.category] = (spending[t.category] || 0) + t.amount;
+  // Load budget summary from API (more accurate than calculating on frontend)
+  useEffect(() => {
+    const loadSummary = async () => {
+      try {
+        const summary = await budgetApi.getSummary();
+        setBudgetSummary(summary);
+      } catch (error) {
+        console.error('Erro ao carregar resumo do orçamento:', error);
       }
+    };
+    loadSummary();
+  }, [transactions, budgets]);
+
+  const categorySpending = useMemo(() => {
+    const spending: Record<string, number> = {};
+    budgetSummary.forEach(item => {
+      spending[item.category] = item.spent;
     });
     return spending;
-  }, [transactions]);
+  }, [budgetSummary]);
 
   const handleEdit = (category: string, currentLimit: number) => {
     setEditingCategory(category);

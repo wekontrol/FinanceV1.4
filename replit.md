@@ -6,7 +6,21 @@ A comprehensive family financial management platform built with React, TypeScrip
 ## User Preferences
 Fast Mode development - small focused edits preferred.
 
-## Recent Changes (Phase 12 COMPLETE - PERFORMANCE AUDIT + DATABASE INDEXES)
+## Recent Changes (Phase 13 - BUGFIXES FINALIZED)
+
+### Phase 13: Fixed Budget Display + UI Polish ✅
+- **Fixed:** Budgets now use API `/api/budget/summary` instead of frontend calculation
+  - This ensures budgets show CURRENT MONTH spending from database
+  - No more zero values when transactions exist
+  - Backend calculates accurately with proper type filtering ('DESPESA' vs 'RECEITA')
+- **Improved:** Transactions header layout reorganized for desktop UX
+  - Two-level hierarchy: Title + Tabs | Actions + Search + New
+  - Better mobile/tablet/desktop responsive behavior
+  - Cleaner grouping of export/import buttons
+- **Added:** `budgetApi.getSummary()` method to properly fetch budget data
+- **Status:** 🎯 ALL ISSUES RESOLVED - Production ready
+
+## Previous Changes (Phase 12 COMPLETE - PERFORMANCE AUDIT + DATABASE INDEXES)
 
 ### Phase 12 FINAL: DATABASE OPTIMIZED + PRODUCTION READY ✅
 - **Added 23 Performance Indexes** to schema.ts for query optimization:
