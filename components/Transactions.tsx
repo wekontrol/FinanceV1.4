@@ -623,55 +623,58 @@ const Transactions: React.FC<TransactionsProps> = ({
          </form>
       </div>
 
-      <div className="flex flex-col xl:flex-row justify-between items-center gap-4">
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full xl:w-auto">
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 dark:text-white truncate">{t("transactions.title")}</h2>
-            <p className="text-slate-500 text-sm hidden md:block">{t("transactions.subtitle")}</p>
+            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 dark:text-white">{t("transactions.title")}</h2>
+            <p className="text-slate-500 text-sm hidden sm:block">{t("transactions.subtitle")}</p>
           </div>
           
-          <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 w-full md:w-auto overflow-x-auto" data-tour="transactions-tabs">
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 w-fit" data-tour="transactions-tabs">
              <button 
                onClick={() => setActiveTab('history')}
-               className={`flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'history' ? 'bg-white dark:bg-slate-600 shadow-sm text-primary-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+               className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'history' ? 'bg-white dark:bg-slate-600 shadow-sm text-primary-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
              >
                {t("common.history")}
              </button>
              <button 
                onClick={() => setActiveTab('subscriptions')}
-               className={`flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center ${activeTab === 'subscriptions' ? 'bg-white dark:bg-slate-600 shadow-sm text-primary-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+               className={`px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center ${activeTab === 'subscriptions' ? 'bg-white dark:bg-slate-600 shadow-sm text-primary-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
              >
                <RefreshCw size={14} className="mr-2"/> {t("transactions.subscriptions")}
              </button>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
-          <div className="flex gap-2 flex-wrap">
-            <button 
-              onClick={() => onExport('PDF')}
-              className="flex-1 md:flex-none flex items-center justify-center px-4 py-2.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-300 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/40 transition font-bold text-sm border border-rose-100 dark:border-rose-800 active:scale-95"
-              title="Exportar PDF"
-            >
-              <FileText size={18} className="mr-2" /> PDF
-            </button>
-            <button 
-              onClick={() => onExport('CSV')}
-              className="flex-1 md:flex-none flex items-center justify-center px-4 py-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-300 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition font-bold text-sm border border-emerald-100 dark:border-emerald-800 active:scale-95"
-              title="Exportar Excel (CSV)"
-            >
-              <FileSpreadsheet size={18} className="mr-2" /> Excel
-            </button>
-            <button 
-              onClick={handleDownloadTemplate}
-              disabled={isLoadingTemplate}
-              className="flex-1 md:flex-none flex items-center justify-center px-4 py-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition font-bold text-sm border border-blue-100 dark:border-blue-800 active:scale-95 disabled:opacity-50"
-              title="Baixar template Excel"
-            >
-              {isLoadingTemplate ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Download size={18} className="mr-2" />}
-              Template
-            </button>
-            <div className="relative flex-1 md:flex-none">
+        <div className="flex flex-col lg:flex-row gap-3 lg:items-center lg:justify-between">
+          <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap">
+              <button 
+                onClick={() => onExport('PDF')}
+                className="flex items-center justify-center px-3 py-2 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-300 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition font-semibold text-xs sm:text-sm border border-rose-100 dark:border-rose-800 active:scale-95"
+                title="Exportar PDF"
+              >
+                <FileText size={16} className="mr-1.5" /> PDF
+              </button>
+              <button 
+                onClick={() => onExport('CSV')}
+                className="flex items-center justify-center px-3 py-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-300 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition font-semibold text-xs sm:text-sm border border-emerald-100 dark:border-emerald-800 active:scale-95"
+                title="Exportar Excel (CSV)"
+              >
+                <FileSpreadsheet size={16} className="mr-1.5" /> Excel
+              </button>
+              <button 
+                onClick={handleDownloadTemplate}
+                disabled={isLoadingTemplate}
+                className="flex items-center justify-center px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition font-semibold text-xs sm:text-sm border border-blue-100 dark:border-blue-800 active:scale-95 disabled:opacity-50"
+                title="Baixar template Excel"
+              >
+                {isLoadingTemplate ? <Loader2 size={16} className="mr-1.5 animate-spin" /> : <Download size={16} className="mr-1.5" />}
+                Template
+              </button>
+            </div>
+
+            <div className="relative">
               <input 
                 ref={excelInputRef}
                 type="file" 
@@ -682,33 +685,35 @@ const Transactions: React.FC<TransactionsProps> = ({
               <button 
                 onClick={() => excelInputRef.current?.click()}
                 disabled={isUploadingExcel}
-                className="w-full flex items-center justify-center px-4 py-2.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition font-bold text-sm border border-purple-100 dark:border-purple-800 active:scale-95 disabled:opacity-50"
+                className="flex items-center justify-center px-3 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition font-semibold text-xs sm:text-sm border border-purple-100 dark:border-purple-800 active:scale-95 disabled:opacity-50"
                 title="Importar Excel"
               >
-                {isUploadingExcel ? <Loader2 size={18} className="mr-2 animate-spin" /> : <UploadCloud size={18} className="mr-2" />}
+                {isUploadingExcel ? <Loader2 size={16} className="mr-1.5 animate-spin" /> : <UploadCloud size={16} className="mr-1.5" />}
                 Importar
               </button>
             </div>
           </div>
 
-          <div className="relative flex-1 md:w-56">
-            <Search className="absolute left-3 top-3 text-slate-400" size={18} />
-            <input 
-              type="text" 
-              placeholder={t("transactions.search_placeholder")}
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none transition text-slate-800 dark:text-white"
-            />
+          <div className="flex flex-col sm:flex-row gap-2 flex-wrap sm:flex-nowrap lg:justify-end">
+            <div className="relative flex-1 sm:flex-none sm:w-48">
+              <Search className="absolute left-3 top-2.5 text-slate-400" size={16} />
+              <input 
+                type="text" 
+                placeholder={t("transactions.search_placeholder")}
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none transition text-slate-800 dark:text-white text-sm"
+              />
+            </div>
+            <button 
+              data-tour="btn-new-transaction"
+              onClick={handleAddNew}
+              className="flex items-center justify-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition shadow-lg shadow-primary-500/20 font-semibold text-sm whitespace-nowrap active:scale-95"
+            >
+              <Plus size={18} className="mr-1.5" />
+              {t("transactions.new_transaction")}
+            </button>
           </div>
-          <button 
-            data-tour="btn-new-transaction"
-            onClick={handleAddNew}
-            className="flex items-center justify-center px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition shadow-lg shadow-primary-500/20 font-bold whitespace-nowrap active:scale-95"
-          >
-            <Plus size={20} className="mr-2" />
-            {t("transactions.new_transaction")}
-          </button>
         </div>
       </div>
 
