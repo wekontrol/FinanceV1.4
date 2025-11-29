@@ -10,6 +10,37 @@ function requireAuth(req: Request, res: Response, next: Function) {
   next();
 }
 
+function isMinor(birthDate: string | null): boolean {
+  if (!birthDate) return false;
+  const birth = new Date(birthDate);
+  const today = new Date();
+  const age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    return age - 1 < 18;
+  }
+  return age < 18;
+}
+
+function canViewUserTransactions(viewerId: string, viewerRole: string, viewerFamilyId: string, targetUserId: string): boolean {
+  if (viewerId === targetUserId) return true;
+  if (viewerRole === 'SUPER_ADMIN') return true;
+  
+  if (viewerRole === 'MANAGER') {
+    const targetUser = db.prepare(`
+      SELECT id, family_id, birth_date, allow_parent_view FROM users WHERE id = ?
+    `).get(targetUserId) as any;
+    
+    if (!targetUser) return false;
+    if (targetUser.family_id !== viewerFamilyId) return false;
+    
+    if (isMinor(targetUser.birth_date)) return true;
+    if (targetUser.allow_parent_view === 1) return true;
+  }
+  
+  return false;
+}
+
 router.use(requireAuth);
 
 router.get('/', (req: Request, res: Response) => {
@@ -17,6 +48,7 @@ router.get('/', (req: Request, res: Response) => {
   const user = req.session.user;
 
   let transactions;
+  
   if (user.role === 'SUPER_ADMIN') {
     transactions = db.prepare(`
       SELECT t.*, u.name as user_name 
@@ -26,15 +58,23 @@ router.get('/', (req: Request, res: Response) => {
     `).all();
   } else if (user.role === 'MANAGER') {
     transactions = db.prepare(`
+      SELECT t.*, u.name as user_name, u.birth_date, u.allow_parent_view
+      FROM transactions t
+      LEFT JOIN users u ON t.user_id = u.id
+      WHERE t.user_id = ? 
+         OR (u.family_id = ? AND (
+           (u.birth_date IS NOT NULL AND date(u.birth_date) > date('now', '-18 years'))
+           OR u.allow_parent_view = 1
+         ))
+      ORDER BY t.date DESC
+    `).all(userId, user.familyId);
+  } else {
+    transactions = db.prepare(`
       SELECT t.*, u.name as user_name 
       FROM transactions t
       LEFT JOIN users u ON t.user_id = u.id
-      WHERE u.family_id = ?
+      WHERE t.user_id = ? 
       ORDER BY t.date DESC
-    `).all(user.familyId);
-  } else {
-    transactions = db.prepare(`
-      SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC
     `).all(userId);
   }
 
@@ -96,9 +136,7 @@ router.put('/:id', (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Transaction not found' });
   }
 
-  const canEdit = existing.user_id === userId || 
-                  user.role === 'SUPER_ADMIN' || 
-                  (user.role === 'MANAGER' && existing.family_id === user.familyId);
+  const canEdit = canViewUserTransactions(userId!, user.role, user.familyId, existing.user_id);
   
   if (!canEdit) {
     return res.status(403).json({ error: 'Not authorized to edit this transaction' });
@@ -135,9 +173,7 @@ router.delete('/:id', (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Transaction not found' });
   }
 
-  const canDelete = existing.user_id === userId || 
-                    user.role === 'SUPER_ADMIN' || 
-                    (user.role === 'MANAGER' && existing.family_id === user.familyId);
+  const canDelete = canViewUserTransactions(userId!, user.role, user.familyId, existing.user_id);
   
   if (!canDelete) {
     return res.status(403).json({ error: 'Not authorized to delete this transaction' });

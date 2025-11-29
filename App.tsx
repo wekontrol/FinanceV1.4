@@ -503,7 +503,7 @@ const App: React.FC = () => {
         )}
 
         {isLoggedIn && !isLoading && (
-        <div className="flex h-screen bg-slate-50 dark:bg-[#09090b] overflow-hidden font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
+        <div className="flex min-h-screen md:h-screen bg-slate-50 dark:bg-[#09090b] md:overflow-hidden font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
           <Sidebar 
             appName={appName}
             currentUser={currentUser}
@@ -524,7 +524,7 @@ const App: React.FC = () => {
             currencyFormatter={formatCurrency} 
           />
 
-          <div className="flex-1 flex flex-col h-full overflow-hidden relative w-full">
+          <div className="flex-1 flex flex-col min-h-screen md:h-full md:overflow-hidden relative w-full">
             <AppHeader 
               appName={appName}
               currentView={currentView}

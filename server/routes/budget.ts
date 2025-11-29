@@ -274,7 +274,6 @@ router.delete('/limits/:category', (req: Request, res: Response) => {
 
 router.get('/summary', (req: Request, res: Response) => {
   const userId = req.session.userId;
-  const user = req.session.user;
 
   const currentMonth = new Date().toISOString().slice(0, 7);
 
@@ -289,23 +288,12 @@ router.get('/summary', (req: Request, res: Response) => {
     `).all(userId) as any[];
   }
 
-  let transactions;
-  if (user.role === 'SUPER_ADMIN' || user.role === 'MANAGER') {
-    transactions = db.prepare(`
-      SELECT category, SUM(amount) as total
-      FROM transactions t
-      JOIN users u ON t.user_id = u.id
-      WHERE u.family_id = ? AND type = 'DESPESA' AND (date LIKE ? OR (is_recurring = 1 AND date <= ?))
-      GROUP BY category
-    `).all(user.familyId, `${currentMonth}%`, new Date().toISOString().split('T')[0]);
-  } else {
-    transactions = db.prepare(`
-      SELECT category, SUM(amount) as total
-      FROM transactions
-      WHERE user_id = ? AND type = 'DESPESA' AND (date LIKE ? OR (is_recurring = 1 AND date <= ?))
-      GROUP BY category
-    `).all(userId, `${currentMonth}%`, new Date().toISOString().split('T')[0]);
-  }
+  const transactions = db.prepare(`
+    SELECT category, SUM(amount) as total
+    FROM transactions
+    WHERE user_id = ? AND type = 'DESPESA' AND (date LIKE ? OR (is_recurring = 1 AND date <= ?))
+    GROUP BY category
+  `).all(userId, `${currentMonth}%`, new Date().toISOString().split('T')[0]);
 
   const summary = limits.map((l: any) => {
     const categoryKey = l.translation_key || l.category;

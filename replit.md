@@ -50,13 +50,31 @@ Fast Mode development - small focused edits preferred.
 - ✅ Frontend forces fresh fetch every time
 - ✅ **USER MUST DO HARD REFRESH OR NEW LOGIN** to see changes (browser cache of old HTML/JS)
 
-## Recent Changes (Phase 17 - BUDGET TRANSLATION KEYS + TRANSLATION UI FIX + REGISTRATION LAYOUT) ✅
+## Recent Changes (Phase 18 - SECURITY FIX: DATA ISOLATION + MOBILE UI) ✅
 
-### Family Registration Form Layout Fixed:
-- ✅ **Modal Width Increased:** Changed from `max-w-md` (448px) to `max-w-xl` (640px) for better fit
-- ✅ **Scroll Support:** Added `max-h-[90vh]` and `overflow-y-auto` for mobile/small screens
-- ✅ **Spacing Optimized:** Reduced field spacing from `space-y-4` to `space-y-3` for compact layout
-- ✅ **Component:** components/Login.tsx - registration form now displays properly without cramping
+### Critical Security Fix - Per-User Data Isolation:
+- ✅ **Transaction Visibility Rules:**
+  - `SUPER_ADMIN`: Can view ALL transactions in system
+  - `MANAGER`: Can view OWN transactions + transactions of MINORS (under 18) in their family OR users who enabled `allow_parent_view`
+  - `MEMBER`: Can view ONLY their own transactions
+- ✅ **Transaction Edit/Delete Rules:** Same visibility rules apply - MANAGER cannot modify adult family members' transactions
+- ✅ **Budget Summary Isolation:** Each user sees ONLY their own budget spending data (not family-wide aggregation)
+- ✅ **Helper Functions Added:**
+  - `isMinor(birthDate)`: Calculates if user is under 18 years old
+  - `canViewUserTransactions()`: Centralized permission check for view/edit/delete
+
+### Mobile UI Improvements:
+- ✅ **App Layout Fixed:** Changed from `h-screen overflow-hidden` to `min-h-screen md:h-screen md:overflow-hidden`
+- ✅ **Mobile Scroll Restored:** Allows proper scrolling on mobile while keeping fixed layout on desktop
+- ✅ **Add Family Member Form:** Made fully responsive with `max-h-[80vh] overflow-y-auto`, sticky header, proper grid columns
+
+### Files Changed:
+- `server/routes/transactions.ts` - Security fixes for GET/PUT/DELETE
+- `server/routes/budget.ts` - Removed family-wide budget aggregation
+- `App.tsx` - Mobile scroll improvements
+- `components/AdminPanel.tsx` - Responsive add member form
+
+## Previous Changes (Phase 17 - BUDGET TRANSLATION KEYS + TRANSLATION UI FIX + REGISTRATION LAYOUT) ✅
 
 ### Budget Categories Internationalization Complete:
 - ✅ **Translation Key Architecture:** 16 default budget categories now use translation keys (`budget.category.food`, etc.)

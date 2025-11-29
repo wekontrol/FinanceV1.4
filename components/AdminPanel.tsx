@@ -1065,10 +1065,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           {expandedSection === 'users' && (
             <div className="p-8 border-t border-slate-100 dark:border-slate-700 animate-slide-down">
               {isUserFormOpen ? (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl mb-6 border border-slate-200 dark:border-slate-700 animate-scale-in p-6 shadow-lg shadow-slate-200/50 dark:shadow-none">
-                  <div className="flex justify-between mb-6"><h4 className="font-bold text-lg text-slate-800 dark:text-white">{editingUser ? 'Editar Perfil' : 'Novo Perfil'}</h4><button type="button" onClick={() => setIsUserFormOpen(false)} className="text-slate-400 hover:text-slate-600"><X size={24}/></button></div>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl mb-6 border border-slate-200 dark:border-slate-700 animate-scale-in p-4 sm:p-6 shadow-lg shadow-slate-200/50 dark:shadow-none max-h-[80vh] overflow-y-auto">
+                  <div className="flex justify-between mb-4 sm:mb-6 sticky top-0 bg-white dark:bg-slate-800 py-2 -mt-2 z-10">
+                    <h4 className="font-bold text-base sm:text-lg text-slate-800 dark:text-white">{editingUser ? 'Editar Perfil' : 'Novo Perfil'}</h4>
+                    <button type="button" onClick={() => setIsUserFormOpen(false)} className="text-slate-400 hover:text-slate-600 p-1"><X size={22}/></button>
+                  </div>
                   <form onSubmit={handleUserSubmit}>
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nome</label>
                       <input type="text" required value={userFormData.name} onChange={e => setUserFormData({...userFormData, name: e.target.value})} className={inputClass} />
@@ -1104,31 +1107,31 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                       <input type="date" value={userFormData.birthDate} onChange={e => setUserFormData({...userFormData, birthDate: e.target.value})} className={inputClass} />
                     </div>
                     
-                    <div className="flex items-center p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
-                      <div className="flex-1">
+                    <div className="flex items-center p-3 sm:p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 col-span-1 sm:col-span-2">
+                      <div className="flex-1 min-w-0">
                         <span className="block text-sm font-bold text-slate-700 dark:text-white flex items-center">
-                           <Lock size={14} className="mr-1"/> Privacidade
+                           <Lock size={14} className="mr-1 shrink-0"/> Privacidade
                         </span>
-                        <span className="text-xs text-slate-400">Permitir que o gestor visualize finanças (se &gt; 18)</span>
+                        <span className="text-xs text-slate-400 block truncate">Permitir que o gestor visualize finanças (se &gt; 18)</span>
                       </div>
                       <input 
                         type="checkbox" 
                         checked={userFormData.allowParentView} 
                         onChange={e => setUserFormData({...userFormData, allowParentView: e.target.checked})} 
-                        className="w-5 h-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+                        className="w-5 h-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500 ml-2 shrink-0"
                       />
                     </div>
 
-                    <div className="md:col-span-2">
+                    <div className="col-span-1 sm:col-span-2">
                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Avatar / Foto</label>
-                       <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
-                         <div className="relative group w-16 h-16 rounded-full overflow-hidden bg-white border-2 border-slate-200 shrink-0">
+                       <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                         <div className="relative group w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-white border-2 border-slate-200 shrink-0">
                             <img src={userFormData.avatar || '/default-avatar.svg'} className="w-full h-full object-cover" />
                          </div>
-                         <div className="flex-1">
+                         <div className="flex-1 w-full sm:w-auto">
                            <div className="relative">
                              <input type="file" accept="image/*" onChange={handleAvatarFileChange} className="hidden" id="avatar-upload" />
-                             <label htmlFor="avatar-upload" className="cursor-pointer inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-white dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-300 font-bold text-sm whitespace-nowrap">
+                             <label htmlFor="avatar-upload" className="cursor-pointer inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-white dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-300 font-bold text-sm">
                                <Upload size={16} className="mr-2" />
                                Escolher arquivo
                              </label>
@@ -1137,7 +1140,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                        </div>
                     </div>
                   </div>
-                  <button type="submit" className="mt-6 bg-primary-600 text-white w-full py-3 rounded-xl font-bold hover:bg-primary-700 shadow-lg shadow-primary-500/30 transition">Salvar Alterações</button>
+                  <button type="submit" className="mt-4 sm:mt-6 bg-primary-600 text-white w-full py-3 rounded-xl font-bold hover:bg-primary-700 shadow-lg shadow-primary-500/30 transition text-sm sm:text-base">Salvar Alterações</button>
                   </form>
                 </div>
               ) : (
