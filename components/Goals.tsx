@@ -18,6 +18,7 @@ interface GoalsProps {
   deleteContribution: (goalId: string, contributionId: string) => void;
   currencyFormatter: (value: number) => string;
   currentUser: User;
+  onRefresh?: () => void;
 }
 
 type TransactionType = 'deposit' | 'withdraw';
@@ -30,7 +31,8 @@ const Goals: React.FC<GoalsProps> = ({
   editContribution,
   deleteContribution,
   currencyFormatter,
-  currentUser
+  currentUser,
+  onRefresh
 }) => {
   const { t } = useLanguage();
   const { mutate: deleteGoal } = useDeleteGoal();
@@ -369,7 +371,7 @@ const Goals: React.FC<GoalsProps> = ({
                   <Target size={24} />
                 </div>
                 <button 
-                  onClick={(e) => { e.stopPropagation(); if(confirm(t("goals.delete_confirm"))) deleteGoal(goal.id); }}
+                  onClick={(e) => { e.stopPropagation(); if(confirm(t("goals.delete_confirm"))) { deleteGoal(goal.id); if(onRefresh) onRefresh(); } }}
                   className="text-slate-300 hover:text-rose-500 p-2 rounded-full hover:bg-rose-50 transition active:scale-90"
                 >
                   <Trash2 size={18} />

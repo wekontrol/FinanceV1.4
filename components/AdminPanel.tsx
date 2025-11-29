@@ -26,6 +26,7 @@ interface AdminPanelProps {
   onUpdateUser: (user: User) => void;
   onDeleteUser: (id: string) => void;
   onRestoreBackup: (file: File) => void;
+  onRefresh?: () => void;
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ 
@@ -39,7 +40,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   onAddUser,
   onUpdateUser,
   onDeleteUser: onDeleteUserProp,
-  onRestoreBackup
+  onRestoreBackup,
+  onRefresh
 }) => {
   const { t } = useLanguage();
   const { mutate: onDeleteUser } = useDeleteUser();
@@ -430,6 +432,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const handleDeleteClick = (userId: string, userName: string) => {
     if (confirm(`Tem certeza que deseja excluir o usuário "${userName}"?`)) {
       onDeleteUser(userId);
+      if (onRefresh) onRefresh();
     }
   };
 
@@ -438,7 +441,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   const handleRejectUser = (user: User) => {
-    if(confirm('Rejeitar e remover este usuário?')) onDeleteUser(user.id);
+    if(confirm('Rejeitar e remover este usuário?')) { onDeleteUser(user.id); if (onRefresh) onRefresh(); }
   };
 
   const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
