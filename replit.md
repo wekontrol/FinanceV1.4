@@ -50,7 +50,29 @@ Fast Mode development - small focused edits preferred.
 - ✅ Frontend forces fresh fetch every time
 - ✅ **USER MUST DO HARD REFRESH OR NEW LOGIN** to see changes (browser cache of old HTML/JS)
 
-## Recent Changes (Phase 19 - PRODUCTION DEPLOYMENT FIXES) ✅
+## Recent Changes (Phase 20 - MOBILE SCROLL + DEFAULT BUDGETS FIX) ✅
+
+### Mobile Scroll Restored:
+- ✅ **Layout Fixed:** Changed container from `h-auto md:h-screen` to `h-screen overflow-hidden` on all devices
+- ✅ **Inner Div Fixed:** Changed from `min-h-0 md:h-full` to `h-full` (consistent height allocation)
+- ✅ **Result:** Scroll now works smoothly on mobile phones with proper flexbox spacing
+- ✅ **Component:** App.tsx lines 509, 530
+
+### Default Budgets Persistence Fixed:
+- ✅ **Removed Destructive Migration:** Deleted automatic deletion of old default budgets in `schema.ts`
+- ✅ **Problem:** Migration was deleting all default budgets every time app restarted, leaving users with empty budgets
+- ✅ **Solution:** Keep existing budgets intact, new users get defaults created on registration
+- ✅ **Result:** Default budgets now persist permanently across server restarts
+- ✅ **Files modified:**
+  - `server/db/schema.ts` - Removed lines 88-97 (destructive budget deletion)
+  - `App.tsx` - Fixed scroll layout
+
+### Current Status:
+- ✅ Mobile scroll working perfectly
+- ✅ Default budgets persist across restarts
+- ✅ No more "Removing old default budgets" messages in logs
+
+## Previous Changes (Phase 19 - PRODUCTION DEPLOYMENT FIXES) ✅
 
 ### Production Deployment Issues Resolved:
 - ✅ **Translation Sync Error Fixed:** Disabled translation database sync in production (use JSON files as source of truth)
