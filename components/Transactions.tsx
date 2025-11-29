@@ -60,7 +60,30 @@ const Transactions: React.FC<TransactionsProps> = ({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
   const [isUploadingExcel, setIsUploadingExcel] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const excelInputRef = useRef<HTMLInputElement>(null);
+
+  const toggleSelect = (id: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) newSelected.delete(id);
+    else newSelected.add(id);
+    setSelectedIds(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === paginatedTransactions.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginatedTransactions.map(t => t.id)));
+    }
+  };
+
+  const deleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`${t("transactions.delete_confirm")} ${selectedIds.size} transações?`)) return;
+    selectedIds.forEach(id => deleteTransaction(id));
+    setSelectedIds(new Set());
+  };
 
   const inputClass = "w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white font-medium focus:ring-2 focus:ring-primary-500 outline-none transition-all";
 
@@ -931,12 +954,23 @@ const Transactions: React.FC<TransactionsProps> = ({
       {/* VIEW: History Table */}
       {activeTab === 'history' && (
         <>
+          {/* Delete Selected Button */}
+          {selectedIds.size > 0 && (
+            <div className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-200 dark:border-blue-800 mb-6">
+              <span className="text-sm font-bold text-blue-700 dark:text-blue-300">{selectedIds.size} selecionadas</span>
+              <button onClick={deleteSelected} className="ml-auto flex items-center gap-2 px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 font-bold text-sm active:scale-95"><Trash2 size={16} /> Excluir</button>
+            </div>
+          )}
+
           {/* Desktop View (Table) */}
           <div className="hidden md:block bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/30">
+                    <th className="p-4 md:p-6">
+                      <input type="checkbox" checked={selectedIds.size === paginatedTransactions.length && paginatedTransactions.length > 0} onChange={toggleSelectAll} className="w-4 h-4 cursor-pointer" />
+                    </th>
                     <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">{t("transactions.transaction_header")}</th>
                     <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">{t("transactions.category_header")}</th>
                     <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">{t("common.date")}</th>
@@ -946,7 +980,10 @@ const Transactions: React.FC<TransactionsProps> = ({
                 </thead>
                 <tbody className="divide-y divide-slate-50 dark:divide-slate-700/50">
                   {paginatedTransactions.map((transaction) => (
-                    <tr key={transaction.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group">
+                    <tr key={transaction.id} className={`${selectedIds.has(transaction.id) ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-700/30'} transition-colors group`}>
+                      <td className="p-4 md:p-6">
+                        <input type="checkbox" checked={selectedIds.has(transaction.id)} onChange={() => toggleSelect(transaction.id)} className="w-4 h-4 cursor-pointer" />
+                      </td>
                       <td className="p-4 md:p-6">
                         <div className="flex items-center">
                           <div className={`p-2.5 rounded-full mr-4 shrink-0 ${transaction.type === TransactionType.INCOME ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30'}`}>

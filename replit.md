@@ -6,6 +6,34 @@ A comprehensive family financial management platform built with React, TypeScrip
 ## User Preferences
 Fast Mode development - small focused edits preferred.
 
+## Recent Changes (Phase 8)
+
+### Phase 8: EXCEL TEMPLATES + MULTI-SELECT DELETE ✅
+- **Excel Template Download + Import:**
+  - Added "Template" button in Transactions tab (blue) → downloads blank Excel template
+  - Added "Importar" button in Transactions tab (purple) → imports multiple transactions from Excel
+  - Template columns: Data (DD/MM/YYYY) | Descrição | Categoria | Tipo | Valor
+  - Validation: Strict type checking (only INCOME/EXPENSE), date parsing, positive amounts
+  - Error messages in Portuguese per line
+  
+- **Multi-Select Delete:**
+  - Checkboxes on each transaction row (desktop table view)
+  - "Select All" checkbox in table header
+  - Selected rows highlighted with blue background
+  - Delete bar appears when items selected (shows count + red delete button)
+  - Confirmation dialog shows count before deleting
+  - State: `selectedIds` (Set<string>)
+  
+- **Dashboard Type Compatibility:**
+  - Fixed to accept both INCOME/EXPENSE and RECEITA/DESPESA formats
+  - Dashboard now properly filters imported transactions
+  
+- **Files Modified:**
+  - `components/Transactions.tsx` - Added 3 handlers (toggleSelect, toggleSelectAll, deleteSelected) + UI for checkboxes and delete bar
+  - `server/routes/reports.ts` - Added Excel import endpoint with validation
+  - `components/Dashboard.tsx` - Fixed type filtering to support both formats
+  - `server/index.ts` - Registered /api/reports route
+
 ## System Architecture
 
 ### UI/UX Decisions
