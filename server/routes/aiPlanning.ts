@@ -57,12 +57,27 @@ interface AnalysisResult {
   }>;
 }
 
-// Get AI Planning Analysis
+// Get AI Planning Analysis (with caching)
 router.get('/analyze', (req: any, res) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const forceRefresh = req.query.refresh === 'true';
+
+    // Check cache if not forcing refresh
+    if (!forceRefresh) {
+      const cache = db.prepare(`
+        SELECT analysis_data FROM ai_analysis_cache
+        WHERE user_id = ? AND month = ? AND expires_at > datetime('now')
+      `).get(userId, currentMonth) as { analysis_data: string } | undefined;
+
+      if (cache) {
+        return res.json(JSON.parse(cache.analysis_data));
+      }
     }
 
     // Fetch transactions
@@ -81,7 +96,6 @@ router.get('/analyze', (req: any, res) => {
     `).all(userId) as Array<{ category: string; limit: number }>;
 
     // Calculate spending per category (current month)
-    const currentMonth = new Date().toISOString().slice(0, 7);
     const spendingByCategory = db.prepare(`
       SELECT 
         category,
@@ -106,10 +120,39 @@ router.get('/analyze', (req: any, res) => {
       WHERE user_id = ?
     `).all(userId) as GoalData[];
 
+    // Get historical monthly spending for comparisons
+    const monthlySpending = db.prepare(`
+      SELECT 
+        date,
+        SUM(CASE WHEN type = 'DESPESA' THEN amount ELSE 0 END) as spent
+      FROM transactions
+      WHERE user_id = ? AND type = 'DESPESA'
+      GROUP BY substr(date, 1, 7)
+      ORDER BY date DESC
+      LIMIT 12
+    `).all(userId) as Array<{ date: string; spent: number }>;
+
     // Calculate metrics
     const analysis = calculateAnalysis(transactions, budgetData, goals);
+    const fullResponse = {
+      ...analysis,
+      monthly_comparison: monthlySpending
+    };
 
-    res.json(analysis);
+    // Save to cache (expires in 30 minutes)
+    const cacheId = `cache_${userId}_${currentMonth}_${Date.now()}`;
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+    
+    try {
+      db.prepare(`
+        INSERT OR REPLACE INTO ai_analysis_cache (id, user_id, month, analysis_data, expires_at)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(cacheId, userId, currentMonth, JSON.stringify(fullResponse), expiresAt);
+    } catch (e) {
+      // Cache write failed, but continue with response
+    }
+
+    res.json(fullResponse);
   } catch (error) {
     console.error('Error analyzing AI Planning:', error);
     res.status(500).json({ error: 'Failed to analyze' });

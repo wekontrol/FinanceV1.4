@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Brain, TrendingUp, Target, AlertCircle, Lightbulb, Calendar, CheckCircle, Loader2, AlertTriangle, TrendingDown } from 'lucide-react';
+import { Sparkles, Brain, TrendingUp, Target, AlertCircle, Lightbulb, Calendar, CheckCircle, Loader2, AlertTriangle, TrendingDown, BarChart3, RefreshCw } from 'lucide-react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Transaction, BudgetLimit, SavingsGoal } from '../types';
 import { aiPlanningApi } from '../services/api';
@@ -40,6 +41,10 @@ interface AnalysisData {
     months_to_target: number;
     on_track: boolean;
   }>;
+  monthly_comparison?: Array<{
+    date: string;
+    spent: number;
+  }>;
 }
 
 const AIPlanning: React.FC<AIPlanningProps> = ({ 
@@ -49,9 +54,10 @@ const AIPlanning: React.FC<AIPlanningProps> = ({
   currencyFormatter 
 }) => {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'overview' | 'suggestions' | 'goals'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'suggestions' | 'goals' | 'comparisons'>('overview');
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showCharts, setShowCharts] = useState(true);
 
   useEffect(() => {
     const loadAnalysis = async () => {
@@ -112,7 +118,8 @@ const AIPlanning: React.FC<AIPlanningProps> = ({
           {[
             { id: 'overview', label: t('ai_planning.overview'), icon: Brain },
             { id: 'suggestions', label: t('ai_planning.suggestions'), icon: Lightbulb },
-            { id: 'goals', label: t('ai_planning.goals'), icon: Target }
+            { id: 'goals', label: t('ai_planning.goals'), icon: Target },
+            { id: 'comparisons', label: 'Gráficos', icon: BarChart3 }
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -252,6 +259,73 @@ const AIPlanning: React.FC<AIPlanningProps> = ({
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Comparisons Tab - with Charts */}
+            {activeTab === 'comparisons' && (
+              <div className="space-y-6">
+                {/* Refresh Button */}
+                <button
+                  onClick={() => {
+                    setLoading(true);
+                    aiPlanningApi.analyze().then(setAnalysis).finally(() => setLoading(false));
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                >
+                  <RefreshCw size={16} />
+                  Atualizar Dados
+                </button>
+
+                {/* Monthly Spending Comparison */}
+                {analysis?.monthly_comparison && analysis.monthly_comparison.length > 0 && (
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-700 p-6">
+                    <h3 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                      <TrendingUp size={20} className="text-blue-600" />
+                      Gasto Mensal (Últimos 12 Meses)
+                    </h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={analysis.monthly_comparison.map(m => ({
+                        month: m.date.slice(-2),
+                        spent: Math.round(m.spent)
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip formatter={(value) => currencyFormatter(Number(value))} />
+                        <Line 
+                          type="monotone" 
+                          dataKey="spent" 
+                          stroke="#8b5cf6" 
+                          strokeWidth={2}
+                          dot={{ fill: '#8b5cf6', r: 4 }}
+                          activeDot={{ r: 6 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
+                {/* Budget vs Actual */}
+                {analysis && (
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-700 p-6">
+                    <h3 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                      <BarChart3 size={20} className="text-green-600" />
+                      Categorias - Limite vs Gasto
+                    </h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={analysis.at_risk_categories.length > 0 ? analysis.at_risk_categories : []}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="category" angle={-45} textAnchor="end" height={100} />
+                        <YAxis />
+                        <Tooltip formatter={(value) => currencyFormatter(Number(value))} />
+                        <Legend />
+                        <Bar dataKey="limit" fill="#10b981" name="Limite" />
+                        <Bar dataKey="spent" fill="#ef4444" name="Gasto" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
               </div>
             )}
 
