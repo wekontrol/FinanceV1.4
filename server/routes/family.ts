@@ -82,11 +82,18 @@ router.put('/tasks/:id', (req: Request, res: Response) => {
     return res.status(403).json({ error: 'Access denied' });
   }
 
+  const newValues = {
+    description: description || existing.description,
+    assignedTo: assignedTo !== undefined ? assignedTo : existing.assigned_to,
+    isCompleted: isCompleted !== undefined ? (isCompleted ? 1 : 0) : existing.is_completed,
+    dueDate: dueDate !== undefined ? dueDate : existing.due_date
+  };
+
   db.prepare(`
     UPDATE family_tasks 
     SET description = ?, assigned_to = ?, is_completed = ?, due_date = ?
     WHERE id = ?
-  `).run(description, assignedTo || null, isCompleted ? 1 : 0, dueDate || null, id);
+  `).run(newValues.description, newValues.assignedTo, newValues.isCompleted, newValues.dueDate, id);
 
   const task = db.prepare(`
     SELECT t.*, u.name as assigned_to_name
@@ -180,11 +187,18 @@ router.put('/events/:id', (req: Request, res: Response) => {
     return res.status(403).json({ error: 'Access denied' });
   }
 
+  const newValues = {
+    title: title || existing.title,
+    date: date || existing.date,
+    type: type || existing.type,
+    description: description !== undefined ? description : existing.description
+  };
+
   db.prepare(`
     UPDATE family_events 
     SET title = ?, date = ?, type = ?, description = ?
     WHERE id = ?
-  `).run(title, date, type, description, id);
+  `).run(newValues.title, newValues.date, newValues.type, newValues.description, id);
 
   const event = db.prepare('SELECT * FROM family_events WHERE id = ?').get(id) as any;
   
