@@ -197,7 +197,7 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
       for (const lang of languages) {
         const value = editingValues[`${lang}-${key}`];
         if (value !== undefined) {
-          await fetch('/api/translations', {
+          await fetch('/api/translations/save-with-history', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ language: lang, key, value })
@@ -322,7 +322,7 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
 
           for (const key of allKeys) {
             if (data[key] && data[key].trim()) {
-              const response = await fetch('/api/translations', {
+              const response = await fetch('/api/translations/save-with-history', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ language: lang, key, value: data[key] })
