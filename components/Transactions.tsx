@@ -1049,21 +1049,17 @@ const Transactions: React.FC<TransactionsProps> = ({
                     <th className="p-4 md:p-6">
                       <input type="checkbox" checked={selectedIds.size === paginatedTransactions.length && paginatedTransactions.length > 0} onChange={toggleSelectAll} className="w-4 h-4 cursor-pointer" />
                     </th>
-                    <th onClick={() => handleSort('description')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition flex items-center gap-1">
-                      {t("transactions.transaction_header")}
-                      {sortColumn === 'description' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
+                    <th onClick={() => handleSort('description')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition">
+                      {t("transactions.transaction_header")} {sortColumn === 'description' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
                     </th>
-                    <th onClick={() => handleSort('category')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition flex items-center gap-1">
-                      {t("transactions.category_header")}
-                      {sortColumn === 'category' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
+                    <th onClick={() => handleSort('category')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition">
+                      {t("transactions.category_header")} {sortColumn === 'category' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
                     </th>
-                    <th onClick={() => handleSort('date')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition flex items-center gap-1">
-                      {t("common.date")}
-                      {sortColumn === 'date' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
+                    <th onClick={() => handleSort('date')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition">
+                      {t("common.date")} {sortColumn === 'date' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
                     </th>
-                    <th onClick={() => handleSort('amount')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition flex items-center justify-end gap-1">
-                      {t("common.value")}
-                      {sortColumn === 'amount' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
+                    <th onClick={() => handleSort('amount')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition">
+                      {t("common.value")} {sortColumn === 'amount' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
                     </th>
                     <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">{t("transactions.actions_header")}</th>
                   </tr>
