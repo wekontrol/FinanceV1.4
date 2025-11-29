@@ -277,8 +277,14 @@ const App: React.FC = () => {
 
   const deleteTransaction = async (id: string) => {
     try {
-      await transactionsApi.delete(id);
-      setTransactions(transactions.filter(t => t.id !== id));
+      console.log('Deleting transaction:', id);
+      const response = await transactionsApi.delete(id);
+      console.log('Delete response:', response);
+      setTransactions(prev => {
+        const updated = prev.filter(t => t.id !== id);
+        console.log('Transactions updated. Before:', prev.length, 'After:', updated.length);
+        return updated;
+      });
     } catch (error) {
       console.error('Error deleting transaction:', error);
     }
