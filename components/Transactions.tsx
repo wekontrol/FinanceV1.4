@@ -69,6 +69,10 @@ const Transactions: React.FC<TransactionsProps> = ({
   const [previewErrors, setPreviewErrors] = useState<string[]>([]);
   const [previewFileData, setPreviewFileData] = useState<string | null>(null);
 
+  // Sort State
+  const [sortColumn, setSortColumn] = useState<'description' | 'category' | 'date' | 'amount'>('date');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
   const toggleSelect = (id: string) => {
     const newSelected = new Set(selectedIds);
     if (newSelected.has(id)) newSelected.delete(id);
@@ -89,6 +93,15 @@ const Transactions: React.FC<TransactionsProps> = ({
     if (!confirm(`${t("transactions.delete_confirm")} ${selectedIds.size} transações?`)) return;
     selectedIds.forEach(id => deleteTransaction(id));
     setSelectedIds(new Set());
+  };
+
+  const handleSort = (column: 'description' | 'category' | 'date' | 'amount') => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
   };
 
   const inputClass = "w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white font-medium focus:ring-2 focus:ring-primary-500 outline-none transition-all";
@@ -509,13 +522,37 @@ const Transactions: React.FC<TransactionsProps> = ({
   };
 
   const filteredTransactions = useMemo(() => {
-    const filtered = transactions.filter(t => 
+    let filtered = transactions.filter(t => 
       (t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.category.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (activeTab === 'subscriptions' ? t.isRecurring : !t.isRecurring)
     );
+    
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let compareA: any, compareB: any;
+      
+      if (sortColumn === 'description') {
+        compareA = a.description.toLowerCase();
+        compareB = b.description.toLowerCase();
+      } else if (sortColumn === 'category') {
+        compareA = a.category.toLowerCase();
+        compareB = b.category.toLowerCase();
+      } else if (sortColumn === 'date') {
+        compareA = new Date(a.date).getTime();
+        compareB = new Date(b.date).getTime();
+      } else if (sortColumn === 'amount') {
+        compareA = a.amount;
+        compareB = b.amount;
+      }
+      
+      if (compareA < compareB) return sortDirection === 'asc' ? -1 : 1;
+      if (compareA > compareB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+    
     return filtered;
-  }, [transactions, searchTerm, activeTab]);
+  }, [transactions, searchTerm, activeTab, sortColumn, sortDirection]);
 
   React.useEffect(() => {
     setCurrentPage(1);
@@ -1012,10 +1049,22 @@ const Transactions: React.FC<TransactionsProps> = ({
                     <th className="p-4 md:p-6">
                       <input type="checkbox" checked={selectedIds.size === paginatedTransactions.length && paginatedTransactions.length > 0} onChange={toggleSelectAll} className="w-4 h-4 cursor-pointer" />
                     </th>
-                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">{t("transactions.transaction_header")}</th>
-                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">{t("transactions.category_header")}</th>
-                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">{t("common.date")}</th>
-                    <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">{t("common.value")}</th>
+                    <th onClick={() => handleSort('description')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition flex items-center gap-1">
+                      {t("transactions.transaction_header")}
+                      {sortColumn === 'description' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
+                    </th>
+                    <th onClick={() => handleSort('category')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition flex items-center gap-1">
+                      {t("transactions.category_header")}
+                      {sortColumn === 'category' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
+                    </th>
+                    <th onClick={() => handleSort('date')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition flex items-center gap-1">
+                      {t("common.date")}
+                      {sortColumn === 'date' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
+                    </th>
+                    <th onClick={() => handleSort('amount')} className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition flex items-center justify-end gap-1">
+                      {t("common.value")}
+                      {sortColumn === 'amount' && <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>}
+                    </th>
                     <th className="p-4 md:p-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">{t("transactions.actions_header")}</th>
                   </tr>
                 </thead>
