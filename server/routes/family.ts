@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import db from '../db/schema';
 
 const router = Router();
@@ -43,7 +44,7 @@ router.post('/tasks', (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Description is required' });
   }
 
-  const id = `task${Date.now()}`;
+  const id = uuidv4();
   
   db.prepare(`
     INSERT INTO family_tasks (id, family_id, description, assigned_to, due_date)
@@ -69,11 +70,16 @@ router.post('/tasks', (req: Request, res: Response) => {
 
 router.put('/tasks/:id', (req: Request, res: Response) => {
   const { id } = req.params;
+  const user = req.session.user;
   const { description, assignedTo, isCompleted, dueDate } = req.body;
 
-  const existing = db.prepare('SELECT * FROM family_tasks WHERE id = ?').get(id);
+  const existing = db.prepare('SELECT * FROM family_tasks WHERE id = ?').get(id) as any;
   if (!existing) {
     return res.status(404).json({ error: 'Task not found' });
+  }
+
+  if (existing.family_id !== user.familyId) {
+    return res.status(403).json({ error: 'Access denied' });
   }
 
   db.prepare(`
@@ -101,10 +107,15 @@ router.put('/tasks/:id', (req: Request, res: Response) => {
 
 router.delete('/tasks/:id', (req: Request, res: Response) => {
   const { id } = req.params;
+  const user = req.session.user;
 
-  const existing = db.prepare('SELECT * FROM family_tasks WHERE id = ?').get(id);
+  const existing = db.prepare('SELECT * FROM family_tasks WHERE id = ?').get(id) as any;
   if (!existing) {
     return res.status(404).json({ error: 'Task not found' });
+  }
+
+  if (existing.family_id !== user.familyId) {
+    return res.status(403).json({ error: 'Access denied' });
   }
 
   db.prepare('DELETE FROM family_tasks WHERE id = ?').run(id);
@@ -137,7 +148,7 @@ router.post('/events', (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Title and date are required' });
   }
 
-  const id = `event${Date.now()}`;
+  const id = uuidv4();
   
   db.prepare(`
     INSERT INTO family_events (id, family_id, title, date, type, description)
@@ -157,11 +168,16 @@ router.post('/events', (req: Request, res: Response) => {
 
 router.put('/events/:id', (req: Request, res: Response) => {
   const { id } = req.params;
+  const user = req.session.user;
   const { title, date, type, description } = req.body;
 
-  const existing = db.prepare('SELECT * FROM family_events WHERE id = ?').get(id);
+  const existing = db.prepare('SELECT * FROM family_events WHERE id = ?').get(id) as any;
   if (!existing) {
     return res.status(404).json({ error: 'Event not found' });
+  }
+
+  if (existing.family_id !== user.familyId) {
+    return res.status(403).json({ error: 'Access denied' });
   }
 
   db.prepare(`
@@ -183,10 +199,15 @@ router.put('/events/:id', (req: Request, res: Response) => {
 
 router.delete('/events/:id', (req: Request, res: Response) => {
   const { id } = req.params;
+  const user = req.session.user;
 
-  const existing = db.prepare('SELECT * FROM family_events WHERE id = ?').get(id);
+  const existing = db.prepare('SELECT * FROM family_events WHERE id = ?').get(id) as any;
   if (!existing) {
     return res.status(404).json({ error: 'Event not found' });
+  }
+
+  if (existing.family_id !== user.familyId) {
+    return res.status(403).json({ error: 'Access denied' });
   }
 
   db.prepare('DELETE FROM family_events WHERE id = ?').run(id);

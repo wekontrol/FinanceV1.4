@@ -49,25 +49,38 @@ router.delete('/:id', requireAuth, requireSuperAdmin, (req: Request, res: Respon
     return res.status(404).json({ error: 'Family not found' });
   }
 
-  // Delete all transactions of users in this family
-  db.prepare(`
-    DELETE FROM transactions 
-    WHERE user_id IN (SELECT id FROM users WHERE family_id = ?)
-  `).run(id);
+  const deleteFamily = db.transaction((familyId) => {
+    // Get all user IDs from the family
+    const users = db.prepare('SELECT id FROM users WHERE family_id = ?').all(familyId) as { id: string }[];
+    const userIds = users.map(u => u.id);
 
-  // Delete all goals of users in this family
-  db.prepare(`
-    DELETE FROM savings_goals 
-    WHERE user_id IN (SELECT id FROM users WHERE family_id = ?)
-  `).run(id);
+    if (userIds.length > 0) {
+      // Delete data linked to users
+      db.prepare(`DELETE FROM transactions WHERE user_id IN (${userIds.map(() => '?').join(',')})`).run(...userIds);
+      db.prepare(`DELETE FROM savings_goals WHERE user_id IN (${userIds.map(() => '?').join(',')})`).run(...userIds);
+      db.prepare(`DELETE FROM budget_limits WHERE user_id IN (${userIds.map(() => '?').join(',')})`).run(...userIds);
+    }
 
-  // Delete all users in this family
-  db.prepare('DELETE FROM users WHERE family_id = ?').run(id);
+    // Delete data linked to the family directly
+    db.prepare('DELETE FROM family_tasks WHERE family_id = ?').run(familyId);
+    db.prepare('DELETE FROM family_events WHERE family_id = ?').run(familyId);
 
-  // Delete the family
-  db.prepare('DELETE FROM families WHERE id = ?').run(id);
+    // Finally, delete users and the family itself
+    db.prepare('DELETE FROM users WHERE family_id = ?').run(familyId);
+    db.prepare('DELETE FROM families WHERE id = ?').run(familyId);
 
-  res.json({ message: 'Family deleted successfully' });
+    return { success: true };
+  });
+
+  try {
+    const result = deleteFamily(id);
+    if (result.success) {
+      res.json({ message: 'Family and all associated data deleted successfully' });
+    }
+  } catch (error) {
+    console.error('Failed to delete family:', error);
+    res.status(500).json({ error: 'Failed to delete family. The operation was rolled back.' });
+  }
 });
 
 export default router;
