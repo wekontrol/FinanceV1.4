@@ -225,6 +225,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Senha</label>
               <input 
                 type="password" 
+                autoComplete="new-password"
                 value={registerPassword}
                 onChange={e => setRegisterPassword(e.target.value)}
                 className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
@@ -367,6 +368,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nova Senha</label>
               <input 
                 type="password" 
+                autoComplete="new-password"
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
                 className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
@@ -446,6 +448,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
               <Lock className="absolute left-3 top-3.5 text-slate-400" size={18} />
               <input 
                 type="password" 
+                autoComplete="current-password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 className="w-full pl-10 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-primary-500"
