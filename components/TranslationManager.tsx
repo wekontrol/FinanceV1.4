@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { User, UserRole } from '../types';
-import { Languages, Plus, Save, Loader2, AlertTriangle, BarChart3, Search, Filter, Download, Upload, CheckCircle } from 'lucide-react';
+import { Languages, Plus, Save, Loader2, AlertTriangle, BarChart3, Search, Filter, Download, Upload, CheckCircle, Sparkles, History, Clock, ArrowRight } from 'lucide-react';
 import JSZip from 'jszip';
 
 interface Translation {
@@ -10,6 +10,17 @@ interface Translation {
   value: string;
   created_by: string;
   updated_at: string;
+}
+
+interface TranslationHistory {
+  id: string;
+  language: string;
+  key: string;
+  old_value: string | null;
+  new_value: string;
+  user_name: string;
+  changed_at: string;
+  change_type: string;
 }
 
 interface TranslationManagerProps {
@@ -38,6 +49,22 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
   const [editingValues, setEditingValues] = useState<Record<string, string>>({});
   const [importMessage, setImportMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+  
+  // Tabs: editor, ai-assistant, history
+  const [activeTab, setActiveTab] = useState<'editor' | 'ai-assistant' | 'history'>('editor');
+  
+  // AI Assistant state
+  const [aiSourceText, setAiSourceText] = useState('');
+  const [aiSourceLang, setAiSourceLang] = useState('en');
+  const [aiTargetLang, setAiTargetLang] = useState('pt');
+  const [aiTranslation, setAiTranslation] = useState('');
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [aiProvider, setAiProvider] = useState('');
+  
+  // History state
+  const [history, setHistory] = useState<TranslationHistory[]>([]);
+  const [historyFilter, setHistoryFilter] = useState({ language: '', key: '' });
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   // Language names mapping - dynamic to support new languages
   const languageNames: Record<string, string> = {
@@ -108,6 +135,61 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
       console.error('Erro ao carregar estatísticas:', error);
     }
   };
+
+  const loadHistory = async () => {
+    setIsLoadingHistory(true);
+    try {
+      const params = new URLSearchParams();
+      if (historyFilter.language) params.set('language', historyFilter.language);
+      if (historyFilter.key) params.set('key', historyFilter.key);
+      params.set('limit', '50');
+      
+      const response = await fetch(`/api/translations/history?${params.toString()}`);
+      if (response.ok) {
+        const data = await response.json();
+        setHistory(data);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
+  const handleAiTranslate = async () => {
+    if (!aiSourceText.trim()) return;
+    
+    setIsTranslating(true);
+    setAiTranslation('');
+    
+    try {
+      const response = await fetch('/api/translations/ai-translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: aiSourceText,
+          fromLang: aiSourceLang,
+          toLang: aiTargetLang
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAiTranslation(data.translation);
+        setAiProvider(data.provider);
+      }
+    } catch (error) {
+      console.error('Erro na tradução AI:', error);
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'history') {
+      loadHistory();
+    }
+  }, [activeTab, historyFilter]);
 
   const handleSaveTranslation = async (key: string) => {
     setIsSaving(true);
@@ -345,6 +427,227 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
         ))}
       </div>
 
+      {/* Tab Navigation */}
+      <div className="flex gap-2 border-b border-slate-200 dark:border-slate-700">
+        <button
+          onClick={() => setActiveTab('editor')}
+          className={`px-6 py-3 font-bold text-sm rounded-t-lg transition flex items-center gap-2 ${
+            activeTab === 'editor'
+              ? 'bg-white dark:bg-slate-800 text-primary-600 border-b-2 border-primary-600'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+          }`}
+        >
+          <Languages size={18} />
+          {t("translations.editor") || "Editor"}
+        </button>
+        <button
+          onClick={() => setActiveTab('ai-assistant')}
+          className={`px-6 py-3 font-bold text-sm rounded-t-lg transition flex items-center gap-2 ${
+            activeTab === 'ai-assistant'
+              ? 'bg-white dark:bg-slate-800 text-primary-600 border-b-2 border-primary-600'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+          }`}
+        >
+          <Sparkles size={18} />
+          {t("translations.ai_assistant") || "AI Assistant"}
+        </button>
+        <button
+          onClick={() => setActiveTab('history')}
+          className={`px-6 py-3 font-bold text-sm rounded-t-lg transition flex items-center gap-2 ${
+            activeTab === 'history'
+              ? 'bg-white dark:bg-slate-800 text-primary-600 border-b-2 border-primary-600'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+          }`}
+        >
+          <History size={18} />
+          {t("translations.history") || "History"}
+        </button>
+      </div>
+
+      {/* AI Assistant Tab */}
+      {activeTab === 'ai-assistant' && (
+        <div className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-2xl p-6 border border-violet-200 dark:border-violet-800 space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="text-violet-600" size={24} />
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">{t("translations.ai_assistant") || "AI Translation Assistant"}</h3>
+          </div>
+          
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            {t("translations.ai_assistant_desc") || "Use AI to help translate text between languages. Enter text and select the source and target languages."}
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
+                {t("translations.source_language") || "Source Language"}
+              </label>
+              <select
+                value={aiSourceLang}
+                onChange={(e) => setAiSourceLang(e.target.value)}
+                className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+              >
+                {languages.map(lang => (
+                  <option key={lang} value={lang}>{getLanguageName(lang)}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
+                {t("translations.target_language") || "Target Language"}
+              </label>
+              <select
+                value={aiTargetLang}
+                onChange={(e) => setAiTargetLang(e.target.value)}
+                className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+              >
+                {languages.map(lang => (
+                  <option key={lang} value={lang}>{getLanguageName(lang)}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          <div>
+            <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
+              {t("translations.source_text") || "Text to Translate"}
+            </label>
+            <textarea
+              value={aiSourceText}
+              onChange={(e) => setAiSourceText(e.target.value)}
+              placeholder={t("translations.enter_text") || "Enter text to translate..."}
+              className="w-full p-4 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white resize-none"
+              rows={3}
+            />
+          </div>
+          
+          <button
+            onClick={handleAiTranslate}
+            disabled={isTranslating || !aiSourceText.trim()}
+            className="w-full px-6 py-3 bg-violet-600 text-white rounded-lg hover:bg-violet-700 disabled:opacity-50 flex items-center justify-center gap-2 font-bold transition"
+          >
+            {isTranslating ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                {t("translations.translating") || "Translating..."}
+              </>
+            ) : (
+              <>
+                <Sparkles size={18} />
+                {t("translations.translate_with_ai") || "Translate with AI"}
+              </>
+            )}
+          </button>
+          
+          {aiTranslation && (
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-violet-200 dark:border-violet-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
+                  {t("translations.translation_result") || "Translation Result"}
+                </span>
+                {aiProvider && (
+                  <span className="text-xs px-2 py-1 bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 rounded-full">
+                    via {aiProvider}
+                  </span>
+                )}
+              </div>
+              <p className="text-lg text-slate-800 dark:text-white">{aiTranslation}</p>
+              <button
+                onClick={() => navigator.clipboard.writeText(aiTranslation)}
+                className="mt-2 text-sm text-violet-600 hover:text-violet-700 font-medium"
+              >
+                {t("translations.copy") || "Copy to clipboard"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* History Tab */}
+      {activeTab === 'history' && (
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <History className="text-amber-600" size={24} />
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">{t("translations.history") || "Translation History"}</h3>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
+                {t("translations.filter_language") || "Filter by Language"}
+              </label>
+              <select
+                value={historyFilter.language}
+                onChange={(e) => setHistoryFilter({ ...historyFilter, language: e.target.value })}
+                className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+              >
+                <option value="">{t("translations.all_languages") || "All Languages"}</option>
+                {languages.map(lang => (
+                  <option key={lang} value={lang}>{getLanguageName(lang)}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-2">
+                {t("translations.filter_key") || "Filter by Key"}
+              </label>
+              <input
+                type="text"
+                value={historyFilter.key}
+                onChange={(e) => setHistoryFilter({ ...historyFilter, key: e.target.value })}
+                placeholder={t("translations.search_key") || "Search key..."}
+                className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+              />
+            </div>
+          </div>
+          
+          {isLoadingHistory ? (
+            <div className="text-center py-8">
+              <Loader2 className="animate-spin mx-auto text-amber-600" size={32} />
+            </div>
+          ) : history.length === 0 ? (
+            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+              {t("translations.no_history") || "No translation history found"}
+            </div>
+          ) : (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {history.map((item) => (
+                <div key={item.id} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold px-2 py-1 bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded uppercase">
+                        {item.language}
+                      </span>
+                      <span className="text-sm font-mono text-slate-600 dark:text-slate-400">{item.key}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                      <Clock size={12} />
+                      {new Date(item.changed_at).toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-slate-500 dark:text-slate-400 line-through">
+                      {item.old_value || '(empty)'}
+                    </span>
+                    <ArrowRight size={14} className="text-slate-400" />
+                    <span className="text-slate-800 dark:text-white font-medium">
+                      {item.new_value}
+                    </span>
+                  </div>
+                  {item.user_name && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                      by {item.user_name}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Editor Tab Content */}
+      {activeTab === 'editor' && (
+        <>
       {/* Export/Import Buttons */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-purple-200 dark:border-purple-800 space-y-4">
         <h3 className="font-bold text-slate-800 dark:text-white mb-4">{t("translations.import_export")}</h3>
@@ -546,6 +849,8 @@ const TranslationManager: React.FC<TranslationManagerProps> = ({ currentUser }) 
           </table>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 };
