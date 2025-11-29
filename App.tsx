@@ -524,7 +524,7 @@ const App: React.FC = () => {
             currencyFormatter={formatCurrency} 
           />
 
-          <div className="flex-1 flex flex-col min-h-screen md:h-full md:overflow-hidden relative w-full">
+          <div className="flex-1 flex flex-col min-h-0 md:h-full md:overflow-hidden relative w-full">
             <AppHeader 
               appName={appName}
               currentView={currentView}
