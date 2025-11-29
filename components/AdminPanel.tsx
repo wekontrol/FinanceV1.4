@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useDeleteUser } = from '../hooks/useQueries';
+import { useDeleteUser } from '../hooks/useQueries';
 import { BackupConfig, User, UserRole, UserStatus } from '../types';
 import { HardDrive, Save, Server, ChevronDown, ChevronUp, Users, UserPlus, Edit, Trash2, X, Sliders, AlertTriangle, Bell, Shield, Upload, Check, UserCheck, Lock, Unlock, Key, RefreshCw, Bot, Sparkles, CheckCircle, Download, Github, Terminal, Cpu, Network, Loader2, FileText, Languages, ArrowRightLeft } from 'lucide-react';
 import { setGeminiKey, hasGeminiKey } from '../services/geminiService';
