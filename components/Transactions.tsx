@@ -62,6 +62,12 @@ const Transactions: React.FC<TransactionsProps> = ({
   const [isUploadingExcel, setIsUploadingExcel] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const excelInputRef = useRef<HTMLInputElement>(null);
+  
+  // Preview Modal States
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewTransactions, setPreviewTransactions] = useState<any[]>([]);
+  const [previewErrors, setPreviewErrors] = useState<string[]>([]);
+  const [previewFileData, setPreviewFileData] = useState<string | null>(null);
 
   const toggleSelect = (id: string) => {
     const newSelected = new Set(selectedIds);
@@ -109,32 +115,62 @@ const Transactions: React.FC<TransactionsProps> = ({
     }
   };
 
-  // Import Excel file
+  // Import Excel file - Show preview first
   const handleImportExcel = async (file: File) => {
     try {
       setIsUploadingExcel(true);
       const reader = new FileReader();
       reader.onload = async (e) => {
         const base64 = (e.target?.result as string).split(',')[1];
-        const response = await fetch('/api/reports/import', {
+        // First, get preview
+        const previewResponse = await fetch('/api/reports/preview', {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ fileData: base64 })
         });
-        const data = await response.json();
-        if (!response.ok) {
-          alert('Erro: ' + (data.error || 'Falha ao importar'));
+        const previewData = await previewResponse.json();
+        if (!previewResponse.ok) {
+          alert('Erro ao processar: ' + (previewData.error || 'Falha'));
           return;
         }
-        alert(`Sucesso! ${data.imported} transações importadas.${data.errors?.length ? '\n\nErros: ' + data.errors.join('\n') : ''}`);
-        if (excelInputRef.current) excelInputRef.current.value = '';
+        // Show preview modal
+        setPreviewTransactions(previewData.transactions || []);
+        setPreviewErrors(previewData.errors || []);
+        setPreviewFileData(base64);
+        setShowPreviewModal(true);
       };
       reader.readAsDataURL(file);
     } catch (error: any) {
       alert('Erro: ' + error.message);
     } finally {
       setIsUploadingExcel(false);
+    }
+  };
+
+  // Confirm import after preview
+  const confirmImport = async () => {
+    if (!previewFileData) return;
+    try {
+      const response = await fetch('/api/reports/import', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileData: previewFileData })
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        alert('Erro: ' + (data.error || 'Falha ao importar'));
+        return;
+      }
+      alert(`✓ Sucesso! ${data.imported} transações importadas.`);
+      setShowPreviewModal(false);
+      setPreviewTransactions([]);
+      setPreviewErrors([]);
+      setPreviewFileData(null);
+      if (excelInputRef.current) excelInputRef.current.value = '';
+    } catch (error: any) {
+      alert('Erro: ' + error.message);
     }
   };
 
@@ -1165,6 +1201,51 @@ const Transactions: React.FC<TransactionsProps> = ({
               </div>
             </div>
           )}
+
+      {/* Preview Modal */}
+      {showPreviewModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl max-h-[80vh] overflow-y-auto w-full p-6 border border-slate-200 dark:border-slate-700">
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Transações para Importar</h2>
+            
+            {previewErrors.length > 0 && (
+              <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg">
+                <p className="text-sm font-bold text-rose-700 dark:text-rose-300 mb-2">⚠️ Erros:</p>
+                {previewErrors.slice(0, 5).map((err, i) => (
+                  <p key={i} className="text-xs text-rose-600 dark:text-rose-400">{err}</p>
+                ))}
+                {previewErrors.length > 5 && <p className="text-xs text-rose-600">... +{previewErrors.length - 5}</p>}
+              </div>
+            )}
+
+            <div className="mb-4">
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">
+                {previewTransactions.length} transação(ões):
+              </p>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {previewTransactions.map((txn, i) => (
+                  <div key={i} className={`p-3 rounded-lg border ${txn.type === 'INCOME' ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800' : 'bg-rose-50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-800'}`}>
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="text-sm font-bold text-slate-800 dark:text-white">{txn.description}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400">{txn.category} • {txn.date}</p>
+                      </div>
+                      <p className={`text-sm font-bold ${txn.type === 'INCOME' ? 'text-green-600' : 'text-rose-600'}`}>
+                        {txn.type === 'INCOME' ? '+' : '-'} {txn.amount}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setShowPreviewModal(false)} className="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white font-bold hover:bg-slate-300">Cancelar</button>
+              <button onClick={confirmImport} className="px-4 py-2 rounded-lg bg-blue-500 text-white font-bold hover:bg-blue-600">✓ Confirmar</button>
+            </div>
+          </div>
+        </div>
+      )}
         </>
       )}
     </div>

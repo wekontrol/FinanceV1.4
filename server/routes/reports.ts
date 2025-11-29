@@ -59,6 +59,88 @@ router.get('/template', requireAuth, async (req: Request, res: Response) => {
   }
 });
 
+// Preview Transactions from Excel (no save)
+router.post('/preview', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const { fileData } = req.body;
+    if (!fileData) return res.status(400).json({ error: 'No file data provided' });
+
+    const buffer = Buffer.from(fileData, 'base64');
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(buffer);
+    
+    const sheet = workbook.getWorksheet('Transações');
+    if (!sheet) return res.status(400).json({ error: 'Sheet "Transações" not found' });
+
+    const transactions: any[] = [];
+    const errors: string[] = [];
+
+    const getCellValue = (cell: any) => {
+      if (!cell) return null;
+      const val = cell.value;
+      if (val === null || val === undefined) return null;
+      if (typeof val === 'object' && val.result) return val.result;
+      if (typeof val === 'object' && val.text) return val.text;
+      return String(val).trim();
+    };
+
+    sheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return;
+      const date = getCellValue(row.getCell(1));
+      const description = getCellValue(row.getCell(2));
+      const category = getCellValue(row.getCell(3));
+      const typeRaw = getCellValue(row.getCell(4));
+      const amount = getCellValue(row.getCell(5));
+
+      if (!date || !description || !category || !typeRaw || !amount) {
+        errors.push(`Linha ${rowNumber}: Campos faltando`);
+        return;
+      }
+
+      try {
+        const typeStr = String(typeRaw).trim().toUpperCase();
+        let normalizedType = typeStr;
+        if (typeStr === 'RECEITA') normalizedType = 'INCOME';
+        else if (typeStr === 'DESPESA') normalizedType = 'EXPENSE';
+        else if (typeStr !== 'INCOME' && typeStr !== 'EXPENSE') {
+          errors.push(`Linha ${rowNumber}: Tipo deve ser INCOME/EXPENSE/RECEITA/DESPESA`);
+          return;
+        }
+
+        let dateObj = new Date(date as string);
+        if (isNaN(dateObj.getTime())) {
+          const parts = String(date).split('/');
+          if (parts.length === 3) dateObj = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        }
+        if (isNaN(dateObj.getTime())) {
+          errors.push(`Linha ${rowNumber}: Data inválida`);
+          return;
+        }
+
+        const amountNum = Number(amount);
+        if (isNaN(amountNum) || amountNum <= 0) {
+          errors.push(`Linha ${rowNumber}: Valor deve ser positivo`);
+          return;
+        }
+
+        transactions.push({
+          date: dateObj.toISOString().split('T')[0],
+          description: String(description).trim(),
+          category: String(category).trim(),
+          type: normalizedType,
+          amount: amountNum
+        });
+      } catch (err: any) {
+        errors.push(`Linha ${rowNumber}: ${err.message}`);
+      }
+    });
+
+    res.json({ transactions, errors });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Import Transactions from Excel
 router.post('/import', requireAuth, async (req: Request, res: Response) => {
   try {
