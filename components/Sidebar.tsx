@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { LayoutDashboard, Wallet, PiggyBank, Users, Settings, LogOut, X, Activity, Camera, TrendingUp, Calculator, PieChart, Languages, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Wallet, PiggyBank, Users, Settings, LogOut, X, Activity, Camera, TrendingUp, Calculator, PieChart, Languages, Zap } from 'lucide-react';
 import { User, UserRole } from '../types';
 import ProfileModal from './ProfileModal';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -31,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const menuItems = [
     { id: 'dashboard', label: t('sidebar.dashboard'), icon: LayoutDashboard },
-    { id: 'ai_planning', label: t('sidebar.ai_planning'), icon: Sparkles },
+    { id: 'ai_planning', label: t('sidebar.ai_planning'), icon: Zap },
     { id: 'transactions', label: t('sidebar.transactions'), icon: Wallet },
     { id: 'budget', label: t('sidebar.budget'), icon: PieChart },
     { id: 'goals', label: t('sidebar.goals'), icon: PiggyBank },

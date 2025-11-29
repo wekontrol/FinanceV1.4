@@ -603,5 +603,6 @@
   "ai_planning.potential_savings": "Économies potentielles",
   "ai_planning.goal_emergency": "Fonds de Secours",
   "ai_planning.goal_vacation": "Vacances en Famille",
-  "ai_planning.goal_education": "Éducation"
+  "ai_planning.goal_education": "Éducation",
+  "ai_planning.no_goals": "Vous n'avez pas encore créé d'objectifs financiers"
 }

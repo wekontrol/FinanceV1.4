@@ -603,5 +603,6 @@
   "ai_planning.potential_savings": "Kusindisa ekoki",
   "ai_planning.goal_emergency": "Kusindisa ya Akuti",
   "ai_planning.goal_vacation": "Molende ya Famille",
-  "ai_planning.goal_education": "Boyekoli"
+  "ai_planning.goal_education": "Boyekoli",
+  "ai_planning.no_goals": "Oyekilaki te layini ya mbongo"
 }

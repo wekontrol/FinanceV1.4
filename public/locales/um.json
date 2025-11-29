@@ -603,5 +603,6 @@
   "ai_planning.potential_savings": "Okuveya okukumina",
   "ai_planning.goal_emergency": "Okuveya okwa Akuti",
   "ai_planning.goal_vacation": "Okuvila Okwonona",
-  "ai_planning.goal_education": "Okuva"
+  "ai_planning.goal_education": "Okuva",
+  "ai_planning.no_goals": "Akakala okweyakile okwa kweyela okwalunga"
 }

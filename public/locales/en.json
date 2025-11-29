@@ -603,5 +603,6 @@
   "ai_planning.potential_savings": "Potential savings",
   "ai_planning.goal_emergency": "Emergency Fund",
   "ai_planning.goal_vacation": "Family Vacation",
-  "ai_planning.goal_education": "Education"
+  "ai_planning.goal_education": "Education",
+  "ai_planning.no_goals": "You haven't created any financial goals yet"
 }

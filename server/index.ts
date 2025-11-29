@@ -20,6 +20,7 @@ import pushRoutes from './routes/push';
 import emailRoutes from './routes/email';
 import translationsRoutes from './routes/translations';
 import reportsRoutes from './routes/reports';
+import aiPlanningRoutes from './routes/aiPlanning';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
@@ -102,6 +103,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/system', systemRoutes);
 app.use('/api/translations', translationsRoutes);
 app.use('/api/reports', reportsRoutes);
+app.use('/api/ai-planning', aiPlanningRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

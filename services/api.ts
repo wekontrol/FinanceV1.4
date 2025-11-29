@@ -91,6 +91,15 @@ export const transactionsApi = {
   }
 };
 
+export const aiPlanningApi = {
+  analyze: async () => {
+    const response = await fetch(`${API_BASE}/ai-planning/analyze`, {
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  }
+};
+
 export const budgetApi = {
   getLimits: async () => {
     const response = await fetch(`${API_BASE}/budget/limits`, { credentials: 'include' });
