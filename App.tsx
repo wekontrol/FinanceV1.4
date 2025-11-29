@@ -130,7 +130,6 @@ const App: React.FC = () => {
         setCurrentUser(response.user);
         setUserLanguage(response.user.languagePreference || 'pt');
         setIsLoggedIn(true);
-        await loadAllData();
       } catch (error) {
         setIsLoggedIn(false);
       } finally {
@@ -139,6 +138,12 @@ const App: React.FC = () => {
     };
     checkSession();
   }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      loadAllData();
+    }
+  }, [isLoggedIn]);
 
   const loadAllData = async () => {
     try {
