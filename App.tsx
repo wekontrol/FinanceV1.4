@@ -503,7 +503,7 @@ const App: React.FC = () => {
         )}
 
         {isLoggedIn && !isLoading && (
-        <div className="flex min-h-screen md:h-screen bg-slate-50 dark:bg-[#09090b] md:overflow-hidden font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
+        <div className="flex h-auto md:h-screen bg-slate-50 dark:bg-[#09090b] md:overflow-hidden font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
           <Sidebar 
             appName={appName}
             currentUser={currentUser}
@@ -541,7 +541,7 @@ const App: React.FC = () => {
               handleThemeToggle={handleThemeToggle}
             />
 
-            <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 scroll-smooth pb-32">
+            <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 scroll-smooth md:pb-32">
               <div className="max-w-7xl mx-auto">
                 {currentView === 'dashboard' && <Dashboard transactions={transactions} savingsGoals={goals} budgets={budgets} currencyFormatter={formatCurrency} />}
                 {currentView === 'ai_planning' && <AIPlanning transactions={transactions} budgets={budgets} goals={goals} currencyFormatter={formatCurrency} />}
