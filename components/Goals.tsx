@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { SavingsGoal, GoalTransaction, User } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useDeleteGoal, useContributeToGoal } from '../hooks/useQueries';
 import { Plus, Trash2, Target, ArrowLeft, TrendingUp, Calendar, Info, MinusCircle, PlusCircle, TrendingDown, Edit2, X, Save } from 'lucide-react';
 import { 
   ComposedChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -24,14 +25,16 @@ type TransactionType = 'deposit' | 'withdraw';
 const Goals: React.FC<GoalsProps> = ({ 
   goals, 
   addGoal, 
-  deleteGoal, 
-  addContribution,
+  deleteGoal: deleteGoalProp, 
+  addContribution: addContributionProp,
   editContribution,
   deleteContribution,
   currencyFormatter,
   currentUser
 }) => {
   const { t } = useLanguage();
+  const { mutate: deleteGoal } = useDeleteGoal();
+  const { mutate: addContribution } = useContributeToGoal();
   const [showForm, setShowForm] = useState(false);
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [transactionAmount, setTransactionAmount] = useState('');
