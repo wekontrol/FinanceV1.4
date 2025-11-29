@@ -91,14 +91,17 @@ router.post('/import', requireAuth, async (req: Request, res: Response) => {
       const typeRaw = row.getCell(4).value;
       const amount = row.getCell(5).value;
 
+      console.log(`[IMPORT DEBUG Row ${rowNumber}] date="${date}" desc="${description}" cat="${category}" type="${typeRaw}" amount="${amount}"`);
+
       if (!date || !description || !category || !typeRaw || !amount) {
-        errors.push(`Linha ${rowNumber}: Campos obrigatórios faltando`);
+        errors.push(`Linha ${rowNumber}: Campos obrigatórios faltando (type=${typeRaw})`);
         return;
       }
 
       try {
         // Validate and normalize type (support both English and Portuguese)
         const typeStr = String(typeRaw).trim().toUpperCase();
+        console.log(`[IMPORT] Row ${rowNumber}: typeRaw="${typeRaw}" -> typeStr="${typeStr}"`);
         let normalizedType = typeStr;
         
         if (typeStr === 'RECEITA') {
