@@ -12,6 +12,7 @@ interface TransactionsProps {
   currentUserId: string;
   currencyFormatter: (value: number) => string;
   onExport: (type: 'PDF' | 'CSV') => void;
+  onRefresh?: () => void;
 }
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
@@ -23,7 +24,8 @@ const Transactions: React.FC<TransactionsProps> = ({
   deleteTransaction,
   currentUserId,
   currencyFormatter,
-  onExport
+  onExport,
+  onRefresh
 }) => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'history' | 'subscriptions'>('history');
@@ -93,6 +95,7 @@ const Transactions: React.FC<TransactionsProps> = ({
     if (!confirm(`${t("transactions.delete_confirm")} ${selectedIds.size} transações?`)) return;
     selectedIds.forEach(id => deleteTransaction(id));
     setSelectedIds(new Set());
+    if (onRefresh) onRefresh();
   };
 
   const handleSort = (column: 'description' | 'category' | 'date' | 'amount') => {
@@ -182,6 +185,7 @@ const Transactions: React.FC<TransactionsProps> = ({
       setPreviewErrors([]);
       setPreviewFileData(null);
       if (excelInputRef.current) excelInputRef.current.value = '';
+      if (onRefresh) onRefresh();
     } catch (error: any) {
       alert('Erro: ' + error.message);
     }
@@ -519,6 +523,7 @@ const Transactions: React.FC<TransactionsProps> = ({
     setShowForm(false);
     setEditingId(null);
     setFormData({ description: '', amount: '', type: TransactionType.EXPENSE, category: '', date: new Date().toISOString().split('T')[0], attachments: [], isRecurring: false, frequency: 'monthly' });
+    if (onRefresh) onRefresh();
   };
 
   const filteredTransactions = useMemo(() => {
