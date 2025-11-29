@@ -183,7 +183,7 @@ const Login: React.FC<LoginProps> = ({ appName, onLogin }) => {
   if (view === 'register') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900 p-4">
-        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
           <div className="flex items-center mb-6">
             <button onClick={() => setView('login')} className="p-2 -ml-2 text-slate-400 hover:text-slate-600">
               <ArrowLeft size={20} />
