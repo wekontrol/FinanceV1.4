@@ -67,7 +67,7 @@ router.post('/preview', requireAuth, async (req: Request, res: Response) => {
 
     const buffer = Buffer.from(fileData, 'base64');
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(buffer);
+    await workbook.xlsx.load(buffer as unknown as Buffer);
     
     const sheet = workbook.getWorksheet('Transações');
     if (!sheet) return res.status(400).json({ error: 'Sheet "Transações" not found' });
@@ -155,7 +155,7 @@ router.post('/import', requireAuth, async (req: Request, res: Response) => {
     // Decode base64
     const buffer = Buffer.from(fileData, 'base64');
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(buffer);
+    await workbook.xlsx.load(buffer as unknown as Buffer);
     
     const sheet = workbook.getWorksheet('Transações');
     if (!sheet) {

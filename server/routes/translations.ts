@@ -139,7 +139,7 @@ router.get('/export', requireTranslatorOrAdmin, (req: Request, res: Response) =>
     languages.forEach(lang => {
       result[lang] = {};
       allKeys.forEach(key => {
-        const trans = translations.find((t: any) => t.language === lang && t.key === key);
+        const trans = translations.find((t: any) => t.language === lang && t.key === key) as { value?: string } | undefined;
         result[lang][key] = trans?.value || '';
       });
     });

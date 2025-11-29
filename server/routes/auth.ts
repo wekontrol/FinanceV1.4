@@ -131,7 +131,11 @@ router.post('/register', (req: Request, res: Response) => {
   const user = db.prepare(`
     SELECT id, username, name, role, avatar, status, family_id as familyId
     FROM users WHERE id = ?
-  `).get(userId);
+  `).get(userId) as any;
+
+  // Auto-login after registration
+  req.session.userId = user.id;
+  req.session.user = user;
 
   res.status(201).json({ user });
 });
