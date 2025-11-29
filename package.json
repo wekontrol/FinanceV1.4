@@ -19,6 +19,7 @@
     "@google/genai": "latest",
     "@heyputer/puter.js": "^2.1.6",
     "@openrouter/ai-sdk-provider": "latest",
+    "@tanstack/react-query": "^5.90.11",
     "@types/bcryptjs": "^2.4.6",
     "@types/better-sqlite3": "^7.6.13",
     "@types/cors": "^2.8.19",

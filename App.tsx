@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { User, UserRole, Transaction, SavingsGoal, TransactionType, BackupConfig, BudgetLimit, GoalTransaction, ExchangeRates, FamilyTask, FamilyEvent, RateProvider, UserStatus, SavedSimulation, LoanSimulation, Notification as AppNotification } from './types';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -20,6 +21,16 @@ import { getExchangeRates } from './services/marketData';
 import { getDefaultProvider as getDefaultCurrencyProvider, setDefaultProvider as setDefaultCurrencyProvider } from './services/currencyProviderService';
 import { authApi, transactionsApi, goalsApi, usersApi, familyApi, budgetApi } from './services/api';
 import { LanguageProvider } from './contexts/LanguageContext';
+
+// Setup React Query
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // Dados Iniciais Atualizados com Hierarquia Familiar
 const INITIAL_USERS: User[] = [
@@ -577,9 +588,9 @@ const App: React.FC = () => {
             </div>
           )}
         </div>
-        )}
       </div>
     </LanguageProvider>
+      </QueryClientProvider>
   );
 };
 
