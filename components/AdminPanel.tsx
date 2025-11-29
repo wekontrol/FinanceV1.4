@@ -572,6 +572,29 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                      </div>
                    </div>
                    <div>
+                     <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Logo do App</label>
+                     <input 
+                       type="file" 
+                       accept="image/*" 
+                       onChange={(e) => {
+                         if (e.target.files?.[0]) {
+                           const reader = new FileReader();
+                           reader.onload = (event) => {
+                             const logoData = event.target?.result as string;
+                             fetch('/api/reports/logo', {
+                               method: 'POST',
+                               credentials: 'include',
+                               headers: { 'Content-Type': 'application/json' },
+                               body: JSON.stringify({ logo: logoData })
+                             }).then(() => alert('Logo salvo com sucesso!')).catch(err => alert('Erro: ' + err.message));
+                           };
+                           reader.readAsDataURL(e.target.files[0]);
+                         }
+                       }} 
+                       className={inputClass}
+                     />
+                   </div>
+                   <div>
                      <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Alertas</label>
                      <button onClick={requestNotificationPermission} className="w-full p-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-200 flex items-center justify-center gap-2"><Bell size={18} /> Testar Notificações</button>
                    </div>

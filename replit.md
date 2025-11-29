@@ -84,6 +84,34 @@ Fast Mode development - small focused edits preferred.
     - Changed map function parameter from `t` to `transaction` to avoid conflicts with translation function
     - Applied fix to both desktop and mobile transaction list views
 
+### Phase 8: EXCEL TEMPLATES + PDF REPORTS + LOGO UPLOAD ✅
+- **Excel Template Download:** Users can download blank Excel template with columns:
+  - Data (DD/MM/YYYY) | Descrição | Categoria | Tipo | Valor
+  - Includes example row for guidance
+  - Endpoint: `GET /api/reports/template`
+- **Excel Import:** Users upload filled Excel files to import multiple transactions:
+  - Parses dates (DD/MM/YYYY format)
+  - Validates required fields
+  - Returns count of imported transactions + error list
+  - Endpoint: `POST /api/reports/import` (requires base64 file data)
+- **App Logo Upload:** SUPER_ADMIN can upload custom logo in Settings:
+  - Stored in `app_settings` table (key: `app_logo`)
+  - Logo appears in PDF reports as header image
+  - Simple file upload in AdminPanel > General Settings
+  - Endpoint: `POST /api/reports/logo` (base64 image data)
+- **Enhanced PDF Reports:** PDF now includes:
+  - Custom app logo in header (if uploaded)
+  - Same transaction summary + table + savings goals
+  - Supports all 6 languages through existing system
+  - Endpoint: Uses existing `/api/reports/logo` to fetch logo
+- **Files Created/Modified:**
+  - `server/routes/reports.ts` - New file with 4 endpoints (template, import, logo get, logo post)
+  - `services/reportService.ts` - Added `appLogo` parameter to `generatePDFReport()`
+  - `components/AdminPanel.tsx` - Added logo file upload in General Settings section
+  - `server/index.ts` - Added `/api/reports` route registration
+- **Package Installed:** ExcelJS for Excel file handling
+- **Result:** Complete Excel workflow (download template → fill → import) + branding with custom logo
+
 ### Phase 7: BUG FIXES - GITHUB URL SAVE + BUDGET DISAPPEARING + SYSTEM UPDATE ✅
 - **GitHub URL Save Error:** Fixed `/api/settings` endpoint usage
   - **Root Cause:** `setSetting()` function sending only `{ value }` to wrong endpoint

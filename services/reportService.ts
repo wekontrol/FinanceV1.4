@@ -7,7 +7,8 @@ export const generatePDFReport = (
   savingsGoals: SavingsGoal[],
   period: 'month' | 'year',
   currencyFormatter: (val: number) => string,
-  currentUser: any
+  currentUser: any,
+  appLogo?: string
 ) => {
   const doc = new jsPDF();
   const now = new Date();
@@ -21,14 +22,22 @@ export const generatePDFReport = (
     new Date(t.date) >= startDate
   );
 
-  // Header
+  // Header com logo
+  if (appLogo) {
+    try {
+      doc.addImage(appLogo, 'PNG', 15, 8, 20, 20);
+    } catch (e) {
+      console.warn('Could not add logo to PDF');
+    }
+  }
+  
   doc.setFontSize(20);
-  doc.text('Relatório Financeiro', 20, 20);
+  doc.text('Relatório Financeiro', appLogo ? 40 : 20, 20);
   
   doc.setFontSize(10);
   doc.setTextColor(100);
-  doc.text(`Período: ${startDate.toLocaleDateString('pt-BR')} - ${now.toLocaleDateString('pt-BR')}`, 20, 30);
-  doc.text(`Usuário: ${currentUser.name}`, 20, 37);
+  doc.text(`Período: ${startDate.toLocaleDateString('pt-BR')} - ${now.toLocaleDateString('pt-BR')}`, 20, 35);
+  doc.text(`Usuário: ${currentUser.name}`, 20, 42);
 
   let yPosition = 45;
 
