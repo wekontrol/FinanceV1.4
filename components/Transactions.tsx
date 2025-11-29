@@ -97,7 +97,7 @@ const Transactions: React.FC<TransactionsProps> = ({
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ file: base64 })
+          body: JSON.stringify({ fileData: base64 })
         });
         const data = await response.json();
         if (!response.ok) {
