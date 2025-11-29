@@ -97,12 +97,12 @@ export const transactionsApi = {
 
 export const aiPlanningApi = {
   analyze: async (forceRefresh = true) => {
-    const url = new URL(`${API_BASE}/ai-planning/analyze`);
+    let url = `${API_BASE}/ai-planning/analyze`;
     if (forceRefresh) {
-      url.searchParams.append('refresh', 'true');
-      url.searchParams.append('t', Date.now().toString()); // Cache buster
+      const timestamp = Date.now();
+      url += `?refresh=true&t=${timestamp}`;
     }
-    const response = await fetch(url.toString(), {
+    const response = await fetch(url, {
       credentials: 'include',
       cache: 'no-cache'
     });
