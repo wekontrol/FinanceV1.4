@@ -43,33 +43,79 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
   const [showHistory, setShowHistory] = useState(false);
   const [budgetHistory, setBudgetHistory] = useState<Record<string, HistoryEntry[]>>({});
   const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [availableMonths, setAvailableMonths] = useState<string[]>([]);
   const [budgetSummary, setBudgetSummary] = useState<BudgetSummary[]>([]);
+  const [displayData, setDisplayData] = useState<BudgetSummary[]>([]);
+  const [isCurrentMonth, setIsCurrentMonth] = useState(true);
+
+  // Get current month in YYYY-MM format
+  const getCurrentMonth = () => {
+    return new Date().toISOString().slice(0, 7);
+  };
 
   // Get all existing budget categories for current user
   const existingBudgetCategories = useMemo(() => {
     return new Set(budgets.map(b => b.category));
   }, [budgets]);
 
-  // Load budget summary from API (more accurate than calculating on frontend)
+  // Load budget summary and history
   useEffect(() => {
-    const loadSummary = async () => {
+    const loadData = async () => {
       try {
-        const summary = await budgetApi.getSummary();
+        const [summary, history] = await Promise.all([
+          budgetApi.getSummary(),
+          budgetApi.getHistory()
+        ]);
         setBudgetSummary(summary);
+        setBudgetHistory(history);
+        
+        // Get all available months (current + historical)
+        const months = Object.keys(history).sort().reverse();
+        const currentMonth = getCurrentMonth();
+        
+        if (!months.includes(currentMonth)) {
+          months.unshift(currentMonth);
+        }
+        
+        setAvailableMonths(months);
+        setSelectedMonth(currentMonth);
       } catch (error) {
-        console.error('Erro ao carregar resumo do orçamento:', error);
+        console.error('Erro ao carregar orçamentos:', error);
       }
     };
-    loadSummary();
+    loadData();
   }, [transactions, budgets]);
+
+  // Update display data based on selected month
+  useEffect(() => {
+    const currentMonth = getCurrentMonth();
+    const isCurrentSelected = selectedMonth === currentMonth;
+    setIsCurrentMonth(isCurrentSelected);
+
+    if (isCurrentSelected) {
+      // Show current month data
+      setDisplayData(budgetSummary);
+    } else if (budgetHistory[selectedMonth]) {
+      // Show historical data
+      const historyData = budgetHistory[selectedMonth].map(item => ({
+        category: item.category,
+        limit: item.limit,
+        spent: item.spent,
+        percentage: item.limit > 0 ? Math.round((item.spent / item.limit) * 100) : 0
+      }));
+      setDisplayData(historyData);
+    } else {
+      setDisplayData([]);
+    }
+  }, [selectedMonth, budgetSummary, budgetHistory]);
 
   const categorySpending = useMemo(() => {
     const spending: Record<string, number> = {};
-    budgetSummary.forEach(item => {
+    displayData.forEach(item => {
       spending[item.category] = item.spent;
     });
     return spending;
-  }, [budgetSummary]);
+  }, [displayData]);
 
   const handleEdit = (category: string, currentLimit: number) => {
     setEditingCategory(category);
@@ -299,8 +345,8 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
         </div>
       )}
 
-      {/* Adicionar Novo Orçamento */}
-      {isAddingNew && (
+      {/* Adicionar Novo Orçamento - Apenas no mês atual */}
+      {isAddingNew && isCurrentMonth && (
         <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 p-6 animate-slide-in-left">
           <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-4 flex items-center gap-2">
             <Plus size={20} className="text-primary-600" />
@@ -364,9 +410,35 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
         </div>
       )}
 
+      {/* Seletor de Mês */}
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-700 p-4 sm:p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          <label className="text-sm font-bold text-slate-600 dark:text-slate-400 whitespace-nowrap">{t("budget.select_month")}:</label>
+          <div className="relative flex-1 sm:max-w-xs">
+            <select 
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm font-semibold bg-white dark:bg-slate-700 appearance-none cursor-pointer pr-10"
+            >
+              {availableMonths.map(month => {
+                const currentMonth = getCurrentMonth();
+                const isCurrentMonth = month === currentMonth;
+                const label = isCurrentMonth ? `${month} ${t("budget.this_month")}` : month;
+                return (
+                  <option key={month} value={month}>
+                    {label}
+                  </option>
+                );
+              })}
+            </select>
+            <Calendar size={16} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-tour="budget-cards">
-        {/* Botão Flutuante para Adicionar */}
-        {!isAddingNew && (
+        {/* Botão Flutuante para Adicionar - Apenas no mês atual */}
+        {!isAddingNew && isCurrentMonth && (
           <button 
             onClick={() => setIsAddingNew(true)}
             className="h-full min-h-[280px] bg-gradient-to-br from-primary-50 dark:from-primary-900/20 to-primary-100/50 dark:to-primary-900/10 border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-3xl flex flex-col items-center justify-center hover:border-primary-500 dark:hover:border-primary-500 transition hover:shadow-md dark:hover:shadow-primary-500/20"
@@ -374,6 +446,12 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
             <Plus size={40} className="text-primary-500 mb-2" />
             <span className="font-bold text-primary-600 dark:text-primary-400">{t("budget.add_budget")}</span>
           </button>
+        )}
+
+        {displayData.length === 0 && (
+          <div className="col-span-full text-center py-12">
+            <p className="text-slate-500 dark:text-slate-400 font-medium">{t("budget.no_data")}</p>
+          </div>
         )}
 
         {budgets.map(budget => {
@@ -423,7 +501,7 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
               </div>
 
               <div className="border-t border-slate-50 dark:border-slate-700 pt-3 sm:pt-4 space-y-2">
-                {editingCategory === cat ? (
+                {editingCategory === cat && isCurrentMonth ? (
                   <div className="flex items-center space-x-2 animate-fade-in gap-1 sm:gap-2">
                     <div className="flex-1 flex flex-col min-w-0">
                       <input 
@@ -449,22 +527,28 @@ const BudgetControl: React.FC<BudgetControlProps> = ({
                   </div>
                 ) : (
                   <div className="flex justify-between items-center gap-2 min-w-0">
-                    <button 
-                      onClick={() => handleEdit(cat, limit)}
-                      className="flex items-center text-xs sm:text-sm font-bold text-slate-400 hover:text-primary-600 transition truncate"
-                    >
-                      <Edit3 size={14} className="sm:w-16 mr-1 flex-shrink-0" />
-                      <span className="hidden sm:inline">{limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}</span>
-                      <span className="sm:hidden">{limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}</span>
-                    </button>
-                    {!isDefault && (
-                      <button 
-                        onClick={() => handleDeleteBudget(cat)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 transition hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg flex-shrink-0"
-                        title={t("budget.delete")}
-                      >
-                        <Trash2 size={14} className="sm:w-16" />
-                      </button>
+                    {isCurrentMonth ? (
+                      <>
+                        <button 
+                          onClick={() => handleEdit(cat, limit)}
+                          className="flex items-center text-xs sm:text-sm font-bold text-slate-400 hover:text-primary-600 transition truncate"
+                        >
+                          <Edit3 size={14} className="sm:w-16 mr-1 flex-shrink-0" />
+                          <span className="hidden sm:inline">{limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}</span>
+                          <span className="sm:hidden">{limit === 0 ? t("budget.set_limit") : t("budget.adjust_target")}</span>
+                        </button>
+                        {!isDefault && (
+                          <button 
+                            onClick={() => handleDeleteBudget(cat)}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 transition hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg flex-shrink-0"
+                            title={t("budget.delete")}
+                          >
+                            <Trash2 size={14} className="sm:w-16" />
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-xs sm:text-sm text-slate-400 italic">{t("budget.view_only_history")}</p>
                     )}
                   </div>
                 )}

@@ -571,7 +571,9 @@
   "common.view_inflation": "Inflation",
   "common.view_admin": "Administration",
   "common.view_family": "Family Mode",
-  "common.view_translations": "Translations"
-,
-  "common.conversion_providers": "Provedores de Conversão Monetária"
+  "common.view_translations": "Translations",
+  "common.conversion_providers": "Provedores de Conversão Monetária",
+  "budget.this_month": "(This Month)",
+  "budget.view_only_history": "Historical view - read only",
+  "budget.no_data": "No data available for this month"
 }

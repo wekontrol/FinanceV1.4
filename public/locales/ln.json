@@ -571,7 +571,9 @@
   "common.view_inflation": "Mobembo Ya Motó",
   "common.view_admin": "Bosangu",
   "common.view_family": "Bolingo Ya Libota",
-  "common.view_translations": "Okunzela"
-,
-  "common.conversion_providers": "Provedores de Conversão Monetária"
+  "common.view_translations": "Okunzela",
+  "common.conversion_providers": "Provedores de Conversão Monetária",
+  "budget.this_month": "(Sanza Oyo)",
+  "budget.view_only_history": "Matomba ya eleko - lengani ye kaka",
+  "budget.no_data": "Eloko eloko te mpo na sanza oyo"
 }

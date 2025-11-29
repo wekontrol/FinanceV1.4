@@ -571,7 +571,9 @@
   "common.view_inflation": "Okukuza Komali",
   "common.view_admin": "Okulaganya",
   "common.view_family": "Okutatanisa Omutwe",
-  "common.view_translations": "Okuhofuna"
-,
-  "common.conversion_providers": "Provedores de Conversão Monetária"
+  "common.view_translations": "Okuhofuna",
+  "common.conversion_providers": "Provedores de Conversão Monetária",
+  "budget.this_month": "(Oku wa Oku)",
+  "budget.view_only_history": "Oku kwa Mbote - Okwanda kuya",
+  "budget.no_data": "Akakala kakala okwavelisa oku wa oku"
 }

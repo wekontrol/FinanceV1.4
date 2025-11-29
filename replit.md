@@ -6,19 +6,25 @@ A comprehensive family financial management platform built with React, TypeScrip
 ## User Preferences
 Fast Mode development - small focused edits preferred.
 
-## Recent Changes (Phase 13 - BUGFIXES FINALIZED)
+## Recent Changes (Phase 14 - MONTH SELECTOR IMPLEMENTED)
 
-### Phase 13: Fixed Budget Display + UI Polish ✅
-- **Fixed:** Budgets now use API `/api/budget/summary` instead of frontend calculation
-  - This ensures budgets show CURRENT MONTH spending from database
-  - No more zero values when transactions exist
-  - Backend calculates accurately with proper type filtering ('DESPESA' vs 'RECEITA')
-- **Improved:** Transactions header layout reorganized for desktop UX
-  - Two-level hierarchy: Title + Tabs | Actions + Search + New
-  - Better mobile/tablet/desktop responsive behavior
-  - Cleaner grouping of export/import buttons
-- **Added:** `budgetApi.getSummary()` method to properly fetch budget data
-- **Status:** 🎯 ALL ISSUES RESOLVED - Production ready
+### Phase 14: Added Month Selector for Budget History ✅
+- **Added:** Dropdown to select and view budgets from current month or historical months
+  - Shows all available months: current month (default) + all historical months
+  - Current month labeled as "(Este Mês)" in Portuguese
+  - Loads current summary via API `/api/budget/summary`
+  - Loads historical data via API `/api/budget/getHistory()` 
+- **Implemented:** View-only mode for historical months
+  - Edit/Delete buttons hidden when viewing past months
+  - Shows "Visualização do histórico" message for historical data
+  - New budgets can only be added in current month
+- **UI Improvements:**
+  - Month selector panel above budget cards
+  - Calendar icon on dropdown for clarity
+  - Grid layout dynamically updates based on selected month data
+- **Translations:** Added 3 new keys in all 6 languages (PT, EN, ES, UM, LN, FR)
+  - `budget.this_month`, `budget.view_only_history`, `budget.no_data`
+- **Status:** ✅ COMPLETE - Full historical budget comparison working
 
 ## Previous Changes (Phase 12 COMPLETE - PERFORMANCE AUDIT + DATABASE INDEXES)
 
