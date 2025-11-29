@@ -82,14 +82,24 @@ router.post('/import', requireAuth, async (req: Request, res: Response) => {
     let imported = 0;
     const errors: string[] = [];
 
+    // Helper to safely extract cell value (ExcelJS may return objects or complex types)
+    const getCellValue = (cell: any) => {
+      if (!cell) return null;
+      const val = cell.value;
+      if (val === null || val === undefined) return null;
+      if (typeof val === 'object' && val.result) return val.result; // Formula result
+      if (typeof val === 'object' && val.text) return val.text; // Rich text
+      return String(val).trim();
+    };
+
     sheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return; // Skip header
 
-      const date = row.getCell(1).value;
-      const description = row.getCell(2).value;
-      const category = row.getCell(3).value;
-      const typeRaw = row.getCell(4).value;
-      const amount = row.getCell(5).value;
+      const date = getCellValue(row.getCell(1));
+      const description = getCellValue(row.getCell(2));
+      const category = getCellValue(row.getCell(3));
+      const typeRaw = getCellValue(row.getCell(4));
+      const amount = getCellValue(row.getCell(5));
 
       console.log(`[IMPORT DEBUG Row ${rowNumber}] date="${date}" desc="${description}" cat="${category}" type="${typeRaw}" amount="${amount}"`);
 
