@@ -289,6 +289,42 @@ export function initializeDatabase() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
+
+    /* Performance Indexes for Query Optimization */
+    
+    /* Users indexes */
+    CREATE INDEX IF NOT EXISTS idx_users_family_id ON users(family_id);
+    CREATE INDEX IF NOT EXISTS idx_users_created_by ON users(created_by);
+    CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+
+    /* Transactions indexes */
+    CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);
+    CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category);
+    CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON transactions(user_id, date);
+
+    /* Budget indexes */
+    CREATE INDEX IF NOT EXISTS idx_budget_limits_user_id ON budget_limits(user_id);
+    CREATE INDEX IF NOT EXISTS idx_budget_limits_user_category ON budget_limits(user_id, category);
+    CREATE INDEX IF NOT EXISTS idx_budget_history_user_id ON budget_history(user_id);
+
+    /* Goals indexes */
+    CREATE INDEX IF NOT EXISTS idx_goals_user_id ON savings_goals(user_id);
+    CREATE INDEX IF NOT EXISTS idx_goal_transactions_goal_id ON goal_transactions(goal_id);
+    CREATE INDEX IF NOT EXISTS idx_goal_transactions_user_id ON goal_transactions(user_id);
+
+    /* Family indexes */
+    CREATE INDEX IF NOT EXISTS idx_family_tasks_family_id ON family_tasks(family_id);
+    CREATE INDEX IF NOT EXISTS idx_family_events_family_id ON family_events(family_id);
+
+    /* Notifications & other indexes */
+    CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+    CREATE INDEX IF NOT EXISTS idx_push_subscriptions_user_id ON push_subscriptions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_forecast_history_user_id ON forecast_history(user_id);
+    CREATE INDEX IF NOT EXISTS idx_waste_analysis_user_id ON waste_analysis_history(user_id);
+    CREATE INDEX IF NOT EXISTS idx_saved_simulations_user_id ON saved_simulations(user_id);
+    CREATE INDEX IF NOT EXISTS idx_transaction_attachments_transaction_id ON transaction_attachments(transaction_id);
+    CREATE INDEX IF NOT EXISTS idx_translations_language_key ON translations(language, key);
   `);
 
   const adminExists = db.prepare('SELECT id FROM users WHERE username = ?').get('admin');
