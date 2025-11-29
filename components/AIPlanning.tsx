@@ -68,6 +68,7 @@ const AIPlanning: React.FC<AIPlanningProps> = ({
         setError(null);
         const data = await aiPlanningApi.analyze();
         setAnalysis(data);
+        console.log('[AIPlanning] Loaded analysis:', data);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Erro desconhecido ao carregar análise';
         console.error('Erro ao carregar análise IA:', message);
