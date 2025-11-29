@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import db from '../db/schema';
 
 const router = Router();
@@ -55,7 +56,7 @@ export function createDefaultBudgetsForUser(userId: string): number {
     `).get(userId, budget.translationKey);
 
     if (!existing) {
-      const budgetId = `bl${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      const budgetId = uuidv4();
       db.prepare(`
         INSERT INTO budget_limits (id, user_id, category, translation_key, limit_amount, is_default)
         VALUES (?, ?, ?, ?, ?, 1)
@@ -94,13 +95,6 @@ export function autoSaveMonthlyHistory(userId: string) {
         GROUP BY category
       `).all(userId, `${previousMonth}%`) as any[];
 
-      const recurringTransactions = db.prepare(`
-        SELECT category, SUM(amount) as total
-        FROM transactions
-        WHERE user_id = ? AND type = 'DESPESA' AND is_recurring = 1 AND date LIKE ?
-        GROUP BY category
-      `).all(userId, `${previousMonth}%`) as any[];
-
       let saved = 0;
       limits.forEach((limit: any) => {
         const categoryKey = limit.translation_key || limit.category;
@@ -111,13 +105,8 @@ export function autoSaveMonthlyHistory(userId: string) {
           t.category === limit.category ||
           (legacyName && t.category === legacyName)
         );
-        const recurring = recurringTransactions.find(t => 
-          t.category === categoryKey || 
-          t.category === limit.category ||
-          (legacyName && t.category === legacyName)
-        );
-        const totalSpent = (spent?.total || 0) + (recurring?.total || 0);
-        const id = `bh${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+        const totalSpent = spent?.total || 0;
+        const id = uuidv4();
         
         db.prepare(`
           INSERT OR REPLACE INTO budget_history (id, user_id, category, month, limit_amount, spent_amount)
@@ -227,6 +216,10 @@ router.post('/limits', (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Category and limit are required' });
   }
 
+  if (typeof limit !== 'number') {
+    return res.status(400).json({ error: 'Limit must be a number' });
+  }
+
   const categoryIdentifier = translationKey || category;
   
   const existing = db.prepare(`
@@ -238,7 +231,7 @@ router.post('/limits', (req: Request, res: Response) => {
       UPDATE budget_limits SET limit_amount = ? WHERE user_id = ? AND (category = ? OR translation_key = ?)
     `).run(limit, userId, categoryIdentifier, categoryIdentifier);
   } else {
-    const id = `bl${Date.now()}`;
+    const id = uuidv4();
     db.prepare(`
       INSERT INTO budget_limits (id, user_id, category, translation_key, limit_amount, is_default)
       VALUES (?, ?, ?, ?, ?, 0)
@@ -291,9 +284,9 @@ router.get('/summary', (req: Request, res: Response) => {
   const transactions = db.prepare(`
     SELECT category, SUM(amount) as total
     FROM transactions
-    WHERE user_id = ? AND type = 'DESPESA' AND (date LIKE ? OR (is_recurring = 1 AND date <= ?))
+    WHERE user_id = ? AND type = 'DESPESA' AND date LIKE ?
     GROUP BY category
-  `).all(userId, `${currentMonth}%`, new Date().toISOString().split('T')[0]);
+  `).all(userId, `${currentMonth}%`);
 
   const summary = limits.map((l: any) => {
     const categoryKey = l.translation_key || l.category;
@@ -363,7 +356,7 @@ router.post('/history/save', (req: Request, res: Response) => {
     limits.forEach((limit: any) => {
       const categoryKey = limit.translation_key || limit.category;
       const spent = transactions.find(t => t.category === categoryKey || t.category === limit.category);
-      const id = `bh${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      const id = uuidv4();
       
       db.prepare(`
         INSERT OR REPLACE INTO budget_history (id, user_id, category, month, limit_amount, spent_amount)
