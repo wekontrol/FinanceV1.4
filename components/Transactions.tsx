@@ -58,8 +58,62 @@ const Transactions: React.FC<TransactionsProps> = ({
     frequency: 'monthly' as 'monthly' | 'weekly' | 'biweekly' | 'quarterly' | 'semiannual' | 'yearly'
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
+  const [isUploadingExcel, setIsUploadingExcel] = useState(false);
+  const excelInputRef = useRef<HTMLInputElement>(null);
 
   const inputClass = "w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white font-medium focus:ring-2 focus:ring-primary-500 outline-none transition-all";
+
+  // Download template Excel
+  const handleDownloadTemplate = async () => {
+    try {
+      setIsLoadingTemplate(true);
+      const response = await fetch('/api/reports/template', { credentials: 'include' });
+      if (!response.ok) throw new Error('Erro ao baixar template');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'template_transacoes.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error: any) {
+      alert('Erro: ' + error.message);
+    } finally {
+      setIsLoadingTemplate(false);
+    }
+  };
+
+  // Import Excel file
+  const handleImportExcel = async (file: File) => {
+    try {
+      setIsUploadingExcel(true);
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64 = (e.target?.result as string).split(',')[1];
+        const response = await fetch('/api/reports/import', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file: base64 })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          alert('Erro: ' + (data.error || 'Falha ao importar'));
+          return;
+        }
+        alert(`Sucesso! ${data.imported} transações importadas.${data.errors?.length ? '\n\nErros: ' + data.errors.join('\n') : ''}`);
+        if (excelInputRef.current) excelInputRef.current.value = '';
+      };
+      reader.readAsDataURL(file);
+    } catch (error: any) {
+      alert('Erro: ' + error.message);
+    } finally {
+      setIsUploadingExcel(false);
+    }
+  };
 
   // Cleanup camera on unmount
   useEffect(() => {
@@ -486,7 +540,7 @@ const Transactions: React.FC<TransactionsProps> = ({
         </div>
 
         <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button 
               onClick={() => onExport('PDF')}
               className="flex-1 md:flex-none flex items-center justify-center px-4 py-2.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-300 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/40 transition font-bold text-sm border border-rose-100 dark:border-rose-800 active:scale-95"
@@ -501,6 +555,33 @@ const Transactions: React.FC<TransactionsProps> = ({
             >
               <FileSpreadsheet size={18} className="mr-2" /> Excel
             </button>
+            <button 
+              onClick={handleDownloadTemplate}
+              disabled={isLoadingTemplate}
+              className="flex-1 md:flex-none flex items-center justify-center px-4 py-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition font-bold text-sm border border-blue-100 dark:border-blue-800 active:scale-95 disabled:opacity-50"
+              title="Baixar template Excel"
+            >
+              {isLoadingTemplate ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Download size={18} className="mr-2" />}
+              Template
+            </button>
+            <div className="relative flex-1 md:flex-none">
+              <input 
+                ref={excelInputRef}
+                type="file" 
+                accept=".xlsx,.xls" 
+                onChange={(e) => e.target.files?.[0] && handleImportExcel(e.target.files[0])}
+                className="hidden"
+              />
+              <button 
+                onClick={() => excelInputRef.current?.click()}
+                disabled={isUploadingExcel}
+                className="w-full flex items-center justify-center px-4 py-2.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition font-bold text-sm border border-purple-100 dark:border-purple-800 active:scale-95 disabled:opacity-50"
+                title="Importar Excel"
+              >
+                {isUploadingExcel ? <Loader2 size={18} className="mr-2 animate-spin" /> : <UploadCloud size={18} className="mr-2" />}
+                Importar
+              </button>
+            </div>
           </div>
 
           <div className="relative flex-1 md:w-56">

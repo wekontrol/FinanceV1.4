@@ -85,32 +85,43 @@ Fast Mode development - small focused edits preferred.
     - Applied fix to both desktop and mobile transaction list views
 
 ### Phase 8: EXCEL TEMPLATES + PDF REPORTS + LOGO UPLOAD ✅
-- **Excel Template Download:** Users can download blank Excel template with columns:
-  - Data (DD/MM/YYYY) | Descrição | Categoria | Tipo | Valor
+- **Excel Template Download:** Users download blank Excel template from Transactions tab:
+  - Columns: Data (DD/MM/YYYY) | Descrição | Categoria | Tipo | Valor
   - Includes example row for guidance
+  - Button: "Template" (blue) in Transactions toolbar
   - Endpoint: `GET /api/reports/template`
+  - File saved as: `template_transacoes.xlsx`
 - **Excel Import:** Users upload filled Excel files to import multiple transactions:
-  - Parses dates (DD/MM/YYYY format)
-  - Validates required fields
+  - Button: "Importar" (purple) in Transactions toolbar
+  - Parses dates in DD/MM/YYYY format
+  - Validates required fields (date, amount, type, category)
   - Returns count of imported transactions + error list
+  - Shows success message with count + error details if any
   - Endpoint: `POST /api/reports/import` (requires base64 file data)
-- **App Logo Upload:** SUPER_ADMIN can upload custom logo in Settings:
+- **App Logo Upload:** SUPER_ADMIN can upload custom logo in AdminPanel:
+  - Location: Settings → General Settings → "Logo do App"
   - Stored in `app_settings` table (key: `app_logo`)
   - Logo appears in PDF reports as header image
-  - Simple file upload in AdminPanel > General Settings
   - Endpoint: `POST /api/reports/logo` (base64 image data)
 - **Enhanced PDF Reports:** PDF now includes:
   - Custom app logo in header (if uploaded)
-  - Same transaction summary + table + savings goals
+  - Transaction summary + detailed table + savings goals
   - Supports all 6 languages through existing system
   - Endpoint: Uses existing `/api/reports/logo` to fetch logo
 - **Files Created/Modified:**
   - `server/routes/reports.ts` - New file with 4 endpoints (template, import, logo get, logo post)
   - `services/reportService.ts` - Added `appLogo` parameter to `generatePDFReport()`
+  - `components/Transactions.tsx` - Added 2 new buttons (Template download + Excel import) in toolbar
   - `components/AdminPanel.tsx` - Added logo file upload in General Settings section
   - `server/index.ts` - Added `/api/reports` route registration
-- **Package Installed:** ExcelJS for Excel file handling
-- **Result:** Complete Excel workflow (download template → fill → import) + branding with custom logo
+- **States/Handlers Added:**
+  - `isLoadingTemplate` state for template download spinner
+  - `isUploadingExcel` state for import spinner
+  - `handleDownloadTemplate()` - Downloads Excel template
+  - `handleImportExcel()` - Reads file, converts to base64, imports to backend
+  - `excelInputRef` - Reference to hidden file input
+- **Package Installed:** ExcelJS (backend Excel parsing)
+- **Result:** Complete Excel workflow in Transactions tab (1 click download → fill → 1 click import) + PDF branding with custom logo
 
 ### Phase 7: BUG FIXES - GITHUB URL SAVE + BUDGET DISAPPEARING + SYSTEM UPDATE ✅
 - **GitHub URL Save Error:** Fixed `/api/settings` endpoint usage
