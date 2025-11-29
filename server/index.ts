@@ -6,7 +6,7 @@ import { initializeDatabase } from './db/schema';
 import pgPool, { initializeSessionsTable } from './db/postgres';
 import ConnectPgSimple from 'connect-pg-simple';
 import authRoutes from './routes/auth';
-import transactionRoutes, { startRecurringTransactionsScheduler } from './routes/transactions';
+import transactionRoutes from './routes/transactions';
 import goalRoutes from './routes/goals';
 import userRoutes from './routes/users';
 import familyRoutes from './routes/family';
@@ -131,6 +131,4 @@ app.listen(PORT, '0.0.0.0', () => {
 
   // Start budget history background scheduler
   startMonthlyHistoryScheduler();
-  // Start recurring transactions scheduler
-  startRecurringTransactionsScheduler();
 });
