@@ -296,11 +296,11 @@ export const settingsApi = {
   },
 
   setSetting: async (key: string, value: string) => {
-    const response = await fetch(`${API_BASE}/settings/${key}`, {
+    const response = await fetch(`${API_BASE}/settings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ value })
+      body: JSON.stringify({ key, value })
     });
     return handleResponse(response);
   },
