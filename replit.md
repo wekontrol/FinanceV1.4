@@ -50,7 +50,13 @@ Fast Mode development - small focused edits preferred.
 - ✅ Frontend forces fresh fetch every time
 - ✅ **USER MUST DO HARD REFRESH OR NEW LOGIN** to see changes (browser cache of old HTML/JS)
 
-## Recent Changes (Phase 17 - BUDGET TRANSLATION KEYS + TRANSLATION UI FIX) ✅
+## Recent Changes (Phase 17 - BUDGET TRANSLATION KEYS + TRANSLATION UI FIX + REGISTRATION LAYOUT) ✅
+
+### Family Registration Form Layout Fixed:
+- ✅ **Modal Width Increased:** Changed from `max-w-md` (448px) to `max-w-xl` (640px) for better fit
+- ✅ **Scroll Support:** Added `max-h-[90vh]` and `overflow-y-auto` for mobile/small screens
+- ✅ **Spacing Optimized:** Reduced field spacing from `space-y-4` to `space-y-3` for compact layout
+- ✅ **Component:** components/Login.tsx - registration form now displays properly without cramping
 
 ### Budget Categories Internationalization Complete:
 - ✅ **Translation Key Architecture:** 16 default budget categories now use translation keys (`budget.category.food`, etc.)
