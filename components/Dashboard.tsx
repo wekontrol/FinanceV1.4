@@ -140,14 +140,14 @@ const Dashboard: React.FC<DashboardProps> = ({
     const totalIncome = filteredTransactions
       .filter(t => {
         const type = String(t.type).toUpperCase();
-        return type === 'RECEITA' || t.type === TransactionType.INCOME;
+        return type === 'INCOME' || type === 'RECEITA';
       })
       .reduce((acc, curr) => acc + curr.amount, 0);
     
     const totalExpense = filteredTransactions
       .filter(t => {
         const type = String(t.type).toUpperCase();
-        return type === 'DESPESA' || t.type === TransactionType.EXPENSE;
+        return type === 'EXPENSE' || type === 'DESPESA';
       })
       .reduce((acc, curr) => acc + curr.amount, 0);
 
@@ -159,12 +159,12 @@ const Dashboard: React.FC<DashboardProps> = ({
   const healthScore = useMemo(() => {
     const allIncome = transactions.filter(t => {
     const type = String(t.type).toUpperCase();
-    return type === 'RECEITA' || t.type === TransactionType.INCOME;
+    return type === 'INCOME' || type === 'RECEITA';
   }).reduce((acc, t) => acc + t.amount, 0);
   
   const allExpense = transactions.filter(t => {
     const type = String(t.type).toUpperCase();
-    return type === 'DESPESA' || t.type === TransactionType.EXPENSE;
+    return type === 'EXPENSE' || type === 'DESPESA';
   }).reduce((acc, t) => acc + t.amount, 0);
     const allSavings = savingsGoals.reduce((acc, t) => acc + t.currentAmount, 0);
     
@@ -202,7 +202,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
       const entry = dataMap.get(key)!;
       const type = String(t.type).toUpperCase();
-      if (type === 'RECEITA' || t.type === TransactionType.INCOME) entry.income += t.amount;
+      if (type === 'INCOME' || type === 'RECEITA') entry.income += t.amount;
       else entry.expense += t.amount;
     });
 
@@ -219,7 +219,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const categoryData = useMemo(() => {
     const expenses = filteredTransactions.filter(t => {
       const type = String(t.type).toUpperCase();
-      return type === 'DESPESA' || t.type === TransactionType.EXPENSE;
+      return type === 'EXPENSE' || type === 'DESPESA';
     });
     const catMap = new Map<string, number>();
     expenses.forEach(t => {

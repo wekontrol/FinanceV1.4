@@ -81,23 +81,41 @@ router.post('/import', requireAuth, async (req: Request, res: Response) => {
       const date = row.getCell(1).value;
       const description = row.getCell(2).value;
       const category = row.getCell(3).value;
-      const type = row.getCell(4).value;
+      const typeRaw = row.getCell(4).value;
       const amount = row.getCell(5).value;
 
-      if (!date || !description || !category || !type || !amount) {
-        errors.push(`Row ${rowNumber}: Missing required fields`);
+      if (!date || !description || !category || !typeRaw || !amount) {
+        errors.push(`Linha ${rowNumber}: Campos obrigatórios faltando`);
         return;
       }
 
       try {
+        // Validate and normalize type
+        const typeStr = String(typeRaw).trim().toUpperCase();
+        if (typeStr !== 'INCOME' && typeStr !== 'EXPENSE') {
+          errors.push(`Linha ${rowNumber}: Tipo deve ser INCOME ou EXPENSE (encontrado: ${typeRaw})`);
+          return;
+        }
+
         // Parse date (handle DD/MM/YYYY format)
         let dateObj = new Date(date as string);
         if (isNaN(dateObj.getTime())) {
           // Try DD/MM/YYYY format
-          const parts = (date as string).split('/');
+          const parts = String(date).split('/');
           if (parts.length === 3) {
             dateObj = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
           }
+        }
+
+        if (isNaN(dateObj.getTime())) {
+          errors.push(`Linha ${rowNumber}: Data inválida: ${date}`);
+          return;
+        }
+
+        const amountNum = Number(amount);
+        if (isNaN(amountNum) || amountNum <= 0) {
+          errors.push(`Linha ${rowNumber}: Valor deve ser um número positivo`);
+          return;
         }
 
         db.prepare(`
@@ -107,14 +125,14 @@ router.post('/import', requireAuth, async (req: Request, res: Response) => {
           `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           userId,
           dateObj.toISOString().split('T')[0],
-          String(description),
-          String(category),
-          String(type).toUpperCase(),
-          Number(amount)
+          String(description).trim(),
+          String(category).trim(),
+          typeStr,
+          amountNum
         );
         imported++;
       } catch (err: any) {
-        errors.push(`Row ${rowNumber}: ${err.message}`);
+        errors.push(`Linha ${rowNumber}: ${err.message}`);
       }
     });
 
