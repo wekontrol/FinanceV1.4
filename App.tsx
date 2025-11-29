@@ -11,7 +11,8 @@ import InflationControl from './components/InflationControl';
 import Simulations from './components/Simulations';
 import Login from './components/Login';
 import AIAssistant from './components/AIAssistant';
-import TranslationManager from './components/TranslationManager'; 
+import TranslationManager from './components/TranslationManager';
+import AIPlanning from './components/AIPlanning'; 
 import AppHeader from './components/AppHeader';
 import { Loader2, Menu, Moon, Sun, Globe, Sparkles } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -543,6 +544,7 @@ const App: React.FC = () => {
             <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 scroll-smooth pb-32">
               <div className="max-w-7xl mx-auto">
                 {currentView === 'dashboard' && <Dashboard transactions={transactions} savingsGoals={goals} budgets={budgets} currencyFormatter={formatCurrency} />}
+                {currentView === 'ai_planning' && <AIPlanning currencyFormatter={formatCurrency} />}
                 {currentView === 'transactions' && currentUser && <Transactions transactions={transactions} addTransaction={addTransaction} updateTransaction={updateTransaction} deleteTransaction={deleteTransaction} currentUserId={currentUser.id} currencyFormatter={formatCurrency} onExport={openExportModal} onRefresh={loadAllData} />}
                 {currentView === 'budget' && <BudgetControl transactions={transactions} budgets={budgets} saveBudget={saveBudget} currencyFormatter={formatCurrency} />}
                 {currentView === 'goals' && currentUser && <Goals goals={goals} addGoal={addGoal} deleteGoal={deleteGoal} addContribution={addGoalContribution} editContribution={editGoalContribution} deleteContribution={deleteGoalContribution} currencyFormatter={formatCurrency} currentUser={currentUser} onRefresh={loadAllData} />}

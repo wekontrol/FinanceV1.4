@@ -6,7 +6,23 @@ A comprehensive family financial management platform built with React, TypeScrip
 ## User Preferences
 Fast Mode development - small focused edits preferred.
 
-## Recent Changes (Phase 14 - MONTH SELECTOR IMPLEMENTED)
+## Recent Changes (Phase 15 - AI PLANNING SECTION ADDED)
+
+### Phase 15: Added "Planificação IA" Section ✅
+- **Added:** New menu item "Planificação IA" (AI Planning) below Dashboard
+- **Features:**
+  - Overview tab: Financial health, spending trends, savings potential
+  - Suggestions tab: AI-powered recommendations with priorities and savings amounts
+  - Goals tab: Track financial goals with progress bars and timelines
+- **UI Elements:**
+  - Sparkles icon for AI Planning menu item
+  - Gradient tabs for navigation between sections
+  - Card-based layout for all data
+  - Progress tracking with visual indicators
+- **Translations:** Added 30+ translation keys for all 6 languages
+- **Status:** ✅ COMPLETE - Fully functional and translated
+
+## Previous Changes (Phase 14 - MONTH SELECTOR IMPLEMENTED)
 
 ### Phase 14: Added Month Selector for Budget History ✅
 - **Added:** Dropdown to select and view budgets from current month or historical months
