@@ -1192,16 +1192,16 @@ const Transactions: React.FC<TransactionsProps> = ({
                        )}
 
                        {/* Actions */}
-                       {t.userId === currentUserId && (
+                       {transaction.userId === currentUserId && (
                           <div className="flex justify-end gap-2 pt-2 border-t border-slate-50 dark:border-slate-700/50 mt-2">
                              <button 
-                               onClick={(e) => { e.stopPropagation(); handleEdit(t); }} 
+                               onClick={(e) => { e.stopPropagation(); handleEdit(transaction); }} 
                                className="px-3 py-1.5 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg text-xs font-bold flex items-center"
                              >
                                <Edit2 size={12} className="mr-1"/> Editar
                              </button>
                              <button 
-                               onClick={(e) => { e.stopPropagation(); if(confirm('Excluir?')) deleteTransaction(t.id); }} 
+                               onClick={(e) => { e.stopPropagation(); if(confirm('Excluir?')) deleteTransaction(transaction.id); }} 
                                className="px-3 py-1.5 bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400 rounded-lg text-xs font-bold flex items-center"
                              >
                                <Trash2 size={12} className="mr-1"/> Excluir
