@@ -11,8 +11,14 @@ db.pragma('journal_mode = WAL');
 /**
  * Sync translations from JSON files to database
  * Ensures database is always up-to-date with translation files
+ * Note: In production, this is a no-op since we use JSON files as source of truth
  */
 function syncTranslationsFromJSON() {
+  // Skip in production - use JSON files as fallback instead
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
+
   const localesPath = path.join(process.cwd(), 'public', 'locales');
   const languages = ['pt', 'en', 'es', 'um', 'ln', 'fr'];
   
@@ -28,25 +34,31 @@ function syncTranslationsFromJSON() {
       const content = fs.readFileSync(filePath, 'utf-8');
       const translations = JSON.parse(content);
       
-      // Temporarily disable foreign key constraints for sync
-      db.exec('PRAGMA foreign_keys = OFF');
-      
-      // Insert or update each translation in the database
-      for (const [key, value] of Object.entries(translations)) {
-        if (value && typeof value === 'string') {
-          db.prepare(`
-            INSERT OR REPLACE INTO translations (id, language, key, value, created_by, updated_at, status)
-            VALUES (?, ?, ?, ?, ?, datetime('now'), 'active')
-          `).run(`tr${Date.now()}${Math.random().toString(36).substr(2, 9)}`, lang, key, value, 'system');
+      // Only sync in development
+      if (process.env.NODE_ENV !== 'production') {
+        // Temporarily disable foreign key constraints for sync
+        db.exec('PRAGMA foreign_keys = OFF');
+        
+        // Insert or update each translation in the database
+        for (const [key, value] of Object.entries(translations)) {
+          if (value && typeof value === 'string') {
+            db.prepare(`
+              INSERT OR REPLACE INTO translations (id, language, key, value, created_by, updated_at, status)
+              VALUES (?, ?, ?, ?, ?, datetime('now'), 'active')
+            `).run(`tr${Date.now()}${Math.random().toString(36).substr(2, 9)}`, lang, key, value, 'system');
+          }
         }
+        
+        // Re-enable foreign key constraints
+        db.exec('PRAGMA foreign_keys = ON');
+        
+        console.log(`✓ Synced ${Object.keys(translations).length} keys for ${lang}`);
       }
-      
-      // Re-enable foreign key constraints
-      db.exec('PRAGMA foreign_keys = ON');
-      
-      console.log(`✓ Synced ${Object.keys(translations).length} keys for ${lang}`);
     } catch (error: any) {
-      console.error(`Error syncing ${lang} translations:`, error.message);
+      // Silently ignore errors in production - use JSON fallback
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(`Error syncing ${lang} translations:`, error.message);
+      }
     }
   });
 }

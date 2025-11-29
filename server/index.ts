@@ -28,7 +28,7 @@ const PORT = parseInt(process.env.PORT || '3001', 10);
 initializeDatabase();
 
 // Initialize PostgreSQL sessions table in production
-if (process.env.NODE_ENV === 'production' && process.env.TheFinance) {
+if (process.env.NODE_ENV === 'production') {
   initializeSessionsTable().catch(console.error);
 }
 
@@ -52,8 +52,8 @@ const sessionSecret = process.env.SESSION_SECRET || 'gestor-financeiro-secret-ke
 // Session store configuration
 let sessionStore: any;
 
-if (process.env.NODE_ENV === 'production' && process.env.TheFinance) {
-  // Use PostgreSQL in production
+if (process.env.NODE_ENV === 'production') {
+  // Always use PostgreSQL in production for persistent sessions
   const PgStore = ConnectPgSimple(session);
   sessionStore = new PgStore({
     pool: pgPool,
@@ -124,11 +124,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   if (process.env.NODE_ENV === 'production') {
     console.log('Running in production mode');
-    if (process.env.TheFinance) {
-      console.log('✅ Sessions stored in PostgreSQL');
-    } else {
-      console.warn('⚠️  TheFinance not set - using memory store (not recommended for production)');
-    }
+    console.log('✅ Sessions stored in PostgreSQL (persistent)');
   } else {
     console.log('Running in development mode');
   }
